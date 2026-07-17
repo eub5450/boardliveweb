@@ -365,6 +365,7 @@ Route::get('audience_list','CommentController@AudienceList');
 
 
 Route::get('check_balance_monthly','GiftController@HostBalanceChack');
+Route::get('live_data_monthly_earn','LiveDataController@monthlyEarnSummary');
 //profile
 Route::get('profile/live_data','ProfileController@ProfileLiveData')->middleware('broadlive.redis_first:public_profile,30,60');
 Route::get('profile/update','ProfileController@ProfileUpdate');
