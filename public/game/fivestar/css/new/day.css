@@ -1,0 +1,8 @@
+:root {
+  --bg-color: white;
+  --text-color: black;
+  --text-color-active: green;
+  --box-shadow: 5px 5px 15px black, -5px -5px 15px black;
+  --box-shadow-inset: 5px 5px 15px black, -5px -5px 15px black;
+  --border: #dddd;
+}

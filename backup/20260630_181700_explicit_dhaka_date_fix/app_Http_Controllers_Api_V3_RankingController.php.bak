@@ -1,0 +1,133 @@
+<?php
+
+namespace App\Http\Controllers\Api\V3;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Gift;
+use App\Models\HostData;
+use Carbon;
+use DB;
+use Auth;
+use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+
+class RankingController extends Controller
+{
+    public function RankList(Request $request)
+    {
+        $response = array();
+         $token = $request->access_token;
+        if($token=="0411f0028cfb768b3a3d96ac3aa37dw3e5"){
+            
+               $date = Carbon\Carbon::now(); // Replace this with your desired date
+
+           $start_date = $date->format('Y-m') . '-01';
+                
+                    // Calculate the previous period's start and end dates
+                    $previous_start_date = $date->copy()->subMonth()->format('Y-m') . '-01';
+                    $previous_end_date = $date->copy()->subMonth()->endOfMonth()->format('Y-m-d');
+               
+                    $end_date = $date->endOfMonth()->format('Y-m-d');
+               
+               DB::statement("
+                    UPDATE gifts g
+                    LEFT JOIN host_data h ON h.user_id = g.reciever_id
+                    SET g.agency_code = COALESCE(h.agency_code, 0)
+                    WHERE g.agency_code IS NULL
+                ");
+
+               
+                     // CURRENT PERIOD
+                    $topThreeSands   = Gift::topSanders($start_date, $end_date, 3);
+                    $totalSand       = Gift::topSanders($start_date, $end_date, 100, 3);
+                    
+                    $topThreeRecived = Gift::topReceivers($start_date, $end_date, 3);
+                    $totalRecived    = Gift::topReceivers($start_date, $end_date, 100, 3);
+                    
+                    $topThreefamillyRecived = Gift::topFamilies($start_date, $end_date, 3);
+                    $totalfamillyRecived   = Gift::topFamilies($start_date, $end_date, 100, 3);
+                    
+                    // PREVIOUS PERIOD
+                    $topThreefamillyRecived_prvious = Gift::topFamilies($previous_start_date, $previous_end_date, 3);
+                    $totalfamillyRecived_prvious   = Gift::topFamilies($previous_start_date, $previous_end_date, 100,3);
+                    
+                       array_push($response,array('message'=>'Host Data Show','code'=>'200','top_three_sander'=>$topThreeSands,'sander_list'=>$totalSand,'top_three_reciver'=>$topThreeRecived,'reciver_list'=>$totalRecived,'top_three_family'=>$topThreefamillyRecived,'family_list'=>$totalfamillyRecived,'topThreefamillyRecived_prvious'=>$topThreefamillyRecived_prvious,'totalfamillyRecived_prvious'=>$totalfamillyRecived_prvious));
+                       return json_encode($response,JSON_UNESCAPED_UNICODE); 
+                   }else{
+                       array_push($response,array('message'=>'Unauthorized','code'=>'401'));
+                       return json_encode($response,JSON_UNESCAPED_UNICODE);
+                   }
+    }
+       public function TopList(Request $request)
+    {
+        $response = array();
+        $token = $request->access_token;
+        
+        if($token == "0411f0028cfb768b3a3d96ac3aa37dw3e5"){
+            
+            $today = date('Y-m-d');
+            $end_date = date('Y-m-d', strtotime('-7 days', strtotime($today)));
+    
+            /* ✅ Today Top 3 Senders (limit 3, skip 0) */
+            $topthreetodaySander = Gift::topSanders($today, $today, 3, 0);
+            
+            /* ✅ Today Senders 4–30 (limit 27, skip 3) */
+            $toptodaySander = Gift::topSanders($today, $today, 27, 3);
+            
+            /* ✅ Today Top 3 Receivers */
+            $topthreetodayreciver = Gift::topReceivers($today, $today, 3, 0);
+            
+            /* ✅ Today Receivers 4–30 */
+            $toptodayreciver = Gift::topReceivers($today, $today, 27, 3);
+            
+            /* ✅ Today Top 3 Families */
+            $topthreetodayfamily = Gift::topFamilies($today, $today, 3, 0);
+            
+            /* ✅ Today Families 4–30 */
+            $toptodayfamily = Gift::topFamilies($today, $today, 27, 3);
+            
+            /* ✅ Weekly Senders 4–30 */
+            $topweeklySander = Gift::topSanders($end_date, $today, 27, 3);
+            
+            /* ✅ Weekly Receivers 4–30 */
+            $topweeklyreciver = Gift::topReceivers($end_date, $today, 27, 3);
+            
+            /* ✅ Weekly Families 4–30 */
+            $topweeklyfamily = Gift::topFamilies($end_date, $today, 27, 3);
+            
+            /* ✅ Weekly TOP 3 Senders */
+            $topthreeweeklySander = Gift::topSanders($end_date, $today, 3, 0);
+            
+            /* ✅ Weekly TOP 3 Receivers */
+            $topthreeweeklyreciver = Gift::topReceivers($end_date, $today, 3, 0);
+            
+            /* ✅ Weekly TOP 3 Families */
+            $topthreeweeklyfamily = Gift::topFamilies($end_date, $today, 3, 0);
+        
+            array_push($response, array(
+                'message' => 'Host Data Show',
+                'code' => '200',
+                'topthreeweeklyfamily' => $topthreeweeklyfamily,
+                'topthreeweeklyreciver' => $topthreeweeklyreciver,
+                'topthreeweeklySander' => $topthreeweeklySander,
+                'topthreetodayfamily' => $topthreetodayfamily,
+                'topthreetodayreciver' => $topthreetodayreciver,
+                'topthreetodaySander' => $topthreetodaySander,
+                'toptodaySander' => $toptodaySander,
+                'toptodayreciver' => $toptodayreciver,
+                'toptodayfamily' => $toptodayfamily,
+                'topweeklySander' => $topweeklySander,
+                'topweeklyreciver' => $topweeklyreciver,
+                'topweeklyfamily' => $topweeklyfamily
+            ));
+            
+            return json_encode($response, JSON_UNESCAPED_UNICODE);
+            
+        } else {
+            array_push($response, array('message' => 'Unauthorized', 'code' => '401'));
+            return json_encode($response, JSON_UNESCAPED_UNICODE);
+        }
+    }
+}

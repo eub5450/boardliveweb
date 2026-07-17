@@ -1,0 +1,282 @@
+@extends('backend.layouts.main')
+@section('title')
+Store Effect Manager
+@endsection
+@section('content')
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<div class="body-content">
+  <div class="card mb-4">
+    <div class="card-body">
+      <section class="forms">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h4>Effect Store Manager</h4>
+                    <span class="badge badge-info">Production Safe</span>
+                </div>
+                <div class="card-body">
+                  <form action="{{URL::to('effect_store')}}" method="post">
+                    @csrf
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Name *</label>
+                          <input type="text" name="name" value="{{ old('name') }}" class="form-control" placeholder="Frame 01" required>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label>Price *</label>
+                          <input type="number" name="amount" value="{{ old('amount') }}" class="form-control" min="0" required>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label>Time Days *</label>
+                          <input type="number" name="time" value="{{ old('time') }}" class="form-control" min="1" required>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label>Type *</label>
+                          <select name="type" class="form-control" required>
+                            <option value="1" {{ old('type') === '1' ? 'selected' : '' }}>Entry Effect</option>
+                            <option value="0" {{ old('type') === '0' ? 'selected' : '' }}>Profile Frame</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Status *</label>
+                          <select name="is_show" class="form-control">
+                            <option value="1" {{ old('is_show', '1') === '1' ? 'selected' : '' }}>Visible</option>
+                            <option value="0" {{ old('is_show') === '0' ? 'selected' : '' }}>Hidden</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>Image Path *</label>
+                          <input type="text" name="image" value="{{ old('image') }}" class="form-control" placeholder="store/vip/frame_1.png" required>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>Effect File *</label>
+                          <input type="text" name="effect" value="{{ old('effect') }}" class="form-control" placeholder="frame_1.svga" required>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-success"><span class="fa fa-plus"></span> Add Store Item</button>
+                    <div style="font-size:10px;color:#777;margin-top:6px;">Powerd by JAMBOai</div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <h4>Effect List</h4>
+                </div>
+                <div class="table-responsive">
+                  <table class="table display table-bordered table-striped table-hover basic">
+                    <thead>
+                      <tr>
+                       <th>Sl</th>
+                       <th>ID</th>
+                       <th>Name</th>
+                       <th>Price</th>
+                       <th>Time</th>
+                       <th>Type</th>
+                       <th>Status</th>
+                       <th>Used</th>
+                       <th>Image</th>
+                       <th>Effect</th>
+                       <th>Actions</th>
+                   </tr>
+               </thead>
+                 <tbody>
+                    @php $i=0; @endphp
+                    @foreach($data as $row)
+                    @php $usedCount = (int) ($usageCounts[$row->id] ?? 0); @endphp
+                    <tr>
+                      <td>{{ ++$i }}</td>
+                      <td>{{ $row->id }}</td>
+                      <td>{{ $row->name }}</td>
+                      <td>{{ $row->price }}</td>
+                      <td>{{ $row->time }}</td>
+                      <td>@if($row->type==1) Entry Effect @else Profile Frame @endif</td>
+                      <td>
+                        <span class="badge {{ $row->is_show ? 'badge-success' : 'badge-secondary' }}">
+                          {{ $row->is_show ? 'Visible' : 'Hidden' }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge {{ $usedCount > 0 ? 'badge-warning' : 'badge-light' }}">{{ $usedCount }}</span>
+                      </td>
+                      <td><img style="width:73px;max-height:73px;object-fit:contain;" src="{{URL::to($row->image)}}" alt="{{ $row->name }}"></td>
+                      <td>{{ $row->effect }}</td>
+                      <td style="min-width:230px;">
+                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editStoreModal-{{$row->id}}">
+                          Edit
+                        </button>
+                        <form action="{{URL::to('effect_toggle',$row->id)}}" method="post" style="display:inline-block;">
+                          @csrf
+                          <button type="submit" class="btn btn-sm {{ $row->is_show ? 'btn-warning' : 'btn-success' }}">
+                            {{ $row->is_show ? 'Hide' : 'Show' }}
+                          </button>
+                        </form>
+                        <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteStoreModal-{{$row->id}}">
+                          Delete
+                        </button>
+                      </td>
+                  </tr>
+
+                  <div class="modal fade" id="editStoreModal-{{$row->id}}" tabindex="-1" role="dialog" aria-labelledby="editStoreModalLabel-{{$row->id}}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content">
+                        <form action="{{URL::to('effect_update',$row->id)}}" method="post">
+                          @csrf
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="editStoreModalLabel-{{$row->id}}">{{$row->name}} Edit</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="row">
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                  <label>Name *</label>
+                                  <input type="text" name="name" value="{{$row->name}}" class="form-control" required>
+                                </div>
+                              </div>
+                              <div class="col-md-3">
+                                <div class="form-group">
+                                  <label>Time Days *</label>
+                                  <input type="number" name="time" value="{{$row->time}}" min="1" class="form-control" required>
+                                </div>
+                              </div>
+                              <div class="col-md-3">
+                                <div class="form-group">
+                                  <label>Price *</label>
+                                  <input type="number" name="amount" value="{{$row->price}}" min="0" class="form-control" required>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                  <label>Type *</label>
+                                  <select name="type" class="form-control" required>
+                                    <option value="1" {{ $row->type == 1 ? 'selected' : '' }}>Entry Effect</option>
+                                    <option value="0" {{ $row->type == 0 ? 'selected' : '' }}>Profile Frame</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                  <label>Status *</label>
+                                  <select name="is_show" class="form-control">
+                                    <option value="1" {{ $row->is_show == 1 ? 'selected' : '' }}>Visible</option>
+                                    <option value="0" {{ $row->is_show == 0 ? 'selected' : '' }}>Hidden</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                  <label>Used By Users</label>
+                                  <input type="text" value="{{ $usedCount }}" class="form-control" readonly>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label>Image Path *</label>
+                              <input type="text" name="image" value="{{$row->image}}" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                              <label>Effect File *</label>
+                              <input type="text" name="effect" value="{{$row->effect}}" class="form-control" required>
+                            </div>
+                            <div style="font-size:10px;color:#777;margin-top:6px;">Powerd by JAMBOai</div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="modal fade" id="deleteStoreModal-{{$row->id}}" tabindex="-1" role="dialog" aria-labelledby="deleteStoreModalLabel-{{$row->id}}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <form action="{{URL::to('effect_delete',$row->id)}}" method="post">
+                          @csrf
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="deleteStoreModalLabel-{{$row->id}}">Delete {{$row->name}}?</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            @if($usedCount > 0)
+                              <div class="alert alert-warning">
+                                This item is already used by {{ $usedCount }} user inventory row(s). Production safe delete will hide it from the store instead of deleting it.
+                              </div>
+                            @else
+                              <div class="alert alert-danger">
+                                This item has no user inventory usage. It will be deleted from the store table.
+                              </div>
+                            @endif
+                            <div style="font-size:10px;color:#777;margin-top:6px;">Powerd by JAMBOai</div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">{{ $usedCount > 0 ? 'Hide Safely' : 'Delete' }}</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  @endforeach
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Sl</th>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Time</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Used</th>
+                  <th>Image</th>
+                  <th>Effect</th>
+                  <th>Actions</th>
+               </tr>
+           </tfoot>
+       </table>
+   </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+@endsection

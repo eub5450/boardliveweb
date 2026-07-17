@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Broad Live · privacy reimagined</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0e1217;  /* deeper ash base */
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            color: #eef2f5;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bgBreath 12s infinite alternate ease-in-out;
+        }
+
+        @keyframes bgBreath {
+            0% { background-color: #0c1015; }
+            100% { background-color: #131a21; }
+        }
+
+        /* main glass‑morphic card — modern dark ash */
+        .glass-card {
+            max-width: 860px;
+            width: 100%;
+            margin: 1rem auto;
+            background: rgba(26, 32, 38, 0.85);
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            border: 1px solid rgba(90, 108, 120, 0.25);
+            border-radius: 48px 48px 48px 48px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 35px 75px -20px rgba(0,0,0,0.9), 0 0 0 1px rgba(200,220,240,0.05) inset;
+            transition: transform 0.3s ease, box-shadow 0.4s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 45px 90px -15px #000, 0 0 0 1px rgba(170,200,230,0.15) inset;
+            transform: scale(1.005);
+        }
+
+        /* modern typography */
+        h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            background: linear-gradient(145deg, #f0f6fc, #b0c6da);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            filter: drop-shadow(0 4px 6px #00000040);
+            animation: floatIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .last-updated {
+            text-align: center;
+            font-size: 0.95rem;
+            color: #9fafbe;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px dashed #2e3c48;
+            padding-bottom: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            animation: fadeSlide 0.8s ease;
+        }
+
+        /* chapter tags – more dynamic */
+        .chapter-tag {
+            font-size: 1.2rem;
+            font-weight: 550;
+            background: linear-gradient(105deg, #1d2a33, #15212b);
+            padding: 0.5rem 1.8rem;
+            border-radius: 60px;
+            display: inline-block;
+            margin: 2.5rem 0 0.5rem 0;
+            border: 1px solid #57708c;
+            color: #dae6f2;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            box-shadow: 0 5px 12px #00000035;
+            backdrop-filter: blur(4px);
+            animation: borderPulse 3s infinite ease-in-out, slideRight 0.5s ease;
+        }
+
+        @keyframes borderPulse {
+            0% { border-color: #57708c; box-shadow: 0 0 8px #2f4555; }
+            50% { border-color: #8aa9c9; box-shadow: 0 0 20px #3d5a73; }
+            100% { border-color: #57708c; box-shadow: 0 0 8px #2f4555; }
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 520;
+            margin: 2rem 0 1rem 0;
+            color: #e1ecf5;
+            border-left: 6px solid #6c8fb0;
+            padding-left: 1.3rem;
+            transition: 0.2s;
+            animation: slideIn 0.6s cubic-bezier(0.22, 0.97, 0.33, 1);
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 470;
+            margin: 1.8rem 0 0.6rem 0;
+            color: #cddef0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px dotted #4e6b82;
+            padding-bottom: 5px;
+        }
+
+        h3::before {
+            content: "✦";
+            font-size: 1.8rem;
+            color: #7999b5;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.15); color: #b4d0e9; }
+            100% { opacity: 0.6; transform: scale(1); }
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-weight: 320;
+            font-size: 1.05rem;
+            color: #d6e2ed;
+            line-height: 1.6;
+            animation: fadePar 0.7s ease;
+        }
+
+        @keyframes fadePar {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        ul, ol {
+            margin: 0.8rem 0 1.5rem 2rem;
+            color: #d3e0ec;
+        }
+
+        li {
+            margin-bottom: 0.6rem;
+            font-weight: 310;
+            transition: transform 0.1s ease;
+        }
+
+        li:hover {
+            transform: translateX(6px);
+            color: #ffffff;
+        }
+
+        li::marker {
+            color: #8fb4d9;
+        }
+
+        strong {
+            color: #f0f7ff;
+            font-weight: 550;
+            background: linear-gradient(90deg, #2f404d, #1a2933);
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            border: 1px solid #4f687c;
+            font-size: 0.95em;
+        }
+
+        /* brand highlight – broad live badge */
+        .broad-badge {
+            background: #25323e;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.15rem 0.9rem;
+            border-radius: 40px;
+            border: 1px solid #6c8fb0;
+            box-shadow: 0 2px 8px #0f1a22;
+            transition: all 0.2s;
+            display: inline-block;
+            backdrop-filter: blur(4px);
+        }
+
+        .broad-badge:hover {
+            background: #2e4050;
+            border-color: #9abde2;
+            transform: scale(1.02);
+            box-shadow: 0 0 16px #3f6180;
+        }
+
+        /* links */
+        a {
+            color: #bad2f0;
+            text-decoration: none;
+            border-bottom: 1px solid #52738c;
+            transition: all 0.2s ease;
+            font-weight: 400;
+        }
+
+        a:hover {
+            color: white;
+            border-bottom-color: #b5d5ff;
+            text-shadow: 0 0 8px #578cba;
+        }
+
+        /* custom meta block */
+        .info-block {
+            background: rgba(18, 26, 32, 0.8);
+            border-radius: 36px;
+            padding: 1.8rem;
+            border: 1px solid #3a4f60;
+            margin: 2rem 0 0.5rem;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 18px 30px -16px black;
+            animation: glow 6s infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { border-color: #2d4355; box-shadow: 0 12px 28px -16px #000; }
+            100% { border-color: #56738f; box-shadow: 0 18px 38px -10px #192b39; }
+        }
+
+        /* chapter intro */
+        .chapter-sub {
+            font-size: 1.3rem;
+            margin-top: -0.2rem;
+            color: #afc7dd;
+            font-weight: 330;
+        }
+
+        /* animation keyframes */
+        @keyframes floatIn {
+            0% { opacity: 0; transform: translateY(-30px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes slideIn {
+            0% { opacity: 0.2; transform: translateX(-25px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideRight {
+            0% { opacity: 0; transform: translateX(-30px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* small adjustments for mobile */
+        @media (max-width: 550px) {
+            .glass-card { padding: 1.5rem 1.2rem; border-radius: 36px; }
+            h1 { font-size: 2.3rem; }
+            h2 { font-size: 1.6rem; }
+            .chapter-tag { font-size: 1rem; padding: 0.3rem 1.2rem; }
+        }
+
+        /* numbered paragraphs refinement */
+        p strong:first-child {
+            font-size: 1.15rem;
+            color: #dfecf7;
+        }
+
+        /* dropcap effect for welcome */
+        .welcome-note p:first-of-type::first-letter {
+            font-size: 3.5rem;
+            float: left;
+            line-height: 0.8;
+            margin-right: 10px;
+            color: #b7d9ff;
+            text-shadow: 4px 4px 12px #00000070;
+            font-weight: 400;
+        }
+
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3f5568, #6f8daa, #3f5568, transparent);
+            margin: 2rem 0;
+        }
+
+        /* tooltip-like definition style */
+        p code {
+            background: #1a2936;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            border: 1px solid #3b5f7a;
+            font-size: 0.9rem;
+            color: #c2d9f2;
+        }
+    </style>
+</head>
+<body>
+<div class="glass-card">
+
+    <h1>Privacy Policy</h1>
+    <div class="last-updated">✧  last updated: february 18, 2026  ✧</div>
+
+    <!-- WELCOME SECTION -->
+    <div class="welcome-note">
+        <p><span class="broad-badge">WELCOME NOTE</span></p>
+        <p>Welcome to <strong class="broad-badge">Broad Live</strong> Platform. This Platform is owned and Operated by <strong class="broad-badge">Broad Live</strong> Entertainment LLP, UK. By visiting our Platform and accessing the information, resources, services, third party products, and tools we provide, you understand and agree to accept and adhere to the following terms and conditions as stated in this policy (hereinafter referred to as the ‘Policy’), along with the terms and conditions as stated in our Privacy Policy.</p>
+    </div>
+    <p>This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.</p>
+    <p>We reserve the right to change this policy from time to time with/without notice. You acknowledge and agree that it is your responsibility to review this Policy periodically to familiarize yourself with any modifications. Your continued use of this site after such modifications will constitute acknowledgement and policy of the modified terms and conditions.</p>
+    <p>We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.</p>
+    <p>Please read this terms carefully. By using this platform or ordering any third party products from this platform you agree to be bound by all the terms and conditions of this policy.</p>
+
+    <!-- spacer (whitespace) -->
+    <p style="margin: 2rem 0 0.2rem;">&nbsp;</p>
+
+    <!-- ========== CHAPTER I ========== -->
+    <div class="chapter-tag">⚡ Chapter I ⚡</div>
+    <div class="chapter-sub">Interpretation and Definitions</div>
+
+    <h2>1. Interpretation</h2>
+    <p>The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p>
+
+    <h2>2. Definitions</h2>
+    <p><strong>Account</strong> means a unique account created for You to access our Service or parts of our Service.</p>
+    <p><strong>Affiliate</strong> means an entity that controls, is controlled by or is under common control with a party, where “control” means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.</p>
+    <p><strong>Application</strong> refers to “<span class="broad-badge">Broad Live</span>”, the software program provided by the Company.</p>
+    <p><strong>Company</strong> (referred to as either “the Company”, “We”, “Us” or “Our” in this Policy) refers to <span class="broad-badge">Broad Live</span> Entertainment LLP, UK.</p>
+    <p><strong>Cookies</strong> are small files placed on Your computer, mobile device or any other device by a <span class="broad-badge">Broad Live</span> Platform, containing the details of Your browsing history.</p>
+    <p><strong>Country</strong> refers to: Delhi, UK</p>
+    <p><strong>Device</strong> means any device that can access the Service such as a computer, a cellphone or a digital tablet.</p>
+    <p><strong>Personal Data</strong> is any information that relates to an identified or identifiable individual.</p>
+    <p><strong>Service</strong> refers to the Application or the <span class="broad-badge">Broad Live</span> Platform or both.</p>
+    <p><strong>Service Provider</strong> means any natural or legal person who processes the data on behalf of the Company.</p>
+    <p><strong>Third-party Social Media Service</strong> refers to any <span class="broad-badge">Broad Live</span> Platform or social network through which a User can log in.</p>
+    <p><strong>Usage Data</strong> refers to data collected automatically (e.g. duration of a page visit).</p>
+    <p><strong><span class="broad-badge">Broad Live</span> Platform</strong> refers to Broad Live, accessible from <a href="#">BroadLive.com</a></p>
+    <p><strong>You</strong> means the individual accessing or using the Service.</p>
+
+    <!-- CHAPTER II -->
+    <div class="chapter-tag">✦ Chapter II ✦</div>
+    <div class="chapter-sub">Collecting and Using Your Personal Data</div>
+
+    <h2>3. Types of Data Collected</h2>
+    <h3>Personal Data</h3>
+    <p>While using Our Service, We may ask You to provide Us with certain personally identifiable information: Email address, first and last name, phone number, address, state, province, ZIP/city, Usage Data.</p>
+
+    <h3>Usage Data</h3>
+    <p>Usage Data is collected automatically when using the Service — e.g. IP address, browser type, pages visited, time spent, unique device identifiers. When accessing via mobile device, we may collect mobile device type, unique ID, IP, OS, browser type.</p>
+
+    <h3>Information from Third-Party Social Media Services</h3>
+    <p>The Company allows You to register using Google, Facebook, Twitter, LinkedIn. If You grant access, We may collect name, email, activities, contact list associated with that account. You are giving permission to use, share, and store it in a manner consistent with this Privacy Policy.</p>
+
+    <h3>Information Collected while Using the Application</h3>
+    <p>With Your prior permission, we may collect location, contacts, pictures from camera/photo library. You can enable/disable access anytime via Device settings.</p>
+
+    <h3>Tracking Technologies and Cookies</h3>
+    <p>We use Cookies and similar tracking technologies (beacons, tags, scripts) to track activity and store information. Both Session and Persistent Cookies are used for essential purposes, functionality, and cookie consent.</p>
+
+    <h2>4. Use of Your Personal Data</h2>
+    <p>The Company may use Personal Data for: providing & maintaining Service; managing Account; contract performance; contacting You (email, calls, push); providing news/offers; managing requests; business transfers; data analysis; and sharing with Service Providers, affiliates, business partners, or with your consent.</p>
+
+    <h2>5. Retention of Your Personal Data</h2>
+    <p>We retain Personal Data only as long as necessary for the purposes set out in this Policy, or to comply with legal obligations, resolve disputes, enforce policies. Usage Data is generally retained shorter.</p>
+
+    <h2>6. Transfer of Your Personal Data</h2>
+    <p>Your information may be transferred to — and maintained on — computers located outside Your jurisdiction. Your consent to this Policy represents Your agreement to such transfer.</p>
+
+    <h2>7. Delete Your Personal Data</h2>
+    <p>You have the right to delete or request deletion of Personal Data. You can update/delete info via Account settings or by contacting us. However, we may retain certain data when required by law.</p>
+
+    <h2>8. Disclosure of Your Personal Data</h2>
+    <p><strong>Business Transactions:</strong> transferred during merger or asset sale. <strong>Law enforcement:</strong> disclosed if required by law or valid request. <strong>Other legal requirements:</strong> good-faith disclosure to comply with legal obligations, protect rights, prevent wrongdoing, ensure public safety, or defend liability.</p>
+
+    <h2>9. Security of Your Personal Data</h2>
+    <p>We strive to use commercially acceptable means to protect Personal Data, but absolute security cannot be guaranteed.</p>
+
+    <!-- CHAPTER III -->
+    <div class="chapter-tag">◈ Chapter III ◈</div>
+    <p class="chapter-sub">Provision outside UK</p>
+    <p>Your Personal Data may be provided to third parties outside UK, including subsidiaries abroad, in compliance with applicable laws.</p>
+
+    <div class="chapter-tag">◈ Chapter IV ◈</div>
+    <h2>Storage Period for Personal Data</h2>
+    <p>We retain Personal Data for the period necessary to process it. Membership info is kept until cancellation; access logs retained 18 months. Longer if required by laws.</p>
+
+    <div class="chapter-tag">◈ Chapter V ◈</div>
+    <h2>Your Rights</h2>
+    <p>You have rights to: (a) obtain information; (b) rectify inaccurate data; (c) erasure; (d) restrict processing; (e) object; (f) data portability; (g) withdraw consent. Contact us to exercise these rights. You may also lodge a complaint with the data protection authority.</p>
+
+    <div class="chapter-tag">◈ Chapter VI ◈</div>
+    <h2>Terms of Offer</h2>
+    <p>This platform offers third party products. By placing an order, you agree to these terms.</p>
+    <h2>10. Customer Solicitation</h2>
+    <p>Unless you opt out during a call, you agree to receive future emails/calls from <span class="broad-badge">Broad Live</span> and its teams.</p>
+    <h2>11. Opt Out Procedure</h2>
+    <p>Three easy ways: (1) opt-out link in emails; (2) email info@broadlive.site; (3) written request during a call.</p>
+    <h2>12. Proprietary Rights</h2>
+    <p><span class="broad-badge">Broad Live</span> owns trade secrets, trademarks, and layout rights. You may not copy or resell.</p>
+    <h2>13. Taxes</h2>
+    <p>You are responsible for applicable taxes (GST).</p>
+    <h2>14. Content, Intellectual Property, Third Party Links</h2>
+    <p>Content is protected by IP laws. Links to third-party sites are provided as a convenience; we are not responsible for their content.</p>
+    <h2>15. Use of <span class="broad-badge">Broad Live</span> Platform</h2>
+    <p>You agree to abide by all laws, not to disrupt others, not to spam, harass, or misuse the platform.</p>
+    <h2>16. License</h2>
+    <p>Limited, non-exclusive right to use content for personal, non-commercial use.</p>
+    <h2>17. Blogs</h2>
+    <p>You may not post illegal or infringing content. By posting, you grant <span class="broad-badge">Broad Live</span> a perpetual license. We may remove content at our discretion. You agree to indemnify us.</p>
+    <h2>18. Posting</h2>
+    <p>By posting content, you grant <span class="broad-badge">Broad Live</span> a worldwide, royalty-free license. We may remove objectionable content.</p>
+    <h2>19. Disclaimer of Warranties</h2>
+    <p>Platform and products are “as is” and “as available”. All warranties are disclaimed.</p>
+    <h2>20. Limitation Of Liability</h2>
+    <p>Our liability limited to amount you paid for products. We are not liable for indirect or consequential damages.</p>
+    <h2>21. Indemnification</h2>
+    <p>You agree to indemnify <span class="broad-badge">Broad Live</span> from third-party claims arising from your breach.</p>
+    <h2>22. Copyrights / Trademarks</h2>
+    <p>All content is intellectual property of <span class="broad-badge">Broad Live</span>. Unauthorized use prohibited.</p>
+    <h2>23. Policy To Be Bound</h2>
+    <p>BY USING THIS PLATFORM YOU AGREE TO BE BOUND BY THIS POLICY.</p>
+
+    <div class="chapter-tag">◈ Chapter VII ◈</div>
+    <h2>24. Force Majeure</h2>
+    <p>Not liable for events beyond control.</p>
+    <h2>25. Cessation of Operation</h2>
+    <p>We may cease operation without advance notice.</p>
+    <h2>26. Entire Policy</h2>
+    <p>This is the entire agreement.</p>
+
+    <div class="chapter-tag">◈ Chapter VIII ◈</div>
+    <h2>27. Governing Law</h2>
+    <p>Controlled from Delhi, UK. Laws of Delhi apply.</p>
+    <h2>28. Effect of Waiver</h2>
+    <p>Failure to enforce does not waive provisions.</p>
+    <h2>29. Governing Law/Jurisdiction</h2>
+    <p>Any action in courts of Delhi, UK. You consent to jurisdiction.</p>
+    <h2>30. Statute of Limitation</h2>
+    <p>Claims must be filed within one year.</p>
+    <h2>31. Waiver of Class Action Rights</h2>
+    <p>You waive class action participation.</p>
+    <h2>32. Termination</h2>
+    <p>Access may be terminated if you breach terms.</p>
+    <h2>33. Domestic Use</h2>
+    <p>Not guaranteed appropriate outside UK.</p>
+    <h2>34. Cancellation And Refund</h2>
+    <p>No cancellation after payment. Refunds only if service not performed.</p>
+    <h2>35. Guarantee</h2>
+    <p>All warranties disclaimed unless expressed.</p>
+    <h2>36. Assignment</h2>
+    <p>You may not assign; we may assign rights.</p>
+
+    <div class="chapter-tag">◈ Chapter IX ◈</div>
+    <h2>Children’s Privacy</h2>
+    <p>Service not intended for under 13. If we become aware of data from a child under 13, we will remove it.</p>
+
+    <div class="chapter-tag">◈ Chapter X ◈</div>
+    <h2>Links to Other Websites</h2>
+    <p>We are not responsible for third-party content or privacy practices.</p>
+
+    <div class="chapter-tag">◈ Chapter XI ◈</div>
+    <h2>Changes to this Privacy Policy</h2>
+    <p>We may update this policy. Changes posted here with “Last updated” date.</p>
+
+    <div class="chapter-tag">◈ Chapter XII ◈</div>
+    <div class="info-block">
+        <p style="font-size:1.3rem;"><span class="broad-badge">Broad Live</span> Entertainment LLP, UK</p>
+        <p>For any questions: <strong>info@broadlive.site</strong>  |  Delhi, UK</p>
+        
+    </div>
+    <hr>
+    <p style="text-align:center; color:#90a3b5;">© A Thomas Live Striming Compamy Based On UK</p>
+</div>
+</body>
+</html>

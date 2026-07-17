@@ -1,0 +1,293 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Agency;
+use App\Models\GameBannner;
+use App\Models\PusherKey;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Kreait\Firebase\Contract\Database;
+
+class RunTaskEvery4Seconds extends Command
+{
+    protected $signature = 'task:run-every-4-seconds';
+    protected $description = 'Run game banner task every 4 seconds safely';
+
+    protected $database;
+    private $userColumns = [];
+    private $bannerColumns = [];
+
+    public function __construct(Database $database)
+    {
+        parent::__construct();
+        $this->database = $database;
+    }
+
+    public function handle()
+    {
+        $lock = Cache::lock('run_task_every_4_seconds_lock', 75);
+
+        if (!$lock->get()) {
+            return 0;
+        }
+
+        try {
+            $this->runDailyPusherClean();
+            $this->frameUpdate();
+            $this->cleanupDuplicates();
+            $this->processBanners();
+
+            return 0;
+        } catch (\Throwable $e) {
+            Log::error('task:run-every-4-seconds failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return 1;
+        } finally {
+            optional($lock)->release();
+        }
+    }
+
+    private function runDailyPusherClean()
+    {
+        $now = Carbon::now('UTC');
+
+        if ($now->format('H:i') !== '00:02') {
+            return;
+        }
+
+        $today = $now->toDateString();
+        $lock = Cache::lock('pusher_clean_' . $today, 120);
+
+        if (!$lock->get()) {
+            return;
+        }
+
+        try {
+            PusherKey::query()
+                ->where('pusher_status', '!=', 1)
+                ->where(function ($query) use ($today) {
+                    $query->whereNull('last_reset_date')
+                        ->orWhere('last_reset_date', '!=', $today);
+                })
+                ->update([
+                    'pusher_status' => 0,
+                    'pusher_active_time' => null,
+                    'pusher_deactive_time' => null,
+                    'last_reset_date' => $today,
+                ]);
+        } finally {
+            optional($lock)->release();
+        }
+    }
+
+    private function frameUpdate()
+    {
+        if (!$this->hasUserColumn('frame')) {
+            return;
+        }
+
+        $this->updateFrameByFlag('is_reseller_frame', 'reseller.svga');
+        $this->updateFrameByFlag('is_admin_frame', 'frame_10.svga');
+        $this->updateFrameByFlag('is_country_admin_frame', 'frame_9.svga');
+        $this->updateFrameByFlag('is_official_frame', 'official.svga');
+        $this->updateAgencyFrame();
+    }
+
+    private function updateAgencyFrame()
+    {
+        $query = User::query()
+            ->whereIn('id', Agency::query()->select('user_id')->whereNotNull('user_id'))
+            ->where(function ($query) {
+                $query->whereNull('frame')
+                    ->orWhere('frame', '!=', 'frame_8.svga');
+            });
+
+        $this->whereFlagNotEnabled($query, 'is_official_frame');
+        $this->whereFlagNotEnabled($query, 'is_admin_frame');
+        $this->whereFlagNotEnabled($query, 'is_reseller_frame');
+        $this->whereFlagNotEnabled($query, 'is_country_admin_frame');
+
+        $query->update([
+            'frame' => 'frame_8.svga',
+        ]);
+    }
+
+    private function updateFrameByFlag($flagColumn, $frame)
+    {
+        if (!$this->hasUserColumn($flagColumn)) {
+            return;
+        }
+
+        User::query()
+            ->where($flagColumn, 1)
+            ->where(function ($query) use ($frame) {
+                $query->whereNull('frame')
+                    ->orWhere('frame', '!=', $frame);
+            })
+            ->update([
+                'frame' => $frame,
+            ]);
+    }
+
+    private function whereFlagNotEnabled($query, $column)
+    {
+        if (!$this->hasUserColumn($column)) {
+            return;
+        }
+
+        $query->where(function ($subQuery) use ($column) {
+            $subQuery->whereNull($column)
+                ->orWhere($column, '!=', 1);
+        });
+    }
+
+    private function cleanupDuplicates()
+    {
+        $groupColumn = $this->bannerGroupColumn();
+
+        if (!$groupColumn) {
+            return;
+        }
+
+        DB::table('game_bannners')
+            ->select(
+                'user_id',
+                $groupColumn,
+                DB::raw('MIN(id) as min_id'),
+                DB::raw('COUNT(*) as total_count')
+            )
+            ->groupBy('user_id', $groupColumn)
+            ->havingRaw('COUNT(*) > 1')
+            ->orderBy('min_id')
+            ->cursor()
+            ->each(function ($duplicate) use ($groupColumn) {
+                $query = GameBannner::query()
+                    ->where('id', '!=', $duplicate->min_id);
+
+                if (is_null($duplicate->user_id)) {
+                    $query->whereNull('user_id');
+                } else {
+                    $query->where('user_id', $duplicate->user_id);
+                }
+
+                $value = $duplicate->{$groupColumn};
+
+                if (is_null($value)) {
+                    $query->whereNull($groupColumn);
+                } else {
+                    $query->where($groupColumn, $value);
+                }
+
+                $query->delete();
+            });
+    }
+
+    private function processBanners()
+    {
+        $processed = 0;
+        $maxPerRun = 15;
+
+        while ($processed < $maxPerRun) {
+            $banner = GameBannner::query()
+                ->orderBy('id')
+                ->first();
+
+            if (!$banner) {
+                break;
+            }
+
+            if (!$this->updateFirebase($banner)) {
+                break;
+            }
+
+            GameBannner::query()
+                ->where('id', $banner->id)
+                ->delete();
+
+            $processed++;
+
+            if ($processed < $maxPerRun) {
+                $this->wait(4);
+            }
+        }
+    }
+
+    private function updateFirebase(GameBannner $banner)
+    {
+        try {
+            $this->database
+                ->getReference('game_global_banner/Linda')
+                ->update([
+                    'message' => $banner->message,
+                    'name' => $banner->name,
+                    'level' => $banner->level,
+                    'game' => $banner->game,
+                    'banner_color' => $banner->banner_color,
+                    'processed_at' => Carbon::now('UTC')->toDateTimeString(),
+                ]);
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('game banner firebase update failed', [
+                'banner_id' => $banner->id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    private function bannerGroupColumn()
+    {
+        if ($this->hasBannerColumn('try_id')) {
+            return 'try_id';
+        }
+
+        if ($this->hasBannerColumn('tray_id')) {
+            return 'tray_id';
+        }
+
+        return null;
+    }
+
+    private function hasUserColumn($column)
+    {
+        if (array_key_exists($column, $this->userColumns)) {
+            return $this->userColumns[$column];
+        }
+
+        $this->userColumns[$column] = Schema::hasColumn('users', $column);
+
+        return $this->userColumns[$column];
+    }
+
+    private function hasBannerColumn($column)
+    {
+        if (array_key_exists($column, $this->bannerColumns)) {
+            return $this->bannerColumns[$column];
+        }
+
+        $this->bannerColumns[$column] = Schema::hasColumn('game_bannners', $column);
+
+        return $this->bannerColumns[$column];
+    }
+
+    private function wait($seconds)
+    {
+        $endAt = microtime(true) + $seconds;
+
+        while (microtime(true) < $endAt) {
+            usleep(100000);
+        }
+    }
+}

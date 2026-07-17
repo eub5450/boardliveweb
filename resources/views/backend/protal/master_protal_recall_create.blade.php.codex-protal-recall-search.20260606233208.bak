@@ -1,0 +1,78 @@
+@extends('backend.layouts.main')
+
+@section('title')
+Create Protal Recall
+@endsection
+@section('content')
+<div class="body-content">
+  <div class="card mb-4">
+    <div class="card-body">
+      <section class="forms">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                  <h4>Create Protal Recall</h4>
+                  <a href="{{URL::to('master-protal-recall')}}" class="btn btn-sm btn-info">Recall History</a>
+                </div>
+                <div class="card-body">
+                  <form action="{{URL::to('master_protal_recall_store')}}" method="post">
+                    @csrf
+                    <div class="form-group">
+                      <label>Protal ID / Balance</label>
+                      <select name="protal_id" id="masterProtalSelect" class="form-control" required>
+                        <option value="">Select Protal</option>
+                        @foreach($protals as $protal)
+                          <option value="{{$protal['id']}}" data-balance="{{$protal['balance']}}">
+                            {{$protal['id']}} -- {{$protal['name']}} -- Balance: {{$protal['balance']}}
+                          </option>
+                        @endforeach
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Current Protal Balance</label>
+                      <input type="number" id="masterProtalBalance" class="form-control" value="0" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Receiver User ID</label>
+                      <select name="user_id" class="form-control" required>
+                        <option value="">Select User</option>
+                        @foreach($users as $user)
+                          <option value="{{$user->id}}">{{$user->id}} -- {{$user->name}} -- {{$user->email}}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Recall Amount</label>
+                      <input type="number" name="amount" id="masterProtalAmount" min="1" value="0" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Recall</button>
+                  </form>
+                  <div style="font-size:10px;text-align:center;color:#999;padding-top:12px;">Powerd by JAMBOai</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var protalSelect = document.getElementById('masterProtalSelect');
+  var balanceInput = document.getElementById('masterProtalBalance');
+  var amountInput = document.getElementById('masterProtalAmount');
+  function syncBalance() {
+    var selected = protalSelect.options[protalSelect.selectedIndex];
+    var balance = selected ? parseFloat(selected.getAttribute('data-balance') || '0') : 0;
+    balanceInput.value = balance;
+    amountInput.max = balance;
+    if (parseFloat(amountInput.value || '0') > balance) amountInput.value = balance;
+  }
+  protalSelect.addEventListener('change', syncBalance);
+  syncBalance();
+});
+</script>
+@endsection

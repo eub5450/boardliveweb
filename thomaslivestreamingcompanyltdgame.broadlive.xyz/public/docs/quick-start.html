@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Start - Thomas Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            margin: -40px -40px 40px -40px;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .language-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .lang-btn {
+            padding: 8px 15px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .lang-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        h3 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+        
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #333;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header {
+                margin: -20px -20px 30px -20px;
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.5em;
+            }
+            
+            .language-switch {
+                position: static;
+                justify-content: center;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="language-switch">
+                <button class="lang-btn active" onclick="switchLanguage('en')">English</button>
+                <button class="lang-btn" onclick="switchLanguage('bn')">বাংলা</button>
+            </div>
+            <h1 id="title">5-Minute Quick Start</h1>
+            <p id="subtitle">Get your app access system running fast</p>
+        </header>
+        
+        <a href="index.html" class="back-link">← Back to Documentation</a>
+        
+        <!-- English Content -->
+        <div id="en-content">
+            <h2>🎯 Quick Start Guide</h2>
+            <p>Set up the app-based game access system in just 5 minutes!</p>
+            
+            <div class="step">
+                <h3>Step 1: Edit Environment Configuration</h3>
+                <p>Open your <code>.env</code> file and add:</p>
+                <pre><code>BD_GAME_FINAL_ALLOWED_APP_PACKAGES=com.jambo.app,com.example.games
+BD_GAME_FINAL_DEVELOPER_PASSWORD=#jambo</code></pre>
+                <p><strong>Replace:</strong></p>
+                <ul>
+                    <li><code>com.jambo.app</code> with your actual app package name</li>
+                    <li><code>#jambo</code> with your secure developer password</li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <h3>Step 2: Run Migration</h3>
+                <p>Add the <code>is_app_access</code> column to track app-based users:</p>
+                <pre><code>php artisan migrate</code></pre>
+            </div>
+            
+            <div class="step">
+                <h3>Step 3: Test It Out</h3>
+                <p><strong>Option A: Browser Test</strong></p>
+                <p>Visit your authentication page:</p>
+                <pre><code>https://yoursite.com/game/lucky88_master/app-access</code></pre>
+                <p>You should see the authentication UI.</p>
+                
+                <p><strong>Option B: Test with cURL</strong></p>
+                <p>If your app is whitelisted:</p>
+                <pre><code>curl -H "X-App-Package: com.jambo.app" \
+  https://yoursite.com/game/lucky88_master/app-access</code></pre>
+                <p>Should auto-grant access and redirect to the game.</p>
+            </div>
+            
+            <div class="success">
+                <strong>✅ Success!</strong> Your app access system is now configured. Users can enter games securely without manual token generation.
+            </div>
+            
+            <h2>📱 Using in Your App</h2>
+            
+            <h3>Dart/Flutter Example</h3>
+            <pre><code>import 'package:http/http.dart' as http;
+
+Future&lt;void&gt; accessGame() async {
+  final response = await http.get(
+    Uri.parse('https://yoursite.com/game/lucky88_master/app-access'),
+    headers: {
+      'X-App-Package': 'com.jambo.app',
+    },
+  );
+  
+  if (response.statusCode == 200) {
+    // Game session established
+    print('Access granted!');
+  }
+}</code></pre>
+            
+            <h2>🔑 Key Features</h2>
+            <ul>
+                <li>✅ Automatic package verification for whitelisted apps</li>
+                <li>✅ Password authentication for non-whitelisted apps</li>
+                <li>✅ Beautiful custom authentication UI</li>
+                <li>✅ Backend-enforced session validation</li>
+                <li>✅ Zero manual token generation needed</li>
+            </ul>
+            
+            <h2>❓ Troubleshooting</h2>
+            <h3>Access Denied?</h3>
+            <ul>
+                <li>Check that your app package is in <code>BD_GAME_FINAL_ALLOWED_APP_PACKAGES</code></li>
+                <li>Verify the <code>X-App-Package</code> header matches exactly</li>
+                <li>Check if migration has been run: <code>php artisan migrate:status</code></li>
+            </ul>
+            
+            <h3>Page Not Found?</h3>
+            <ul>
+                <li>Ensure Laravel is running properly</li>
+                <li>Check the game code exists (e.g., <code>lucky88_master</code>)</li>
+                <li>Check <code>routes/bd_game_final.php</code> for the route definition</li>
+            </ul>
+        </div>
+        
+        <!-- Bengali Content -->
+        <div id="bn-content" class="hidden">
+            <h2>🎯 দ্রুত শুরু গাইড</h2>
+            <p>মাত্র ৫ মিনিটে অ্যাপ-ভিত্তিক গেম অ্যাক্সেস সিস্টেম চালু করুন!</p>
+            
+            <div class="step">
+                <h3>ধাপ ১: পরিবেশ কনফিগারেশন সম্পাদনা করুন</h3>
+                <p>আপনার <code>.env</code> ফাইল খুলুন এবং যোগ করুন:</p>
+                <pre><code>BD_GAME_FINAL_ALLOWED_APP_PACKAGES=com.jambo.app,com.example.games
+BD_GAME_FINAL_DEVELOPER_PASSWORD=#jambo</code></pre>
+                <p><strong>প্রতিস্থাপন করুন:</strong></p>
+                <ul>
+                    <li><code>com.jambo.app</code> আপনার প্রকৃত অ্যাপ প্যাকেজ নাম দিয়ে</li>
+                    <li><code>#jambo</code> আপনার সুরক্ষিত ডেভেলপার পাসওয়ার্ড দিয়ে</li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <h3>ধাপ ২: মাইগ্রেশন চালান</h3>
+                <p>অ্যাপ-ভিত্তিক ব্যবহারকারীদের ট্র্যাক করার জন্য <code>is_app_access</code> কলাম যোগ করুন:</p>
+                <pre><code>php artisan migrate</code></pre>
+            </div>
+            
+            <div class="step">
+                <h3>ধাপ ৩: এটি পরীক্ষা করুন</h3>
+                <p><strong>বিকল্প A: ব্রাউজার পরীক্ষা</strong></p>
+                <p>আপনার প্রমাণীকরণ পৃষ্ঠা পরিদর্শন করুন:</p>
+                <pre><code>https://আপনারসাইট.com/game/lucky88_master/app-access</code></pre>
+                <p>আপনি প্রমাণীকরণ ইন্টারফেস দেখতে পাবেন।</p>
+                
+                <p><strong>বিকল্প B: cURL দিয়ে পরীক্ষা করুন</strong></p>
+                <p>যদি আপনার অ্যাপ হোয়াইটলিস্টেড হয়:</p>
+                <pre><code>curl -H "X-App-Package: com.jambo.app" \
+  https://আপনারসাইট.com/game/lucky88_master/app-access</code></pre>
+                <p>স্বয়ংক্রিয়ভাবে অ্যাক্সেস প্রদান করবে এবং গেমে পুনঃনির্দেশ করবে।</p>
+            </div>
+            
+            <div class="success">
+                <strong>✅ সাফল্য!</strong> আপনার অ্যাপ অ্যাক্সেস সিস্টেম এখন কনফিগার করা হয়েছে। ব্যবহারকারীরা ম্যানুয়াল টোকেন তৈরি ছাড়াই নিরাপদে গেমে প্রবেশ করতে পারে।
+            </div>
+            
+            <h2>📱 আপনার অ্যাপে ব্যবহার করুন</h2>
+            
+            <h3>Dart/Flutter উদাহরণ</h3>
+            <pre><code>import 'package:http/http.dart' as http;
+
+Future&lt;void&gt; accessGame() async {
+  final response = await http.get(
+    Uri.parse('https://আপনারসাইট.com/game/lucky88_master/app-access'),
+    headers: {
+      'X-App-Package': 'com.jambo.app',
+    },
+  );
+  
+  if (response.statusCode == 200) {
+    // গেম সেশন প্রতিষ্ঠিত
+    print('অ্যাক্সেস অনুমোদিত!');
+  }
+}</code></pre>
+            
+            <h2>🔑 মূল বৈশিষ্ট্য</h2>
+            <ul>
+                <li>✅ হোয়াইটলিস্টেড অ্যাপের জন্য স্বয়ংক্রিয় প্যাকেজ যাচাইকরণ</li>
+                <li>✅ অ-হোয়াইটলিস্টেড অ্যাপের জন্য পাসওয়ার্ড প্রমাণীকরণ</li>
+                <li>✅ সুন্দর কাস্টম প্রমাণীকরণ ইউআই</li>
+                <li>✅ ব্যাকএন্ড-প্রয়োগ করা সেশন যাচাইকরণ</li>
+                <li>✅ কোন ম্যানুয়াল টোকেন তৈরির প্রয়োজন নেই</li>
+            </ul>
+            
+            <h2>❓ সমস্যা সমাধান</h2>
+            <h3>অ্যাক্সেস অস্বীকার?</h3>
+            <ul>
+                <li>নিশ্চিত করুন আপনার অ্যাপ প্যাকেজ <code>BD_GAME_FINAL_ALLOWED_APP_PACKAGES</code> এ আছে</li>
+                <li><code>X-App-Package</code> হেডার ঠিক মেলে কিনা যাচাই করুন</li>
+                <li>মাইগ্রেশন চালানো হয়েছে কিনা চেক করুন: <code>php artisan migrate:status</code></li>
+            </ul>
+            
+            <h3>পৃষ্ঠা পাওয়া যাচ্ছে না?</h3>
+            <ul>
+                <li>নিশ্চিত করুন Laravel সঠিকভাবে চলছে</li>
+                <li>গেম কোড বিদ্যমান আছে কিনা চেক করুন (যেমন <code>lucky88_master</code>)</li>
+                <li><code>routes/bd_game_final.php</code> এ রুট সংজ্ঞা পরীক্ষা করুন</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        function switchLanguage(lang) {
+            document.getElementById('en-content').classList.add('hidden');
+            document.getElementById('bn-content').classList.add('hidden');
+            document.getElementById(lang + '-content').classList.remove('hidden');
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            localStorage.setItem('quickStartLanguage', lang);
+        }
+        
+        // Restore language preference
+        const savedLang = localStorage.getItem('quickStartLanguage') || 'en';
+        if (savedLang === 'bn') {
+            switchLanguage('bn');
+            document.querySelectorAll('.lang-btn')[1].classList.add('active');
+        }
+    </script>
+</body>
+</html>

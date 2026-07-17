@@ -1,0 +1,110 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\PortalRecharge;
+use Auth;
+use App\Models\Gift;
+use DB;
+
+class ReCallController extends Controller
+{
+    public function Create()
+    {
+        $data['users']=User::where('status',1)->get();
+        $data['protals']=User::where('status',1)->where('is_coin_protal_active',1)->get();
+        return view('backend.protal.recall_create')->with($data);
+    }
+
+    public function GetData($id)
+    {
+        $data=User::find($id);
+        return response()->json(['success' => 'User Find','data'=>$data]);
+    }
+
+    public function RecallStore(Request $request)
+    {
+        $validated = $request->validate([
+            'protal_id' => 'required|integer|exists:users,id',
+            'amount' => 'required|numeric|min:1',
+        ]);
+
+        $portal = User::where('id', $validated['protal_id'])
+            ->where('status', 1)
+            ->where('is_coin_protal_active', 1)
+            ->first();
+
+        if (!$portal) {
+            return Redirect()->back()->withInput()->with([
+                'messege'=>'Selected receiver protal/user is not active.',
+                'alert-type'=>'error'
+            ]);
+        }
+
+        $negativeAmount = -1 * abs((float) $validated['amount']);
+        $trxid='recall-'.rand(2586,589898);
+
+        try {
+            DB::transaction(function () use ($portal, $negativeAmount, $trxid) {
+                $deposit=new PortalRecharge;
+                $deposit->user_id=$portal->id;
+                $deposit->trxid=$trxid;
+                $deposit->amount=$negativeAmount;
+                $deposit->date=date('Y-m-d');
+                $deposit->recharge_by=Auth::id();
+                $deposit->status='Approved';
+                $deposit->is_recall=1;
+                $deposit->save();
+
+                DB::table('portal_recalls')->insert([
+                    'protal_id' => $portal->id,
+                    'amount' => $negativeAmount,
+                    'date' => date('Y-m-d'),
+                    'user_id' => Auth::id(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
+
+            return Redirect()->to('recall-list')->with([
+                'messege'=>'Protal Recall Successfully Saved',
+                'alert-type'=>'success'
+            ]);
+        } catch (\Throwable $error) {
+            return Redirect()->back()->withInput()->with([
+                'messege'=>'Protal Recall Failed: '.$error->getMessage(),
+                'alert-type'=>'error'
+            ]);
+        }
+    }
+
+    public function Index()
+    {
+        $data=PortalRecharge::where('is_recall',1)->orderby('id','desc')->get();
+        return view('backend.protal.recall_index',compact('data'));
+    }
+
+    public function GiftRecall($id)
+    {
+        $gift=Gift::find($id);
+        if ($gift) {
+            $user=User::find(555555);
+            $user->balance+=$gift->value;
+            if ($user->save()) {
+                $gift->delete();
+            }
+            return Redirect()->back()->with([
+                'messege'=>'Gift Recall SuccessFully',
+                'alert-type'=>'success'
+            ]);
+        }
+
+        return Redirect()->back()->with([
+            'messege'=>'Somnthing Wrong!!',
+            'alert-type'=>'warning'
+        ]);
+    }
+}

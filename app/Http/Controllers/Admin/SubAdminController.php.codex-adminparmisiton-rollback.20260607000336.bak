@@ -1,0 +1,145 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\AdminParmisiton;
+use App\Models\User;
+use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
+class SubAdminController extends Controller
+{
+    public function Index(Request $request)
+    {
+        $this->authorizeOwner();
+
+        $query = trim((string) $request->get('q', ''));
+        $permissionUserIds = AdminParmisiton::query()->select('user_id');
+
+        $users = User::query()
+            ->where(function ($builder) use ($permissionUserIds) {
+                $builder->whereIn('is_admin', [1, 2, 3])
+                    ->orWhereIn('id', $permissionUserIds);
+            })
+            ->when($query !== '', function ($builder) use ($query) {
+                $builder->where(function ($search) use ($query) {
+                    $search->where('id', $query)
+                        ->orWhere('email', 'like', '%'.$query.'%')
+                        ->orWhere('name', 'like', '%'.$query.'%');
+                });
+            })
+            ->orderBy('is_admin', 'desc')
+            ->orderBy('id', 'asc')
+            ->limit(200)
+            ->get();
+
+        $accessLevels = $this->accessLevels();
+        $permissionGroups = AdminParmisiton::groupedDefinitions();
+        $userPermissions = AdminParmisiton::matrixForUsers($users->pluck('id'));
+
+        return view('backend.setting.subadmin', compact('users', 'accessLevels', 'query', 'permissionGroups', 'userPermissions'));
+    }
+
+    public function Update(Request $request)
+    {
+        $this->authorizeOwner();
+
+        $request->validate([
+            'target_user' => 'required',
+            'is_admin' => 'required|integer|in:0,1,2,3',
+            'password' => 'nullable|string|min:6',
+            'permissions' => 'array',
+        ]);
+
+        $target = trim((string) $request->target_user);
+        $user = User::where('id', $target)->orWhere('email', $target)->first();
+
+        if (!$user) {
+            return Redirect()->back()->withInput()->with([
+                'messege' => 'User not found',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        if ((int) $user->id === (int) Auth::id() && (int) $request->is_admin === 0) {
+            return Redirect()->back()->withInput()->with([
+                'messege' => 'You cannot remove your own admin access',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        DB::transaction(function () use ($request, $user) {
+            $user->is_admin = (int) $request->is_admin;
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+            $user->save();
+
+            $permissions = array_values(array_intersect(
+                array_keys(AdminParmisiton::definitions()),
+                (array) $request->input('permissions', [])
+            ));
+
+            AdminParmisiton::syncUserPermissions((int) $user->id, $permissions, (int) Auth::id());
+        });
+
+        return Redirect()->back()->with([
+            'messege' => 'Admin permission updated successfully',
+            'alert-type' => 'success',
+        ]);
+    }
+
+    public function Delete(Request $request)
+    {
+        $this->authorizeOwner();
+        $request->validate(['target_user' => 'required']);
+
+        $target = trim((string) $request->target_user);
+        $user = User::where('id', $target)->orWhere('email', $target)->first();
+
+        if (!$user) {
+            return Redirect()->back()->with([
+                'messege' => 'User not found',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        if ((int) $user->id === (int) Auth::id()) {
+            return Redirect()->back()->with([
+                'messege' => 'You cannot delete your own admin access',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        DB::transaction(function () use ($user) {
+            $user->is_admin = 0;
+            $user->save();
+            AdminParmisiton::where('user_id', (int) $user->id)->delete();
+        });
+
+        return Redirect()->back()->with([
+            'messege' => 'Admin permission removed successfully',
+            'alert-type' => 'success',
+        ]);
+    }
+
+    private function authorizeOwner(): void
+    {
+        if (!AdminParmisiton::allowed(Auth::id(), 'setting_admin_manage', (int) Auth::id() === 11133)) {
+            abort(403, 'Only owner admin can manage admin permissions.');
+        }
+    }
+
+    private function accessLevels(): array
+    {
+        return [
+            0 => 'Normal User',
+            1 => 'Main Admin Panel',
+            2 => 'Country Admin Panel',
+            3 => 'Sub Admin Panel',
+        ];
+    }
+}

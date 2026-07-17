@@ -1,0 +1,18 @@
+Teen Patti URLs for users 111133, 111135, 111138
+
+Run this in phpMyAdmin to generate the exact URLs:
+
+SELECT
+  id,
+  CONCAT('https://thomaslivestreamingcompanyltdgame.fairylive.online/game/thomas-live-streeaming-game-', game_api_key, '/start/teen_patti') AS teen_patti_url
+FROM users
+WHERE id IN (111133, 111135, 111138)
+ORDER BY id;
+
+Short preview format:
+
+https://thomaslivestreamingcompanyltdgame.fairyliv...
+
+Full format:
+
+https://thomaslivestreamingcompanyltdgame.fairylive.online/game/thomas-live-streeaming-game-<game_api_key>/start/teen_patti

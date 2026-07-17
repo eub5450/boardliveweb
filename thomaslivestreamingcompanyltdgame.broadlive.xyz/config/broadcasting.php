@@ -1,0 +1,64 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Broadcaster
+    |--------------------------------------------------------------------------
+    |
+    | This option controls the default broadcaster that will be used by the
+    | framework when an event needs to be broadcast. You may set this to
+    | any of the connections defined in the "connections" array below.
+    |
+    | Supported: "pusher", "redis", "log", "null"
+    |
+    */
+
+    'default' => env('BROADCAST_DRIVER', env('BD_GAME_FINAL_REALTIME_ENABLED', false) ? 'pusher' : 'log'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Broadcast Connections
+    |--------------------------------------------------------------------------
+    |
+    | Here you may define all of the broadcast connections that will be used
+    | to broadcast events to other systems or over websockets. Samples of
+    | each available type of connection are provided inside this array.
+    |
+    */
+
+    'connections' => [
+
+        'pusher' => [
+            'driver' => 'pusher',
+            'key' => env('PUSHER_APP_KEY'),
+            'secret' => env('PUSHER_APP_SECRET'),
+            'app_id' => env('PUSHER_APP_ID'),
+            'options' => array_filter([
+                'cluster' => env('PUSHER_APP_CLUSTER', 'mt1'),
+                'encrypted' => env('PUSHER_ENCRYPTED', env('PUSHER_SCHEME', 'https') === 'https'),
+                'useTLS' => env('PUSHER_SCHEME', 'https') === 'https',
+                'host' => env('PUSHER_HOST'),
+                'port' => (int) env('PUSHER_PORT', env('PUSHER_SCHEME', 'https') === 'https' ? 443 : 80),
+                'scheme' => env('PUSHER_SCHEME', 'https'),
+                'timeout' => (int) env('PUSHER_TIMEOUT', 10),
+            ], static fn ($value) => $value !== null && $value !== ''),
+        ],
+
+        'redis' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+        ],
+
+        'log' => [
+            'driver' => 'log',
+        ],
+
+        'null' => [
+            'driver' => 'null',
+        ],
+
+    ],
+
+];

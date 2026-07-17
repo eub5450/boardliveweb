@@ -1,0 +1,248 @@
+  @php
+  $image_pending=App\Models\ProfilePending::count();
+  $withdraw=App\Models\Withdraw::where('status',0)->count();
+  $luck_star_pending=App\Models\luckyStar::where('status',0)->count();
+  $total_recharg=App\Models\PortalRecharge::where('is_recall',0)->sum('amount');
+  $total_coin_generate=App\Models\CoinGenerate::sum('amount');
+  $total_balance=$total_coin_generate-$total_recharg;
+  $adminCan=function($key,$default=false){ return \App\Models\AdminParmisiton::allowed(Auth::id(),$key,$default); };
+  $adminAny=function($keys) use ($adminCan){ foreach($keys as $key){ if($adminCan($key)){ return true; } } return false; };
+
+  $hostItems=[
+    ['key'=>'sidebar_host_add','url'=>'add-host','label'=>'Add Host'],
+    ['key'=>'sidebar_host_active','url'=>'active_host','label'=>'Active Host'],
+    ['key'=>'sidebar_host_pending','url'=>'pending_host','label'=>'Pending Host'],
+    ['key'=>'sidebar_host_transfer','url'=>'transfer_host','label'=>'Transfer Host'],
+  ];
+  $agencyItems=[
+    ['key'=>'sidebar_agency_create','url'=>'agency_create','label'=>'Create Agency'],
+    ['key'=>'sidebar_agency_list','url'=>'agency_list','label'=>'Agency List'],
+  ];
+  $protalItems=[
+    ['key'=>'sidebar_protal_create','url'=>'protal_create','label'=>'Create Protal'],
+    ['key'=>'sidebar_protal_list','url'=>'protal_list','label'=>'Protal List'],
+    ['key'=>'sidebar_protal_recall_create','url'=>'master-protal-recall-create','label'=>'Protal Recall Create'],
+    ['key'=>'sidebar_protal_recall_history','url'=>'master-protal-recall','label'=>'Protal Recall History'],
+    ['key'=>'sidebar_protal_recharge','url'=>'recharge_otp','label'=>'Recharge'],
+    ['key'=>'sidebar_protal_recharge_list','url'=>'recharge-list','label'=>'Recharge List'],
+    ['key'=>'sidebar_protal_new_recall','url'=>'recall','label'=>'New ReCall'],
+    ['key'=>'sidebar_protal_recall_list','url'=>'recall-list','label'=>'ReCall List'],
+  ];
+  $supportItems=[
+    ['key'=>'sidebar_support_index','url'=>'support','label'=>'Support'],
+  ];
+  $rankingItems=[
+    ['key'=>'sidebar_ranking_list','url'=>'rankingList','label'=>'Ranking'],
+  ];
+  $userBalanceItems=[
+    ['key'=>'sidebar_user_balance_wallet','url'=>'user_have_balance','label'=>'Wallet'],
+  ];
+  $coinGenerateItems=[
+    ['key'=>'sidebar_coin_generate_generate','url'=>'admin-coin-generate','label'=>'Generate'],
+  ];
+  $banItems=[
+    ['key'=>'sidebar_ban_id','url'=>'ban_id','label'=>'Ban'],
+  ];
+  $liveItems=[
+    ['key'=>'sidebar_live_list','url'=>'live-list','label'=>'Live List'],
+  ];
+  $gameItems=[
+    ['key'=>'sidebar_game_fruits_detail','url'=>'admin/fruts-game-detail','label'=>'Fruits Game'],
+    ['key'=>'sidebar_game_fruits_lock','url'=>'admin/fruts-game-lock-list','label'=>'Fruits Lock'],
+    ['key'=>'sidebar_game_teenpatti_detail','url'=>'admin/teen-patti-game-detail','label'=>'Teenpati Game'],
+    ['key'=>'sidebar_game_greedy_detail','url'=>'admin/grady-game-detail','label'=>'Greedy Game'],
+    ['key'=>'sidebar_game_fruits_pattern','url'=>'admin/fruts-game-pattarn','label'=>'Fruits Pattan'],
+  ];
+  $settingItems=[
+    ['key'=>'sidebar_setting_banner','url'=>'admin-slider','label'=>'Banner'],
+    ['key'=>'sidebar_setting_country','url'=>'admin-country','label'=>'Country'],
+    ['key'=>'sidebar_setting_gift_data','url'=>'admin-gift-data','label'=>'Gift Data'],
+    ['key'=>'sidebar_setting_agora','url'=>'admin-agora_account_setting','label'=>'Agora Setting'],
+    ['key'=>'sidebar_setting_email_change','url'=>'admin-user-emailchange','label'=>'Email Change'],
+    ['key'=>'sidebar_setting_admin','url'=>'setting/admin','label'=>'Admin'],
+    ['key'=>'sidebar_setting_audio_background','url'=>'admin-audio-brd-background','label'=>'Audio Brd Background'],
+    ['key'=>'sidebar_setting_store','url'=>'admin-store','label'=>'Store'],
+  ];
+  @endphp
+@if($adminCan('sidebar_access'))
+<nav class="sidebar sidebar-bunker">
+    <div class="sidebar-header">
+     <a href="{{URL::to('/dashboard')}}" class="logo"><img src="" alt=""></a>
+ </div><!--/.sidebar header-->
+ <form class="search sidebar-form" action="{{URL::to('id_search')}}" method="get" >
+    @csrf
+    <div class="search__inner">
+        <input type="number" name="id" class="search__text" placeholder="Search..." >
+        <i class="typcn typcn-zoom-outline search__helper" data-sa-action="search-close"></i>
+    </div>
+</form><!--/.search-->
+@if($adminCan('sidebar_coin_balance'))
+            <center> <span class="badge badge-success" style="font-size: 24px;background-color: #2f3131;font-weight: 900;">Coin: <font color="white">{{ $total_balance }}</font></span></center>
+    <br>
+@endif
+<div class="sidebar-body">
+    <nav class="sidebar-nav">
+        <ul class="metismenu">
+            <li class="nav-label">Main Menu</li>
+            @if($adminCan('sidebar_menu_dashboard'))
+            <li><a href="{{URL::to('/dashboard')}}"><i class="typcn typcn-home-outline mr-2"></i>Dashboard</a></li>
+            @endif
+
+            @if($adminCan('sidebar_menu_host') && $adminAny(array_column($hostItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Host
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($hostItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+
+            @if($adminCan('sidebar_menu_agency') && $adminAny(array_column($agencyItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Agency
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($agencyItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+
+            @if($adminCan('sidebar_menu_protal') && $adminAny(array_column($protalItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Protal
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($protalItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+
+            @if($adminCan('sidebar_menu_support') && $adminAny(array_column($supportItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                   Support
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($supportItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+
+            @if($adminCan('sidebar_menu_ranking') && $adminAny(array_column($rankingItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                   Ranking
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($rankingItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+
+            @if($adminCan('sidebar_menu_user_balance') && $adminAny(array_column($userBalanceItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    User Balance
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($userBalanceItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+
+            @if($adminCan('sidebar_menu_coin_generate') && $adminAny(array_column($coinGenerateItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Coin Generate
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($coinGenerateItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+
+            @if($adminCan('sidebar_menu_ban') && $adminAny(array_column($banItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Ban ID
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($banItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+
+            @if($adminCan('sidebar_menu_live') && $adminAny(array_column($liveItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Live
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($liveItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+
+            @if($adminCan('sidebar_menu_game_control') && $adminAny(array_column($gameItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Game Control
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($gameItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+
+            @if($adminCan('sidebar_menu_setting') && $adminAny(array_column($settingItems,'key')))
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                   Setting
+                </a>
+                <ul class="nav-second-level">
+                    @foreach($settingItems as $item)
+                      @if($adminCan($item['key']))<li><a href="{{URL::to($item['url'])}}">{{$item['label']}}</a></li>@endif
+                    @endforeach
+                </ul>
+            </li>
+            @endif
+        </ul>
+        </nav>
+    </div><!-- sidebar-body -->
+</nav>
+@endif

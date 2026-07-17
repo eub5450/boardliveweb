@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="JAMBOai Pet">
+  <defs>
+    <radialGradient id="g" cx="35%" cy="20%" r="80%">
+      <stop offset="0%" stop-color="#7df9ff"/>
+      <stop offset="45%" stop-color="#1d8cff"/>
+      <stop offset="100%" stop-color="#7c3cff"/>
+    </radialGradient>
+    <filter id="s" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#20f7ff" flood-opacity=".45"/>
+    </filter>
+  </defs>
+  <circle cx="90" cy="90" r="70" fill="url(#g)" filter="url(#s)"/>
+  <circle cx="63" cy="80" r="11" fill="#02111f"/>
+  <circle cx="117" cy="80" r="11" fill="#02111f"/>
+  <path d="M61 112c17 16 41 16 58 0" fill="none" stroke="#02111f" stroke-width="9" stroke-linecap="round"/>
+  <path d="M42 45 24 22M138 45l18-23" stroke="#7df9ff" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="24" cy="22" r="8" fill="#ff4fd8"/>
+  <circle cx="156" cy="22" r="8" fill="#ffbf36"/>
+</svg>

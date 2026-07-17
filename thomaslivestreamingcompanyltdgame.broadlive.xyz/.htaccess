@@ -1,0 +1,82 @@
+DirectoryIndex index.php
+Options -Indexes
+ServerSignature Off
+
+<IfModule mod_authz_core.c>
+    <FilesMatch "(^\.|composer\.(json|lock)$|package(-lock)?\.json$|webpack\.mix\.js$|artisan$|README|CHANGELOG|LICENSE|\.md$|\.sql$|\.log$|\.bak$|\.old$|\.ini$|\.sh$|\.bat$|\.ps1$)">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+    <FilesMatch "(^\.|composer\.(json|lock)$|package(-lock)?\.json$|webpack\.mix\.js$|artisan$|README|CHANGELOG|LICENSE|\.md$|\.sql$|\.log$|\.bak$|\.old$|\.ini$|\.sh$|\.bat$|\.ps1$)">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Self-contained web installer. This runs before Laravel so setup works
+    # even when cached config/vendor state is not ready yet.
+    RewriteRule ^install/?$ install.php [L]
+
+    # Block direct browser access to Laravel/system folders and repo metadata.
+    RewriteRule ^(\.git|\.vscode|app|bootstrap|config|database|docs|resources|routes|storage|tests|vendor)(/|$) - [F,L,NC]
+
+    # Block common sensitive source/config/archive files from browser access.
+    RewriteRule (^|/)(\.env|\.env\..*|composer\.(json|lock)|package(-lock)?\.json|webpack\.mix\.js|artisan|phpunit\.xml|server\.php|.*\.(md|sql|log|bak|old|ini|sh|bat|ps1))$ - [F,L,NC]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Serve only files that exist inside the public directory.
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -f
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # Send everything else to Laravel's public front controller.
+    RewriteRule ^(.*)$ public/index.php [L]
+</IfModule>
+
+# BEGIN cPanel-generated php ini directives, do not edit
+# Manual editing of this file may result in unexpected behavior.
+# To make changes to this file, use the cPanel MultiPHP INI Editor (Home >> Software >> MultiPHP INI Editor)
+# For more information, read our documentation (https://go.cpanel.net/EA4ModifyINI)
+<IfModule php7_module>
+   php_flag display_errors Off
+   php_value max_execution_time 200
+   php_value max_input_time 120
+   php_value max_input_vars 1000
+   php_value memory_limit 1280M
+   php_value post_max_size 800M
+   php_value session.gc_maxlifetime 1440
+   php_value session.save_path "/var/cpanel/php/sessions/alt-php74"
+   php_value upload_max_filesize 20M
+   php_flag zlib.output_compression Off
+</IfModule>
+<IfModule lsapi_module>
+   php_flag display_errors Off
+   php_value max_execution_time 200
+   php_value max_input_time 120
+   php_value max_input_vars 1000
+   php_value memory_limit 1280M
+   php_value post_max_size 800M
+   php_value session.gc_maxlifetime 1440
+   php_value session.save_path "/var/cpanel/php/sessions/alt-php74"
+   php_value upload_max_filesize 20M
+   php_flag zlib.output_compression Off
+</IfModule>
+# END cPanel-generated php ini directives, do not edit
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php81” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php81 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

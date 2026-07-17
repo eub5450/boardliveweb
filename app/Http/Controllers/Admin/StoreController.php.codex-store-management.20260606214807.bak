@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\EntryFrame;
+class StoreController extends Controller
+{
+    public function Index()
+    {
+        $data=EntryFrame::get();
+        return view('backend.setting.store',compact('data'));
+    }
+    public function Update($id,Request $request)
+    {
+        
+        $data=EntryFrame::find($id);
+        $data->name=$request->name;
+        $data->price=$request->amount;
+        $data->time=$request->time;
+        $data->save();
+          $notification=array(
+                'messege'=>'Effect Update SuccessFully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+}

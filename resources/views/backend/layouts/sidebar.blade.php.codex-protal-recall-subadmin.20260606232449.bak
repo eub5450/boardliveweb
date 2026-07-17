@@ -1,0 +1,184 @@
+  @php
+  $image_pending=App\Models\ProfilePending::count();
+  $withdraw=App\Models\Withdraw::where('status',0)->count();
+  $luck_star_pending=App\Models\luckyStar::where('status',0)->count();
+  $total_recharg=App\Models\PortalRecharge::where('is_recall',0)->sum('amount');
+        $total_coin_generate=App\Models\CoinGenerate::sum('amount');
+        $total_balance=$total_coin_generate-$total_recharg;
+  @endphp
+@if(Auth::id() == 11133 || Auth::id() == 11130|| Auth::id() == 11811)
+<nav class="sidebar sidebar-bunker">
+    <div class="sidebar-header">
+     <a href="{{URL::to('/dashboard')}}" class="logo"><img src="" alt=""></a> 
+ </div><!--/.sidebar header-->
+ <form class="search sidebar-form" action="{{URL::to('id_search')}}" method="get" >
+    @csrf
+    <div class="search__inner">
+        <input type="number" name="id" class="search__text" placeholder="Search..." >
+        <i class="typcn typcn-zoom-outline search__helper" data-sa-action="search-close"></i>
+    </div>
+</form><!--/.search-->
+@if(Auth::id() != 11811)
+			<center> <span class="badge badge-success" style="font-size: 24px;background-color: #2f3131;font-weight: 900;">Coin: <font color="white">{{ $total_balance }}</font></span></center>
+    <br>
+    @endif
+<div class="sidebar-body">
+    <nav class="sidebar-nav">
+        <ul class="metismenu">
+            <li class="nav-label">Main Menu</li>
+            <li><a href="{{URL::to('/dashboard')}}"><i class="typcn typcn-home-outline mr-2"></i>Dashboard</a></li>
+            
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Host
+                </a>
+                <ul class="nav-second-level">
+                    <li><a href="{{URL::to('add-host')}}">Add Host</a></li>
+                    <li><a href="{{URL::to('active_host')}}">Active Host</a></li>
+                    <li><a href="{{URL::to('pending_host')}}">Pending Host</a></li>
+                    <li><a href="{{URL::to('transfer_host')}}">Transfer Host</a></li>
+                    
+                </ul>
+            </li>
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Agency 
+                </a>
+                <ul class="nav-second-level">
+                    
+                    <li><a href="{{URL::to('agency_create')}}">Create Agency</a></li>
+                    <li><a href="{{URL::to('agency_list')}}">Agency List</a></li>
+                    
+                </ul>
+            </li> 
+             @if(Auth::id()!='11811')
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Protal 
+                </a>
+                <ul class="nav-second-level">
+                  
+                    <li><a href="{{URL::to('protal_create')}}">Create Protal</a></li>
+            
+                    <li><a href="{{URL::to('protal_list')}}">Protal List</a></li>
+                    <li><a href="{{URL::to('master-protal-recall')}}">Protal Recall</a></li>
+                    <li><a href="{{URL::to('recharge_otp')}}">Recharge</a></li>
+                    <li><a href="{{URL::to('recharge-list')}}">Recharge List</a></li>
+                
+                    <li><a href="{{URL::to('recall')}}">New ReCall</a></li>
+                    <li><a href="{{URL::to('recall-list')}}">ReCall List</a></li>
+                    
+                </ul>
+            </li>
+                
+          @endif
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                   Support
+                </a>
+                <ul class="nav-second-level">
+                    
+                    <li><a href="{{URL::to('support')}}">Support</a></li>
+                </ul>
+            </li> 
+           
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                   Ranking
+                </a>
+                <ul class="nav-second-level">
+                    
+                    <li><a href="{{URL::to('rankingList')}}">Ranking</a></li>
+                </ul>
+            </li> 
+             @if(Auth::id()==11133)
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    User Balance
+                </a>
+                <ul class="nav-second-level">
+                    
+                    <li><a href="{{URL::to('user_have_balance')}}">Wallet</a></li>
+                </ul>
+            </li> 
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Coin Generate 
+                </a>
+                <ul class="nav-second-level">
+                    
+                    <li><a href="{{URL::to('admin-coin-generate')}}">Generate</a></li>
+                    
+                </ul>
+            </li> 
+            @endif
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Ban ID 
+                </a>
+                <ul class="nav-second-level">
+                    
+                    <li><a href="{{URL::to('ban_id')}}">Ban</a></li>
+                </ul>
+            </li> 
+            <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Live
+                </a>
+                <ul class="nav-second-level">
+                    
+                    <li><a href="{{URL::to('live-list')}}"> Live List</a></li>                        
+                </ul>
+            </li> 
+             @if(Auth::id()==11133)
+            <li>
+                
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                    Game Control
+                </a>
+                <ul class="nav-second-level">
+                    
+                    <li><a href="{{URL::to('admin/fruts-game-detail')}}"> Fruits Game</a></li> 
+                    <li><a href="{{URL::to('admin/fruts-game-lock-list')}}"> Fruits Lock </a></li> 
+                     <li><a href="{{URL::to('admin/teen-patti-game-detail')}}"> Teenpati Game</a></li> 
+                    <li><a href="{{URL::to('admin/grady-game-detail')}}"> Greedy Game</a></li> 
+                    <li><a href="{{URL::to('admin/fruts-game-pattarn')}}"> Fruits Pattan</a></li>  
+                </ul>
+            </li> 
+             @endif
+             @if(Auth::id()!='555562')
+           <li>
+                <a class="has-arrow material-ripple" href="#">
+                    <i class="typcn typcn-book mr-2"></i>
+                   Setting
+                </a>
+                <ul class="nav-second-level">
+                    
+                    <li><a href="{{URL::to('admin-slider')}}">Banner </a></li>   
+                       @if(Auth::id()==11133)
+                    <li><a href="{{URL::to('admin-country')}}">Country </a></li>   
+                        <li><a href="{{URL::to('admin-gift-data')}}">Gift Data </a></li> 
+                        <li><a href="{{URL::to('admin-agora_account_setting')}}">Agora Setting</a></li> 
+                    <li><a href="{{URL::to('admin-user-emailchange')}}">Email Change</a></li> 
+                    
+                    <li><a href="{{URL::to('admin-audio-brd-background')}}">Audio Brd Background </a></li> 
+                         @endif
+                    <li><a href="{{URL::to('admin-store')}}">Store </a></li>   
+                   
+                </ul>
+            </li> 
+        @endif
+        </nav>
+    </div><!-- sidebar-body -->
+</nav>
+@endif

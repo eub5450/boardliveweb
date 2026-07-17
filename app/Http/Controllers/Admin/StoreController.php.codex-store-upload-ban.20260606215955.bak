@@ -1,0 +1,153 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\EntryFrame;
+use App\Models\MyBeg;
+use DB;
+
+class StoreController extends Controller
+{
+    public function Index()
+    {
+        $data = EntryFrame::orderBy('id', 'desc')->get();
+        $usageCounts = MyBeg::select('store_id', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('store_id')
+            ->groupBy('store_id')
+            ->pluck('total', 'store_id');
+
+        return view('backend.setting.store', compact('data', 'usageCounts'));
+    }
+
+    public function Store(Request $request)
+    {
+        $validated = $this->validateStoreEffect($request);
+
+        try {
+            $data = new EntryFrame;
+            $this->fillStoreEffect($data, $validated);
+            $data->save();
+
+            return Redirect()->back()->with([
+                'messege' => 'Effect Created Successfully',
+                'alert-type' => 'success',
+            ]);
+        } catch (\Throwable $error) {
+            return Redirect()->back()->withInput()->with([
+                'messege' => 'Effect create failed: '.$error->getMessage(),
+                'alert-type' => 'error',
+            ]);
+        }
+    }
+
+    public function Update($id, Request $request)
+    {
+        $validated = $this->validateStoreEffect($request);
+        $data = EntryFrame::find($id);
+
+        if (!$data) {
+            return Redirect()->back()->withInput()->with([
+                'messege' => 'Effect not found',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        try {
+            $this->fillStoreEffect($data, $validated);
+            $data->save();
+
+            return Redirect()->back()->with([
+                'messege' => 'Effect Update Successfully',
+                'alert-type' => 'success',
+            ]);
+        } catch (\Throwable $error) {
+            return Redirect()->back()->withInput()->with([
+                'messege' => 'Effect update failed: '.$error->getMessage(),
+                'alert-type' => 'error',
+            ]);
+        }
+    }
+
+    public function ToggleShow($id)
+    {
+        $data = EntryFrame::find($id);
+
+        if (!$data) {
+            return Redirect()->back()->with([
+                'messege' => 'Effect not found',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        $data->is_show = (int) $data->is_show === 1 ? 0 : 1;
+        $data->save();
+
+        return Redirect()->back()->with([
+            'messege' => $data->is_show ? 'Effect is now visible in app' : 'Effect is now hidden from app store',
+            'alert-type' => 'success',
+        ]);
+    }
+
+    public function Destroy($id)
+    {
+        $data = EntryFrame::find($id);
+
+        if (!$data) {
+            return Redirect()->back()->with([
+                'messege' => 'Effect not found',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        $usageCount = MyBeg::where('store_id', $data->id)->count();
+        if ($usageCount > 0) {
+            $data->is_show = 0;
+            $data->save();
+
+            return Redirect()->back()->with([
+                'messege' => 'Effect is used by '.$usageCount.' user inventory row(s), so it was hidden instead of deleted.',
+                'alert-type' => 'warning',
+            ]);
+        }
+
+        try {
+            $data->delete();
+
+            return Redirect()->back()->with([
+                'messege' => 'Unused effect deleted successfully',
+                'alert-type' => 'success',
+            ]);
+        } catch (\Throwable $error) {
+            return Redirect()->back()->with([
+                'messege' => 'Effect delete failed: '.$error->getMessage(),
+                'alert-type' => 'error',
+            ]);
+        }
+    }
+
+    private function validateStoreEffect(Request $request)
+    {
+        return $request->validate([
+            'name' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'time' => 'required|integer|min:1|max:3650',
+            'type' => 'required|in:0,1',
+            'image' => 'required|string|max:255',
+            'effect' => 'required|string|max:255',
+            'is_show' => 'nullable|in:0,1',
+        ]);
+    }
+
+    private function fillStoreEffect(EntryFrame $data, array $validated)
+    {
+        $data->name = $validated['name'];
+        $data->price = (string) $validated['amount'];
+        $data->time = (string) $validated['time'];
+        $data->type = (int) $validated['type'];
+        $data->image = $validated['image'];
+        $data->effect = $validated['effect'];
+        $data->is_show = array_key_exists('is_show', $validated) ? (int) $validated['is_show'] : 1;
+    }
+}

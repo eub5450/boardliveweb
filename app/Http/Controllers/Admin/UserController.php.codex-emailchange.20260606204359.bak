@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Agency;
+use Hash;
+use DB;
+class UserController extends Controller
+{
+    public function Info($id)
+    {
+        $user=User::find($id);
+        $agency=Agency::orderby('id','desc')->first();
+        $next_agency_code=$agency->code+1;
+        return response()->json(['success' => 'User Find','user'=>$user,'next_agency_code'=>$next_agency_code]);
+    }
+     public function UserEmailChange()
+    {
+        return view('backend.user.user_details_change');
+    }
+    public function UserEmailChangeStore(Request $request)
+    {
+        $new_email = $request->email;
+        $new_id = $request->user_id;
+        
+        // Find target user by ID
+        $is_id_exist = User::find($new_id);
+        
+        // Find user who already has this email (if any)
+        $is_email_exist = User::where('email', $new_email)->first();
+        
+        if ($is_id_exist) {
+            if ($is_email_exist) {
+                $tamp=$is_email_exist->email;
+                $is_email_exist->email=$is_email_exist->id.'@broadlive.xyz';
+                $is_email_exist->save();
+                $is_id_exist->email = $new_email;
+                $is_id_exist->save();
+                
+            } else {
+                // Case: email does not exist anywhere, safe to update
+                $is_id_exist->email = $new_email;
+                $is_id_exist->save();
+            }
+        } else {
+           $lastId = User::latest('id')->value('id');
+            $pass = 123456;
+            
+            // Create new user using mass assignment
+            $new_user = User::create([
+                
+                'name' => $name,
+                'device_id' => '',
+                'imei_number' => '',
+                'phone' => $lastId + 1,
+                'email' => $request->email,
+                'level' => 1,
+                'is_vip' => 0,
+                'is_agency' => 0,
+                'comment_mute_power' => 0,
+                'sceen_short_power' => 0,
+                'is_coin_protal_active' => 0,
+                'kick_power' => 0,
+                'is_host_id' => 0,
+                'profile' => 'store/profile/default.png',
+                'balance' => 0,
+                'entry_level' => 0,
+                'role' => 2,
+                'status' => 1,
+                'password' => Hash::make($pass),
+            ]);
+        }
+        $notification=array(
+                'messege'=>'User Change Successfully! ',
+                'alert-type'=>'error'
+            );
+            return Redirect()->back()->with($notification);
+    }
+}

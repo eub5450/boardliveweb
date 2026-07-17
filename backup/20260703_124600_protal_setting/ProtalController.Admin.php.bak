@@ -1,0 +1,332 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Notification;
+use App\Models\PortalRecharge;
+use Auth;
+use App\Models\PortalRecall;
+use App\Models\MasterProtalRecall;
+use App\Models\CoinGenerate;
+use Illuminate\Support\Facades\DB;
+class ProtalController extends Controller
+{
+    public function Create()
+    {
+        $users=User::where('status',1)->where('is_coin_protal_active',0)->get();
+        return view('backend.protal.create',compact('users'));
+    }
+    public function Store(Request $request)
+    {
+        $total_recharge=PortalRecharge::sum('amount');
+        $total_coin_generate=CoinGenerate::sum('amount');
+        $total_balance=$total_coin_generate-$total_recharge;
+        if($total_balance>=$request->deposit){
+        $id=$request->user_id;
+        $user=User::where('id',$id)->where('master_protal_id','!=',1)->first();
+        if ($user) {
+            
+               if($request->deposit==0){
+                   $notification=array(
+                    'messege'=>'Protal Active SuccessFully!',
+                    'alert-type'=>'success'
+                );
+                   return Redirect()->back()->with($notification);
+               }else{
+                $deposit=new PortalRecharge;
+                $deposit->user_id=$user->id;
+                $deposit->trxid=rand(2586,589898);
+                $deposit->amount=$request->deposit;
+                $deposit->date=date('Y-m-d');
+                $deposit->recharge_by=Auth::id();
+                $deposit->status='Approved';
+                $deposit->save();
+                
+                 $notification=new Notification;
+                 $notification->user_id=$user->id;
+                 $notification->date=date('Y-m-d');
+                 $notification->message=$request->deposit.' Point Deposit Successfully Added On Your Protal .TrxID: '.$deposit->trxid;
+                 $notification->save();
+                $notification=array(
+                    'messege'=>'Protal Active SuccessFully With deposit!',
+                    'alert-type'=>'success'
+                );
+                   return Redirect()->back()->with($notification);
+               }
+            
+
+        }else{
+            $notification=array(
+                'messege'=>'User Data Not Found!',
+                'alert-type'=>'error'
+            );
+            return Redirect()->back()->with($notification);
+        }
+        }else{
+            $notification=array(
+                'messege'=>'Coin Insufficient',
+                'alert-type'=>'error'
+            );
+            return Redirect()->back()->with($notification);
+        }
+
+    }
+    public function Index()
+    {
+        $users=User::where('status',1)->where('is_coin_protal_active',1)->get();
+        $all_users=User::where('status',1)->orderBy('id','asc')->get();
+        return view('backend.protal.index',compact('users','all_users'));
+    }
+     public function PortalRechargeIndex()
+    {
+        $otp = 123456;
+        session(['protal_otp' => $otp]);
+
+        $notification = new Notification;
+        $notification->user_id = 11130;
+        $notification->date = date('Y-m-d');
+        $notification->message = 'Protal Open Otp: '.$otp.' Open Protal From User:- '. Auth::user()->name .'& id Number :-' .Auth::id();
+        $notification->save();
+
+        return view('backend.protal.recharge_otp', compact('otp'));
+    }
+
+    public function checkOTP(Request $request)
+    {
+        $enteredOTP = $request->input('otpInput');
+        $sessionOTP = session('protal_otp');
+
+        if ($enteredOTP == $sessionOTP) {
+            // Matched - redirect to the recharge method with the OTP
+            return $this->Recharge($sessionOTP);
+        } else {
+            // Not matched - return to the previous page with an error message
+            $notification = new Notification;
+            $notification->user_id = 11130;
+            $notification->date = date('Y-m-d');
+            $notification->message = 'Warning: Wrong Otp Input. From User:- '. Auth::user()->name .'& id Number :-' .Auth::id();
+            $notification->save();
+
+            $notification = [
+                'message' => 'Otp Not Matched',
+                'alert-type' => 'error'
+            ];
+            return Redirect()->back()->with($notification);
+        }
+    }
+
+        public function Recharge($sessionOTP)
+        {
+             $users=User::where('status',1)->where('is_coin_protal_active',1)->get();
+                return view('backend.protal.recharge_create',compact('users','sessionOTP'));
+    }
+
+
+    public function RechargeStore(Request $request)
+    {
+         $total_recharge=PortalRecharge::sum('amount');
+        $total_coin_generate=CoinGenerate::sum('amount');
+        $total_balance=$total_coin_generate-$total_recharge;
+        if($total_balance>=$request->deposit){
+        if (Auth::id()==11130 || Auth::id()==11133) {
+         
+        $deposit=new PortalRecharge;
+        $deposit->user_id=$request->user_id;
+        $deposit->trxid=rand(2586,589898);
+        $deposit->amount=$request->deposit;
+        $deposit->date=date('Y-m-d');
+        $deposit->recharge_by=Auth::id();
+        $deposit->status='Approved';
+        $deposit->save();
+        $notification=new Notification;
+        $notification->user_id=$request->user_id;
+        $notification->date=date('Y-m-d');
+        $notification->message=$request->deposit.' Point Deposit Successfully Added On Your Protal .TrxID: '.$deposit->trxid;
+        $notification->save();
+        $notification=array(
+            'messege'=>'Protal Active SuccessFully With deposit!',
+            'alert-type'=>'success'
+        );
+         return $this->PortalRechargeIndex();
+           # code...
+        }else{
+             $notification = new Notification;
+            $notification->user_id = 11130;
+            $notification->date = date('Y-m-d');
+            $notification->message = 'UnAuthorize User Submit A Coin Genrator Request '. Auth::user()->name .'& id Number :-' .Auth::id();
+            $notification->save();
+
+                 Auth::logout(); // Logs the user out
+
+            // Redirect to the login page
+            return redirect()->route('login');
+
+        }
+    }else{
+          $notification=array(
+            'messege'=>'Coin insufficient',
+            'alert-type'=>'success'
+        );
+         return $this->PortalRechargeIndex();
+    }
+    }
+    public function RechargeIndex()
+    {
+        $data=PortalRecharge::orderby('id','desc')->get();
+        return view('backend.protal.recharge_index',compact('data'));
+    }
+  public function Recall(Request $request)
+    {
+        $data=new PortalRecall;
+        $data->amount=$request->amount;
+        $data->protal_id=$request->user_id;
+        $data->date=date('Y-m-d');
+        $data->user_id=Auth::id();
+        if ($data->save()) {
+        $deposit=new PortalRecharge;
+        $deposit->user_id='555555';
+        $deposit->trxid='Recall_'.rand(2586,589898);
+        $deposit->amount=$request->amount;
+        $deposit->date=date('Y-m-d');
+        $deposit->recharge_by=Auth::id();
+        $deposit->status='Approved';
+        $deposit->save();
+        }
+
+         $notification=array(
+            'messege'=>'Protal Recall SuccessFully With deposit!',
+            'alert-type'=>'success'
+        );
+        return Redirect()->back()->with($notification);
+        
+    } 
+
+
+    public function MasterProtalRecallCreate()
+    {
+        $protals=User::where('status',1)->where('is_coin_protal_active',1)->get()->map(function ($protal) {
+            return [
+                'id' => $protal->id,
+                'name' => $protal->name,
+                'balance' => $this->masterProtalAvailableBalance($protal->id),
+            ];
+        });
+        return view('backend.protal.master_protal_recall_create',compact('protals'));
+    }
+
+    public function MasterProtalRecallUserSearch(Request $request)
+    {
+        $query = trim((string) $request->get('q', ''));
+        if (strlen($query) < 2) {
+            return response()->json(['data' => []], 200, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        $users = User::where('status', 1)
+            ->where(function ($builder) use ($query) {
+                $builder->where('id', $query)
+                    ->orWhere('email', 'like', '%'.$query.'%')
+                    ->orWhere('name', 'like', '%'.$query.'%');
+            })
+            ->orderBy('id', 'asc')
+            ->limit(20)
+            ->get(['id', 'name', 'email', 'balance']);
+
+        return response()->json(['data' => $users], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function MasterProtalRecallHistory()
+    {
+        $data=MasterProtalRecall::orderby('id','desc')->get();
+        return view('backend.protal.master_protal_recall_history',compact('data'));
+    }
+
+    public function MasterProtalRecallStore(Request $request)
+    {
+        $request->validate([
+            'protal_id' => 'required|integer',
+            'user_id' => 'required|integer',
+            'amount' => 'required|numeric|min:1',
+        ]);
+
+        $protalId = (int) $request->protal_id;
+        $receiverId = (int) $request->user_id;
+        $amount = (float) $request->amount;
+
+        try {
+            DB::transaction(function () use ($protalId, $receiverId, $amount) {
+                $protal = User::where('id', $protalId)->where('is_coin_protal_active', 1)->lockForUpdate()->first();
+                $receiver = User::where('id', $receiverId)->lockForUpdate()->first();
+
+                if (!$protal || !$receiver) {
+                    throw new \RuntimeException('User or protal not found');
+                }
+
+                $availableBalance = $this->masterProtalAvailableBalance($protalId);
+                if ($amount > $availableBalance) {
+                    throw new \RuntimeException('Recall amount greater than protal balance');
+                }
+
+                $receiver->balance = $receiver->balance + $amount;
+                $receiver->save();
+
+                MasterProtalRecall::create([
+                    'user_id' => $receiver->id,
+                    'protal_id' => $protal->id,
+                    'amount' => $amount,
+                    'date' => date('Y-m-d'),
+                    'auth_id' => Auth::id(),
+                    'transaction_id' => 'MPR-'.date('YmdHis').'-'.rand(2586,589898),
+                    'remarks' => 'Master protal recall',
+                ]);
+            });
+
+            return Redirect()->back()->with([
+                'messege'=>'Master Protal Recall SuccessFully!',
+                'alert-type'=>'success'
+            ]);
+        } catch (\Throwable $error) {
+            return Redirect()->back()->withInput()->with([
+                'messege'=>$error->getMessage(),
+                'alert-type'=>'error'
+            ]);
+        }
+    }
+
+    private function masterProtalAvailableBalance($portalId)
+    {
+        $totalReceived = PortalRecharge::where('user_id',$portalId)->where('status','Approved')->sum('amount');
+        $totalSent = \App\Models\PortalTransfer::where('portal_user_id',$portalId)->sum('amount');
+        $oldRecall = PortalRecall::where('protal_id',$portalId)->sum('amount');
+        $masterRecall = MasterProtalRecall::where('protal_id',$portalId)->sum('amount');
+        $p2pSent = \App\Models\ProtalToPTransfer::where('user_id',$portalId)->sum('amount');
+        $p2pReceived = \App\Models\ProtalToPTransfer::where('portal_user_id',$portalId)->sum('amount');
+
+        return ($totalReceived + $p2pReceived) - ($totalSent + $oldRecall + $masterRecall + $p2pSent);
+    }
+
+     public function MasterRecharge()
+    {
+        $users=User::where('master_protal_id',1)->get();
+        return view('backend.protal.master_protal',compact('users'));
+    } 
+    public function MasterRechargeStore(Request $request)
+    {
+        $deposit=new PortalRecharge;
+        $deposit->user_id=$request->user_id;
+        $deposit->master_protal_id=$request->user_id;
+        $deposit->trxid='master_reseller-'.rand(2586,589898);
+        $deposit->amount=$request->deposit;
+        $deposit->date=date('Y-m-d');
+        $deposit->recharge_by=Auth::id();
+        $deposit->status='Approved';
+        $deposit->save();
+        $notification=array(
+            'messege'=>'Master Protal Deposit SuccessFully ',
+            'alert-type'=>'success'
+        );
+        return Redirect()->back()->with($notification);
+    }
+}

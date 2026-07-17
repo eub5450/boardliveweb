@@ -1,0 +1,60 @@
+[15-Apr-2025 18:17:13 UTC] PHP Fatal error:  Uncaught Error: Class 'Auth' not found in /home/rk/public_html/routes/web.php:15
+Stack trace:
+#0 {main}
+  thrown in /home/rk/public_html/routes/web.php on line 15
+[15-Mar-2026 12:25:51 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Route" not found in /home/broadlive/public_html/routes/api.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/api.php on line 21
+[15-Mar-2026 12:25:51 UTC] PHP Fatal error:  Uncaught Error: Class "Auth" not found in /home/broadlive/public_html/routes/web.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/web.php on line 19
+[25-May-2026 06:38:55 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Route" not found in /home/broadlive/public_html/routes/api.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/api.php on line 21
+[25-May-2026 06:38:55 UTC] PHP Fatal error:  Uncaught Error: Class "Auth" not found in /home/broadlive/public_html/routes/web.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/web.php on line 19
+[25-May-2026 06:42:39 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Route" not found in /home/broadlive/public_html/routes/api.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/api.php on line 21
+[25-May-2026 06:44:24 UTC] PHP Fatal error:  Uncaught Error: Class "Auth" not found in /home/broadlive/public_html/routes/web.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/web.php on line 19
+[25-May-2026 06:44:24 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Route" not found in /home/broadlive/public_html/routes/api.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/api.php on line 21
+[25-May-2026 09:56:28 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Artisan" not found in /home/broadlive/public_html/routes/console.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/console.php on line 17
+[25-May-2026 09:56:28 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Broadcast" not found in /home/broadlive/public_html/routes/channels.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/channels.php on line 16
+[25-May-2026 10:01:49 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Broadcast" not found in /home/broadlive/public_html/routes/channels.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/channels.php on line 16
+[25-May-2026 10:01:50 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Artisan" not found in /home/broadlive/public_html/routes/console.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/console.php on line 17
+[25-May-2026 22:28:25 UTC] PHP Fatal error:  Uncaught Error: Class "Auth" not found in /home/broadlive/public_html/routes/web.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/web.php on line 19
+[25-May-2026 22:28:25 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Route" not found in /home/broadlive/public_html/routes/api.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/api.php on line 21
+[25-May-2026 22:31:54 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Broadcast" not found in /home/broadlive/public_html/routes/channels.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/routes/channels.php on line 16

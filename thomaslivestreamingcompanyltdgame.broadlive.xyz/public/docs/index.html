@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thomas Game - Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .language-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .lang-btn {
+            padding: 8px 15px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .lang-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .doc-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 25px;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .doc-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .doc-card h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        
+        .doc-card p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .doc-card .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-right: 5px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .language-switch {
+                position: static;
+                justify-content: center;
+                margin-top: 15px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="language-switch">
+                <button class="lang-btn active" onclick="switchLanguage('en')">English</button>
+                <button class="lang-btn" onclick="switchLanguage('bn')">বাংলা</button>
+            </div>
+            <h1 id="title">Thomas Game - Documentation</h1>
+            <p id="subtitle">Complete setup and usage guide for your game platform</p>
+        </header>
+        
+        <div class="content">
+            <div id="en-content">
+                <h2>📚 Documentation</h2>
+                <p>Welcome to Thomas Game documentation. Choose a topic below to get started:</p>
+                
+                <div class="docs-grid">
+                    <a href="setup.html" class="doc-card">
+                        <h2>🚀 Setup Guide</h2>
+                        <p>Complete installation and configuration instructions for your server.</p>
+                        <span class="badge">Getting Started</span>
+                    </a>
+                    
+                    <a href="quick-start.html" class="doc-card">
+                        <h2>⚡ Quick Start</h2>
+                        <p>5-minute setup guide for app-based game access system.</p>
+                        <span class="badge">Fast Track</span>
+                    </a>
+                    
+                    <a href="app-access.html" class="doc-card">
+                        <h2>📱 App Access System</h2>
+                        <p>Secure URL-based access for mobile and desktop applications.</p>
+                        <span class="badge">Integration</span>
+                    </a>
+
+                    <a href="admin-manual-bn.html" class="doc-card">
+                        <h2>🧭 Admin Manual (Bangla)</h2>
+                        <p>Graphical Bangla guide for the admin panel with tooltip-style simulator.</p>
+                        <span class="badge">Admin Guide</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div id="bn-content" class="hidden">
+                <h2>📚 ডকুমেন্টেশন</h2>
+                <p>থমাস গেম ডকুমেন্টেশনে আপনাকে স্বাগতম। শুরু করতে নীচে একটি বিষয় বেছে নিন:</p>
+                
+                <div class="docs-grid">
+                    <a href="setup.html" class="doc-card">
+                        <h2>🚀 সেটআপ গাইড</h2>
+                        <p>আপনার সার্ভারের জন্য সম্পূর্ণ ইনস্টলেশন এবং কনফিগারেশন নির্দেশাবলী।</p>
+                        <span class="badge">শুরু করুন</span>
+                    </a>
+                    
+                    <a href="quick-start.html" class="doc-card">
+                        <h2>⚡ দ্রুত শুরু</h2>
+                        <p>অ্যাপ-ভিত্তিক গেম অ্যাক্সেস সিস্টেমের জন্য ৫ মিনিটের সেটআপ গাইড।</p>
+                        <span class="badge">দ্রুত ট্র্যাক</span>
+                    </a>
+                    
+                    <a href="app-access.html" class="doc-card">
+                        <h2>📱 অ্যাপ অ্যাক্সেস সিস্টেম</h2>
+                        <p>মোবাইল এবং ডেস্কটপ অ্যাপ্লিকেশনের জন্য সুরক্ষিত URL-ভিত্তিক অ্যাক্সেস।</p>
+                        <span class="badge">ইন্টিগ্রেশন</span>
+                    </a>
+
+                    <a href="admin-manual-bn.html" class="doc-card">
+                        <h2>🧭 অ্যাডমিন ম্যানুয়াল (বাংলা)</h2>
+                        <p>টুলটিপ-স্টাইল সিমুলেটরসহ বাংলা গ্রাফিকাল অ্যাডমিন গাইড।</p>
+                        <span class="badge">অ্যাডমিন গাইড</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; 2026 Thomas Game. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <script>
+        function switchLanguage(lang) {
+            document.querySelectorAll('[id$="-content"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById(lang + '-content').classList.remove('hidden');
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            localStorage.setItem('selectedLanguage', lang);
+        }
+        
+        // Restore language preference
+        const savedLang = localStorage.getItem('selectedLanguage') || 'en';
+        if (savedLang === 'bn') {
+            switchLanguage('bn');
+            document.querySelectorAll('.lang-btn')[1].classList.add('active');
+        }
+    </script>
+</body>
+</html>

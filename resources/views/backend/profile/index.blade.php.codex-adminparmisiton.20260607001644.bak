@@ -1,0 +1,1569 @@
+@extends('backend.layouts.main')
+
+
+@section('title')
+Supplier  
+@endsection
+@section('content')
+<style type="text/css">
+	.resume {
+    background-color: #D5F5E3;
+}
+.card-header {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    background-image: url(../img/profile-bg.jpg);
+    background-size: cover;
+    background-position: center center;
+    padding: 30px 15px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+/* Dark Theme CSS */
+.dark-theme {
+    background: #1a1a2e !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #2a2a3c !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark-theme .info-header {
+    background: #23233a !important;
+    color: #fff !important;
+    padding: 15px 20px !important;
+    border-bottom: 1px solid #33334a !important;
+    font-weight: 600;
+}
+
+.dark-theme table {
+    background: #1a1a2e !important;
+}
+
+.dark-theme th {
+    background: #23233a !important;
+    color: #b0b0c0 !important;
+    border-bottom: 1px solid #33334a !important;
+    font-weight: 500;
+}
+
+.dark-theme td {
+    background: #1a1a2e !important;
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #2a2a3c !important;
+}
+
+.dark-theme tr:hover td {
+    background: #23233a !important;
+}
+
+.dark-theme .badge-primary {
+    background: linear-gradient(135deg, #6b5bff 0%, #5a4ad8 100%) !important;
+    color: #fff !important;
+}
+
+.dark-theme .badge-info {
+    background: linear-gradient(135deg, #3b9bff 0%, #2a7ad8 100%) !important;
+    color: #fff !important;
+}
+
+.dark-theme .badge-secondary-dark {
+    background: #2a2a3c !important;
+    color: #b0b0c0 !important;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid #3a3a4c;
+}
+
+.dark-theme .balance-highlight {
+    color: #2ecc71 !important;
+    font-size: 18px;
+    font-weight: 700;
+    text-shadow: 0 0 5px rgba(46, 204, 113, 0.3);
+}
+
+.dark-theme .text-muted-dark {
+    color: #6c6c8a !important;
+    font-style: italic;
+}
+
+.dark-theme i {
+    color: #6b5bff !important;
+}
+
+.dark-theme .table {
+    border: none !important;
+}
+
+.dark-theme .table th,
+.dark-theme .table td {
+    border-top: none !important;
+    border-bottom: 1px solid #2a2a3c !important;
+    padding: 12px !important;
+}
+
+.dark-theme .table tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Apply to existing elements */
+.info-table.dark-theme {
+    background: #1a1a2e !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #2a2a3c !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+.info-table.dark-theme caption {
+    background: #23233a !important;
+    color: #fff !important;
+    border-bottom: 1px solid #33334a !important;
+    padding: 15px 20px !important;
+    font-weight: 600;
+}
+
+.info-table.dark-theme th {
+    background: #23233a !important;
+    color: #b0b0c0 !important;
+}
+
+.info-table.dark-theme td {
+    background: #1a1a2e !important;
+    color: #e0e0e0 !important;
+}
+
+.info-table.dark-theme .badge-primary {
+    background: linear-gradient(135deg, #6b5bff 0%, #5a4ad8 100%) !important;
+}
+
+.info-table.dark-theme .badge-info {
+    background: linear-gradient(135deg, #3b9bff 0%, #2a7ad8 100%) !important;
+}
+
+.info-table.dark-theme .balance-highlight {
+    color: #2ecc71 !important;
+    font-weight: 700;
+}
+
+.info-table.dark-theme .text-muted {
+    color: #6c6c8a !important;
+}
+
+.info-table.dark-theme i {
+    color: #6b5bff !important;
+}
+
+.info-table.dark-theme .badge-secondary {
+    background: #2a2a3c !important;
+    color: #b0b0c0 !important;
+    border: 1px solid #3a3a4c;
+}
+</style>
+
+@php $adminCan=function($key,$default=false){ return \App\Models\AdminParmisiton::allowed(Auth::id(),$key,$default); }; @endphp
+<div class="body-content">
+	<div class="row">
+   <div class="col-sm-12 col-md-4 employee-cv">
+      <div class="card-header resume">
+         <div><img src="{{URL::to($user->profile)}}" style=" border-radius: 50%; " width="100px;" height="100px;" class="img-circle"></div>
+      </div>
+      <div class="card-content dark-theme">
+         <div class="card-content-member dark-theme">
+            <h4 class="m-t-0">Name : {{ $user->name }}</h4>
+            <h5> ID :{{$user->id}}</h5>
+            @if($adminCan('profile_balance'))<p class="m-0"><i class="fa fa-mobile" aria-hidden="true"></i>
+               {{number_format($user->balance)}}
+            </p> @endif
+         </div>
+         <div class="card-content-languages">
+            <div class="card-content-languages-group"></div>
+            <div class="card-content-languages-group">
+               <table class="table table-hover dark-theme" width="100%">
+                  <caption class="resumecaption">Agency Information</caption>
+                  <tbody>
+                     <tr>
+                        <th>Lavel</th>
+                        <td>{{$user->level}}</td>
+                     </tr>
+                      @if($adminCan('profile_sensitive_info'))
+                     <tr>
+                        <th>Email</th>
+                        <td> {{$user->email}}</td>
+                     </tr>
+                    
+                     @if($info)
+                      <tr>
+                        <th>Nid</th>
+                        <td> {{$info->nid}}</td>
+                     </tr>
+                     
+                     <tr>
+                        <th>Phone</th>
+                        <td> {{$info->phone}}</td>
+                     </tr>
+                     @endif
+                     
+                     <tr>
+                        <th>VIP</th>
+                        <td>
+                            @foreach($my_vips as $my_vip)
+                            <img  src="{{URL::to($my_vip->image)}}" style="width: 31px;height: 5%;">
+                            @endforeach
+                        </td>
+                     </tr>
+                     <tr>
+                        <th>Entry Frame</th>
+                        <td>
+                            @foreach($my_begs as $my_beg)
+                            <img  src="{{URL::to($my_beg->image)}}" style="width: 31px;height: 5%;">
+                            @endforeach
+                        </td>
+                     </tr>
+                      @endif
+                     <tr>
+                        <th>Entry </th>
+                        <td>{{$user->entry_level}}</td>
+                     </tr> 
+                     <tr>
+                        <th>Join Date </th>
+                        <td>{{$user->created_at}}</td>
+                     </tr> 
+                     
+                     @php
+                     $contry=App\Models\Country::find($user->country_id);
+                     $other_devices=App\Models\User::where('imei_number',$user->imei_number)->get();
+                     @endphp
+                     <tr>
+                        <th>Country</th>
+                        <td>@if($contry) {{$contry->name}} @endif</td>
+                     </tr>
+                     @if($adminCan('profile_other_ids'))
+                     <tr>
+                        <th>Other ID's </th>
+                        <td>@if($other_devices) 
+                        @foreach($other_devices as $other_device){{$other_device->id}}-{{$other_device->name}}, @endforeach @endif</td>
+                     </tr>
+                    @endif
+                  </tbody>
+               </table>
+            </div>
+						
+            	 @if($agency_info)
+            <div class="card-content-languages-group">
+               <table class="table table-hover" width="100%">
+                 
+                  <tbody>
+                     <tr>
+                        <th>Join Agency Name</th>
+                        <td> {{$agency_info->name}}</td>
+                     </tr>
+                     <tr>
+                        <th>Code</th>
+                        <td>{{$agency_info->code}}</td>
+                     </tr>
+                     
+                     <tr>
+                        <th>Agency Phone</th>
+                        <td>{{$agency_info->phone}}</td>
+                     </tr>
+
+                  </tbody>
+               </table>
+            </div>
+               @endif
+
+
+
+         </div>
+       
+      </div>
+   </div>
+   <div class="col-sm-12 col-md-8 employee-cv-info">
+      <div class="row">
+      	@if($user->is_coin_protal_active==1)
+      	@php
+      	 $ProtalToPTransfer=App\Models\ProtalToPTransfer::where('user_id',$user->id)->sum('amount');
+        $ProtalToPTransferRecived=App\Models\ProtalToPTransfer::where('portal_user_id',$user->id)->sum('amount');
+      	@endphp
+         <div class="col-sm-12 col-md-12 rating-block">
+            <table class="table table-hover" width="100%">
+               <caption class="resumecaption">Protal Active</caption>
+               <tbody>
+                  <tr>
+                     <th>Recharge</th>
+                     <td>{{number_format($protal_recharge)}}</td>
+                  </tr>
+                  <tr>
+                     <th>Transfer</th>
+                     <td> {{number_format($protal_transfer)}}</td>
+                  </tr>
+                  <tr>
+                     <th>Recall</th>
+                     <td>{{number_format($recall_protal_recharge)}}</td>
+                  </tr>
+                  <tr>
+                     <th>Protal Transfer Sand</th>
+                     <td>{{number_format($ProtalToPTransfer)}}</td>
+                  </tr>
+                  <tr>
+                     <th>Protal Transfer Recived</th>
+                     <td>{{number_format($ProtalToPTransferRecived)}}</td>
+                  </tr>
+                  <tr>
+                     <th>Balance</th>
+                     <td>{{number_format(($protal_recharge+$ProtalToPTransferRecived)-($protal_transfer+$recall_protal_recharge+$ProtalToPTransfer))}}</td>
+                  </tr>
+                  
+               </tbody>
+            </table>
+         </div>	
+         @endif		
+         <div class="col-sm-12 col-md-12 rating-block">
+         	 @if($agency)
+            <table class="table table-hover" width="100%">
+               <caption class="resumecaption">Agency Woner</caption>
+               <tbody>
+                  <tr>
+                     <th><b>Name: </b> </th>
+                     <td>{{$agency->name}}</td>
+                  </tr>
+                  <tr>
+                     <th>Code</th>
+                     <td>{{$agency->code}}</td>
+                  </tr>
+                  <tr>
+                     <th>Phone</th>
+                     <td> {{$agency->phone}}</td>
+                  </tr>
+                 
+                  
+               </tbody>
+            </table>
+            @endif
+         </div>
+         @php
+                          $date= Carbon\Carbon::now(); // Replace this with your desired date
+                            $user_id=$user->id;
+     
+                             // Current month
+                                    $start_date = $date->copy()->startOfMonth()->format('Y-m-d');
+                                    $end_date   = $date->copy()->endOfMonth()->format('Y-m-d');
+                                    
+                                    // Previous month
+                                    $previous_start_date = $date->copy()->subMonth()->startOfMonth()->format('Y-m-d');
+                                    $previous_end_date   = $date->copy()->subMonth()->endOfMonth()->format('Y-m-d');
+
+                             $type = DB::table('users')
+                            ->join('host_data', 'host_data.user_id', 'users.id')
+                            ->where('users.id', $user_id)
+                            ->select('host_data.hosting_type','host_data.id')
+                            ->first();
+
+                                if ($type) {
+                                  $dayTimeHistory = DB::table('day_times')
+                                ->where('user_id', $user_id)
+                               
+                                ->get();
+                                	$running_durations = DB::table('day_times')
+                    				->where('user_id', $user_id)
+                    				
+                    				->where('brd_type',$type->hosting_type)
+                    				->select('day_times')
+                    				->get();
+                    
+                                    function addDurations($duration1, $duration2) {
+                                    $time1 = explode(':', $duration1);
+                                    $time2 = explode(':', $duration2);
+                            
+                                    $hours = intval($time1[0]) + intval($time2[0]);
+                                    $minutes = intval($time1[1]) + intval($time2[1]);
+                                    $seconds = intval($time1[2]) + intval($time2[2]);
+                            
+                                    if ($seconds >= 60) {
+                                        $minutes += 1;
+                                        $seconds -= 60;
+                                    }
+                            
+                                    if ($minutes >= 60) {
+                                        $hours += 1;
+                                        $minutes -= 60;
+                                    }
+                            
+                                    return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+                                }
+                                
+                                $totalDuration = '00:00:00';
+                                foreach ($running_durations as $duration) {
+                                    // Check if $duration->day_times is a valid time format
+                                    
+                                        // Parse the duration as a DateTime object
+                                        $durationTime = new DateTime($duration->day_times);
+                                    
+                                        // Add the current duration to the total
+                                        $totalDuration = addDurations($totalDuration, $durationTime->format('H:i:s'));
+                                   
+                                }
+                           
+                    
+                    	   // $running_totalDurationFormatted = $running_totalDuration->format('H:i:s');
+                    
+                    	          
+                                    
+                    				$total_coin= DB::table('gifts')->join('users','users.id','gifts.sander_id')->where('gifts.reciever_id',$user_id)->whereDate('date', '>=', $start_date)
+                                    ->whereDate('date', '<=', $end_date)->select('gifts.date','gifts.value')->sum('gifts.value');
+                                    
+                                    $day_time_hostory = DB::table('day_times')
+                    				->where('user_id', $user_id)
+                    				
+                                    ->orderby('id','desc')
+                    				->get();
+                    				
+                    				
+               $day_time_data = DB::table('day_times')
+                    				->where('user_id', $user_id)
+                    			
+                                    ->orderby('id','desc')
+                    				->get();
+
+                                  $day_time_duration = DB::table('day_times')
+                                        ->where('user_id', $user_id)
+                                      
+                                        ->where('brd_type', $type->hosting_type)
+                                   
+                                        ->select('live_time', 'day_times')
+                                        ->get();
+                                    
+                                    $running_day_count = 0;
+                                    $current_date = null;
+                                    $total_duration = 0;
+                                    
+                                    foreach ($day_time_duration as $day_time_duration) {
+                                    
+                                    
+                                        $date = Carbon\Carbon::parse($day_time_duration->live_time)->toDateString();
+                                        $time = $day_time_duration->day_times;
+                                    
+                                        if ($current_date === null || $current_date !== $date) {
+                                            // Check if the previous day's total duration exceeds 01:01:00
+                                            if ($current_date !== null && $total_duration >= 3600) { // 3660 seconds = 1 hour 1 minute
+                                                $running_day_count++;
+                                            }
+                                    
+                                            $current_date = $date;
+                                            $total_duration = 0;
+                                        }
+                                    
+                                        $duration_parts = explode(':', $time);
+                                        $hours = intval($duration_parts[0]);
+                                        $minutes = intval($duration_parts[1]);
+                                        $seconds = intval($duration_parts[2]);
+                                        $total_duration += ($hours * 3600) + ($minutes * 60) + $seconds;
+                                    }
+                                    
+                                    // Check the total duration of the last date
+                                    if ($total_duration >= 3600) { // 3660 seconds = 1 hour 1 minute
+                                        $running_day_count++;
+                                    }
+                    				}
+                    				$day_time = "00:00:00";
+list($hours, $minutes, $seconds) = explode(':', $day_time);
+
+$total_seconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+	$total_withdraw= DB::table('withdraws')->where('host_id',$user_id)->whereDate('date', '>=', $start_date)
+                                    ->whereDate('date', '<=', $end_date)->sum('total');        
+         @endphp
+
+		
+         	 @if($type)
+         	
+         <div class="col-sm-12 col-md-12 rating-block">
+            <table class="table table-hover" width="100%">
+               <caption class="resumecaption">Live Data {{$total_seconds}}</caption>
+               <tbody>
+                  <tr>
+                     <th><b>Hosting Type </b> </th>
+                     <td> @if($type->hosting_type==2) Video @else Audio @endif <a href="{{URL::to('hosting_type_change/'.$type->id)}}" class="btn btn-sm btn-danger" ><span class="fa fa-check"></span>@if($type->hosting_type==2) Make Audio @else Make Video @endif</a></td>
+                  </tr>
+                  <tr>
+                  
+                     <th>Day</th>
+                     <td>{{$running_day_count}}</td>
+                  </tr>
+                  <tr>
+                     <th>Time</th>
+                     <td> {{$totalDuration}}</td>
+                  </tr>
+                  <tr>
+                     <th>Point Collect</th>
+                     <td> {{number_format($total_coin)}}</td>
+                  </tr>
+                  
+               </tbody>
+            </table>
+         </div>
+            @endif
+
+
+         <div class="col-sm-12 col-md-12 rating-block">
+            <table class="table table-hover" width="100%">
+               <caption class="resumecaption">Power Button</caption>
+               <tbody>
+                   
+                @if($adminCan('profile_power_buttons'))
+                 
+                   <tr>
+                     <th>Gone Top </th>
+                     <td>@if($user->prosss_top==1)
+						<a  type="button" class="btn btn-success" href="{{URL::to('/admin/top-position',$user->id)}}">Top Id Off</a>
+						@else
+						<a  type="button" class="btn btn-danger" href="{{URL::to('/admin/top-position',$user->id)}}">Top ID On</a>
+						@endif
+					</td>
+					</tr>
+				
+                    <tr>
+                     <th>Protal </th>
+                     <td> 
+                    @if($user->is_coin_protal_active!=1)
+					<a href="{{URL::to('active_protal/'.$user->id)}}" class="btn btn-sm btn-success" ><span class="fa fa-check"></span>Protal Active</a>
+					@else
+					<a href="{{URL::to('reject_protal/'.$user->id)}}" class="btn btn-sm btn-danger" ><span class="fa fa-close"></span>Protal Reject</a>
+					@endif
+                     </td>
+                  </tr>
+                  <tr>
+                     <th>Official </th>
+                     <td> 
+                    @if($user->is_official_id!=1)
+					<a href="{{URL::to('active_official_id/'.$user->id)}}" class="btn btn-sm btn-success" ><span class="fa fa-check"></span>Official ID Active</a>
+					@else
+					<a href="{{URL::to('reject_official_id/'.$user->id)}}" class="btn btn-sm btn-danger" ><span class="fa fa-close"></span>Official ID Reject</a>
+					
+					@endif
+                     </td>
+                  </tr>
+                   
+                  <tr>
+                     <th>Brd Off Power </th>
+                     <td>@if($user->brd_off_power!=1)
+						<a  type="button" class="btn btn-success" href="{{URL::to('/brd_off_power_on',$user->id)}}">Brd Off Power On</a>
+						@else
+						<a  type="button" class="btn btn-danger" href="{{URL::to('/brd_off_power_off',$user->id)}}">Brd Off Power off</a>
+						@endif
+					</td>
+                  </tr>
+                  <tr>
+                     <th>SceenShort ID</th>
+                     <td>
+                     	@if($user->sceen_short_power!=1)
+						<a  type="button" class="btn btn-success" href="{{URL::to('/sceenshort_on',$user->id)}}">Screen Shot On</a>
+						@else
+						<a  type="button" class="btn btn-danger" href="{{URL::to('/sceenshort_off',$user->id)}}">Screen Shot off</a>
+						@endif
+					</td>
+                  </tr> 
+                  <tr>
+                     <th>Kick ID</th>
+                     <td>
+                     	@if($user->kick_power!=1)
+						<a  type="button" class="btn btn-info" href="{{URL::to('/kick_power_on',$user->id)}}">Kick Power On</a>
+						@else
+						<a  type="button" class="btn btn-danger" href="{{URL::to('/kick_power_off',$user->id)}}">Kick Power off</a>
+						@endif
+					</td>
+                  </tr> 
+                  <tr>
+                     <th>Comment Mute ID</th>
+                     <td>
+                     	@if($user->kick_power!=1)
+						<a  type="button" class="btn btn-info" href="{{URL::to('/comment_mute_power_on',$user->id)}}">Comment Mute Power On</a>
+						@else
+						<a  type="button" class="btn btn-danger" href="{{URL::to('/comment_mute_power_off',$user->id)}}">Comment Mute Power off</a>
+						@endif
+					</td>
+                  </tr> 
+                  <tr>
+                     <th>Invisibal ID</th>
+                     <td>
+                     	@if($user->is_invisible!=1)
+						<a  type="button" class="btn btn-success" href="{{URL::to('/invisibal_on',$user->id)}}">Invisibal On</a>
+						@else
+						<a  type="button" class="btn btn-danger" href="{{URL::to('/invisibal_off',$user->id)}}">Invisibal off</a>
+						@endif
+					</td>
+                  </tr>
+                
+               
+                  @endif
+                  	  <tr>
+                     <th>Hosting ID</th>
+                     <td> 
+                     	 @if($user->is_host_id!=1)
+					<a href="{{URL::to('active_host/'.$user->id)}}" class="btn btn-sm btn-success" ><span class="fa fa-check"></span>Host Active</a>
+					@else
+					<a href="{{URL::to('reject_host/'.$user->id)}}" class="btn btn-sm btn-danger" ><span class="fa fa-close"></span>Host Reject</a>
+					@endif
+                     </td>
+                  </tr>
+                  
+                
+                 @if($adminCan('profile_vip_frames_edit'))
+                    <tr>
+                     <th>Vip Actived</th>
+                     <td>
+                      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;">
+                       @for($vipNo = 1; $vipNo <= 7; $vipNo++)
+                        @php
+                         $vipRow = $my_vips->where('vip_no', $vipNo)->first();
+                         $vipActive = $vipRow && (int) $vipRow->is_active === 1 && (int) $user->is_vip === $vipNo;
+                        @endphp
+                        <div style="border:1px solid #d9edf7;border-radius:6px;padding:6px;min-width:112px;background:#f9fcff;">
+                         <div style="font-weight:600;color:#222;">VIP {{ $vipNo }}</div>
+                         <span class="label {{ $vipActive ? 'label-success' : 'label-default' }}">{{ $vipActive ? 'Active' : 'Inactive' }}</span>
+                         <a href="{{ URL::to('active_vip_manual', ['id' => $user->id, 'vip' => $vipNo]) }}" class="btn btn-xs {{ $vipActive ? 'btn-danger' : 'btn-success' }}" style="margin-top:5px;display:block;">
+                          <span class="fa {{ $vipActive ? 'fa-close' : 'fa-check' }}"></span> {{ $vipActive ? 'Deactivate' : 'Activate' }}
+                         </a>
+                        </div>
+                       @endfor
+                      </div>
+                     </td>
+                  </tr>
+
+                  <tr>
+                     <th>Entry Frame</th>
+                     <td>
+                      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;">
+                       @foreach($entry_frame_list as $entry_frame)
+                        @php
+                         $ownedEntryFrame = $my_begs->where('store_id', $entry_frame->id)->first();
+                         $entryFrameActive = $ownedEntryFrame && (int) $ownedEntryFrame->status === 1;
+                        @endphp
+                        <div style="border:1px solid #d9edf7;border-radius:6px;padding:6px;min-width:150px;background:#f9fcff;">
+                         <img src="{{URL::to($entry_frame->image)}}" style="width:31px;height:31px;object-fit:contain;margin-right:5px;">
+                         <span style="font-weight:600;color:#222;">{{ $entry_frame->name ?? ('Frame '.$entry_frame->id) }}</span>
+                         <div style="margin:4px 0;">
+                          <span class="label {{ $entryFrameActive ? 'label-success' : 'label-default' }}">{{ $entryFrameActive ? 'Active' : 'Inactive' }}</span>
+                         </div>
+                         <a href="{{ URL::to('active_effect_manual',['user_id' => $user->id, 'id' => $entry_frame->id]) }}" type="button" class="btn btn-xs {{ $entryFrameActive ? 'btn-danger' : 'btn-success' }}">
+                          <span class="fa {{ $entryFrameActive ? 'fa-close' : 'fa-check' }}"></span> {{ $entryFrameActive ? 'Deactivate' : 'Activate' }}
+                         </a>
+                        </div>
+                       @endforeach
+                      </div>
+                     </td>
+                  </tr>
+                  <tr>
+                     <th>Special Frame</th>
+                     <td>
+                      @php
+                       $specialFrames = [
+                        ['label' => 'Admin Frame', 'flag' => 'is_admin_frame', 'active' => 'active_special_admin_frame_manual', 'inactive' => 'inactive_special_admin_frame_manual', 'class' => 'warning'],
+                        ['label' => 'Official Frame', 'flag' => 'is_official_frame', 'active' => 'active_special_official_frame_manual', 'inactive' => 'inactive_special_official_frame_manual', 'class' => 'danger'],
+                        ['label' => 'Country Admin Frame', 'flag' => 'is_country_admin_frame', 'active' => 'active_special_country_admin_frame_manual', 'inactive' => 'inactive_special_country_admin_frame_manual', 'class' => 'primary'],
+                        ['label' => 'Reseller Frame', 'flag' => 'is_reseller_frame', 'active' => 'active_special_reseller_frame_manual', 'inactive' => 'inactive_special_reseller_frame_manual', 'class' => 'info'],
+                       ];
+                      @endphp
+                      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;">
+                       @foreach($specialFrames as $specialFrame)
+                        @php $specialActive = (int) $user->{$specialFrame['flag']} === 1; @endphp
+                        <div style="border:1px solid #d9edf7;border-radius:6px;padding:6px;min-width:160px;background:#f9fcff;">
+                         <div style="font-weight:600;color:#222;">{{ $specialFrame['label'] }}</div>
+                         <span class="label {{ $specialActive ? 'label-success' : 'label-default' }}">{{ $specialActive ? 'Active' : 'Inactive' }}</span>
+                         <a href="{{ URL::to(($specialActive ? $specialFrame['inactive'] : $specialFrame['active']).'/'.$user->id) }}" style="margin-top:5px;display:block;" type="button" class="btn btn-xs {{ $specialActive ? 'btn-danger' : 'btn-'.$specialFrame['class'] }}">
+                          <span class="fa {{ $specialActive ? 'fa-close' : 'fa-check' }}"></span> {{ $specialActive ? 'Deactivate' : 'Activate' }}
+                         </a>
+                        </div>
+                       @endforeach
+                      </div>
+                      <div style="font-size:10px;color:#777;margin-top:6px;">Powerd by JAMBOai</div>
+                     </td>
+                  </tr>
+                  <tr>
+                     <th>Profile Edit</th>
+                     <td> 
+                     	 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Edit Profile</button>
+                     </td>
+                  </tr>
+                 @endif
+                 @if($adminCan('profile_password_daytime'))
+                  <tr>
+                     <th>Change Password(123456)</th>
+                     <td> 
+                      <a href="{{URL::to('password_change_user/'.$user->id)}}" class="btn btn-sm btn-danger" ><span class="fa fa-close"></span>Change Password</a>
+                     </td>
+                  </tr>
+                  <tr>
+                     <th>Add Day Time</th>
+                     <td> 
+                       <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#add_day_time">Add Day Time</button>
+                     </td>
+                  </tr> 
+                   @endif
+                   
+                  
+               </tbody>
+            </table>
+         </div>
+        
+      </div>
+   </div>
+</div>
+	
+	
+		<div class="row">
+		    <!-- Modal -->
+			<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="exampleModalLabel">Edit Profile</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body">
+			         <form action="{{URL::to('user_profile_update',$user->id)}}" enctype="multipart/form-data" method="post">
+			             @csrf
+			       
+			          
+			          <div class="form-group">
+			            <label for="recipient-name" class="col-form-label">Name:</label>
+			            <input type="text" name="name" value="{{ $user->name }}" class="form-control" id="recipient-name" required="">
+			          </div>
+			          <div class="form-group">
+			            <label for="recipient-name" class="col-form-label">Profle:</label>
+			            <input type="file" name="profile" class="form-control" id="recipient-name">
+			            <input type="hidden" value="{{$user->profile}}"  name="old_profile" class="form-control" id="recipient-name">
+			          </div>
+			           <div class="form-group">
+			            <label for="recipient-name" class="col-form-label">Tag:</label>
+			            <input type="text" name="teg" class="form-control" id="recipient-name">
+			          
+			          </div> 
+			          <div class="form-group">
+			            <label for="recipient-name" class="col-form-label">Top Value:</label>
+			            <input type="number" name="top_value" value="{{$user->top_value}}" class="form-control" id="recipient-name">
+			          
+			          </div>
+			        
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			        <button type="submit" class="btn btn-primary">Save changes</button>
+			      </div>
+			      </form>
+			    </div>
+			  </div>
+			</div>
+	
+		<div class="modal fade" id="add_day_time" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Add Day Time</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+               <form action="{{URL::to('user_day_time_add',$user->id)}}" enctype="multipart/form-data" method="post">
+                   @csrf
+             
+                
+                <div class="form-group">
+                  <label for="recipient-name" class="col-form-label">Date:</label>
+                  <input type="date" name="date" value="{{ date('Y-m-d') }}" class="form-control" id="recipient-name" required="">
+                </div>
+                
+                 <div class="form-group">
+                  <label for="recipient-name" class="col-form-label">Time:</label>
+                  <input type="text" name="time" value="01:01:03" class="form-control" id="recipient-name" required="">
+                
+                </div>
+               <div class="form-group">
+                  <label for="recipient-name" class="col-form-label">brd Type:</label>
+                 <select name="brd_type" class="form-control" required="">
+                   <option value="2">Video</option>
+                   <option value="1">Audio</option>
+                 </select>
+                
+                </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+            </form>
+          </div>
+        </div>
+      </div>
+			
+		
+	</div>
+</div>
+	@if($info)
+            <div class="body-content">
+			 <div class="row">
+		<div class="col-xl-4 col-sm-4 py-2">
+               	<div class="card ">
+			 		<div class="card-body">
+			 		
+                    <img style=" width: 80%; " src="{{URL::to($info->image)}}">
+                </div>
+            </div>
+		</div>
+		<div class="col-xl-4 col-sm-4 py-2">
+               	<div class="card ">
+			 		<div class="card-body">
+                    <img style=" width: 80%; " src="{{URL::to($info->photo_id)}}">
+                </div>
+            </div>
+		</div>
+		<div class="col-xl-4 col-sm-4 py-2">
+               	<div class="card ">
+			 		<div class="card-body">
+                    <img style=" width: 80%; " src="{{URL::to($info->selfie)}}">
+                </div>
+            </div>
+		</div>
+	</div>
+</div>
+@endif
+@if($user->is_coin_protal_active==1)
+<div class="body-content">
+	
+	<div class="row">
+
+		<div class="col-xl-12 col-sm-12 py-2">
+			<div class="card mb-4">
+				<div class="card-header">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<h6 class="fs-17 font-weight-600 mb-0">Protal History</h6>
+						</div>
+						
+					</div>
+				</div>
+				<div class="card-body">
+					
+					<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+						
+						<li class="nav-item">
+							<a class="nav-link active show" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="true">Recharge </a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Transfer</a>
+						</li>
+						
+					</ul>
+					<div class="tab-content" id="pills-tabContent">
+						
+						<div class="tab-pane fade active show" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+						<table class="table display table-bordered table-striped table-hover basic">
+			                    <thead>
+			                      <tr>
+			                       <th>Sl</th>
+			                       <th>ID</th>
+			                       <th>Date</th>
+			                       <th>Approved By</th>
+			                       <th>Amount</th>
+			                       <th>Action</th>
+			                   </tr>
+			               </thead>
+			                 <tbody>
+			                    @php
+			                    $i=0;
+			                    $total_potal_history=0;
+			                    @endphp
+			                    @foreach($protal_recharge_details as $protal_recharge_detail)
+			                    @php
+			                    $approved_by=App\Models\User::find($protal_recharge_detail->recharge_by);
+			                    @endphp
+			                    <tr>
+			                      <td>{{ ++$i }}</td>
+			                      <td>{{$protal_recharge_detail->trxid}}  </td>
+			              
+			                      <td>{{$protal_recharge_detail->date}}  </td>
+			                      <td>@if($approved_by){{$approved_by->name}} @else  @endif </td>
+			                      <td>{{$protal_recharge_detail->amount}}  </td>
+			                      <td>
+			                          <a href="#" class="btn btn-sm btn-danger" ><span class="fa fa-times"></span> Reject</a>
+			                      </td>
+			                      
+			                  </tr>
+			                  @php
+			                  $total_potal_history+=$protal_recharge_detail->amount;
+			                  @endphp
+			                  @endforeach
+			              </tbody>
+			              <tfoot>
+			                <tr>
+			                  <th>Sl</th>
+			                  <th>ID</th>
+			                  <th>Date</th>
+			                  <th>Approved By</th>
+			                  <th>{{$total_potal_history}}</th>
+			                  <th>Action</th>
+			               </tr>
+			           </tfoot>
+			       </table>
+						</div>
+						<div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+							<table class="table display table-bordered table-striped table-hover basic">
+			                    <thead>
+			                      <tr>
+			                       <th>Sl</th>
+			                       <th>ID</th>
+			                       <th>Date</th>
+			                       <th>Recived By</th>
+			                       <th>Amount</th>
+			                       <th>Action</th>
+			                   </tr>
+			               </thead>
+			                 <tbody>
+			                    @php
+			                    $i=0;
+			                    $transer=0;
+			                    @endphp
+			                    @foreach($protal_transfer_details as $protal_transfer_detail)
+			                    
+			                    <tr>
+			                      <td>{{ ++$i }}</td>
+			                      <td>{{$protal_transfer_detail->trxid}}  </td>
+			              
+			                      <td>{{$protal_transfer_detail->date}}  </td>
+			                      <td>{{$protal_transfer_detail->user_id}}  </td>
+			                      
+			                      <td>{{$protal_transfer_detail->amount}}  </td>
+			                      <td>
+			                          <a href="#" class="btn btn-sm btn-danger" ><span class="fa fa-times"></span> Reject</a>
+			                      </td>
+			                      
+			                  </tr>
+			                  @php
+			                  $transer+=$protal_transfer_detail->amount;
+			                  @endphp
+			                  @endforeach
+			              </tbody>
+			              <tfoot>
+			                <tr>
+			                  <th>Sl</th>
+			                  <th>ID</th>
+			                  <th>Date</th>
+			                  <th>Recived By</th>
+			                  <th>{{$transer}}</th>
+			                  <th>Action</th>
+			               </tr>
+			           </tfoot>
+			       </table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+@endif
+@if($agency)
+@php
+$host_lists=DB::table('host_data')->join('users','users.id','host_data.user_id')->where('agency_code',$agency->code)->get();
+@endphp
+<div class="body-content">
+	
+	<div class="row">
+
+		<div class="col-xl-12 col-sm-12 py-2">
+			<div class="card mb-4">
+				<div class="card-header">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<h6 class="fs-17 font-weight-600 mb-0">Host Data</h6>
+						</div>
+						
+					</div>
+				</div>
+				<div class="card-body">
+					
+					 <table class="table display table-bordered table-striped table-hover basic">
+			                    <thead>
+			                      <tr>
+			                       <th>Sl</th>
+			                       <th>ID</th>
+			                       <th>Name</th>
+			                       <th>Balance</th>
+			                       <th>Day Time</th>
+			                       <th>Phone Number</th>
+			                       <th>Action</th>
+			                   </tr>
+			               </thead>
+			                 <tbody>
+			                    @php
+			                    $i=0;
+			                    @endphp
+			                    @foreach($host_lists as $host_list)
+			                     @php
+		                         $date = Carbon\Carbon::now(); // Replace this with your desired date
+                            $user_id=$host_list->id;
+               // Current month
+                            $host_start_date = $date->copy()->startOfMonth()->format('Y-m-d');
+                            $host_end_date   = $date->copy()->endOfMonth()->format('Y-m-d');
+
+                             $host_type = DB::table('users')
+                            ->join('host_data', 'host_data.user_id', 'users.id')
+                            ->where('users.id', $user_id)
+                            ->select('host_data.hosting_type','host_data.id')
+                            ->first();
+
+                                if ($host_type) {
+                                	$durations = DB::table('day_times')
+                    				->where('user_id', $user_id)
+                    				->where('live_time', '>=', $host_start_date)
+                                    ->where('live_time', '<=', $host_end_date)
+                    				->where('brd_type',$host_type->hosting_type)
+                    			
+                    				->select('day_times')
+                    				->get();
+                    
+                    
+        
+                    	        $totalDuration = Carbon\Carbon::createFromTime(0, 0, 0);
+                    
+                    	        foreach ($durations as $duration) {
+                    				$parts = explode(':', $duration->day_times);
+                    
+                    				$hours = intval($parts[0]);
+                    				$minutes = intval($parts[1]);
+                    				$seconds = intval($parts[2]);
+                    
+                    				$interval = new DateInterval("PT{$hours}H{$minutes}M{$seconds}S");
+                    				$totalDuration->add($interval);
+                    	        }
+                    
+                    	    $totalDurationFormatted = $totalDuration->format('H:i:s');
+                    
+                    	          
+                                    
+                    				$total_coin= DB::table('gifts')->join('users','users.id','gifts.sander_id')->where('gifts.reciever_id',$user_id)->where('date', '>=', $host_start_date)
+                                    ->where('date', '<=', $host_end_date)->select('users.profile','users.name','gifts.value')->sum('value');
+                                    
+                                    $day_time_hostory = DB::table('day_times')
+                    				->where('user_id', $user_id)
+                    				->where('live_time', '>=', $host_start_date)
+                                    ->where('live_time', '<=', $host_end_date)
+                                    ->orderby('id','desc')
+                    				->get();
+                    				
+                    				
+               
+
+                                  $day_time_duration = DB::table('day_times')
+                                        ->where('user_id', $user_id)
+                                        ->where('live_time', '>=', $host_start_date)
+                                        ->where('live_time', '<=', $host_end_date)
+                                        ->where('brd_type', $host_type->hosting_type)
+                                       
+                                        ->select('live_time', 'day_times')
+                                        ->get();
+                                    
+                                    $day_count = 0;
+                                    $current_date = null;
+                                    $total_duration = 0;
+                                    
+                                    foreach ($day_time_duration as $day_time_duration) {
+                                        $date = Carbon\Carbon::parse($day_time_duration->live_time)->toDateString();
+                                        $time = $day_time_duration->day_times;
+                                    
+                                        if ($current_date === null || $current_date !== $date) {
+                                            // Check if the previous day's total duration exceeds 01:01:00
+                                            if ($current_date !== null && $total_duration >= 3660) { // 3660 seconds = 1 hour 1 minute
+                                                $day_count++;
+                                            }
+                                    
+                                            $current_date = $date;
+                                            $total_duration = 0;
+                                        }
+                                    
+                                        $duration_parts = explode(':', $time);
+                                        $hours = intval($duration_parts[0]);
+                                        $minutes = intval($duration_parts[1]);
+                                        $seconds = intval($duration_parts[2]);
+                                        $total_duration += ($hours * 3600) + ($minutes * 60) + $seconds;
+                                    }
+                                    
+                                    // Check the total duration of the last date
+                                    if ($total_duration >= 3660) { // 3660 seconds = 1 hour 1 minute
+                                        $day_count++;
+                                    }
+                    				}
+			                    @endphp
+			                
+			                    <tr>
+			                      <td>{{ ++$i }}</td>
+			                      <td>{{$host_list->id}}  </td>
+			              
+			                      <td>{{$host_list->name}}  </td>
+			                      <td>{{$host_list->balance}}  </td>
+			                      <td>Day : {{$day_count}} <br>Time : {{$totalDurationFormatted}} </td>
+			                      <td>{{$host_list->phone}}  </td>
+			                      <td>
+			                          <a href="#" class="btn btn-sm btn-success" ><span class="fa fa-eye"></span> View</a>
+			                          <a href="#" class="btn btn-sm btn-danger" ><span class="fa fa-times"></span> Inactive</a>
+			                      </td>
+			                      
+			                  </tr>
+			                  @endforeach
+			              </tbody>
+			              <tfoot>
+			                <tr>
+			                 <th>Sl</th>
+			                       <th>ID</th>
+			                       <th>Name</th>
+			                       <th>Balance</th>
+			                       <th>Phone Number</th>
+			                       <th>Action</th>
+			               </tr>
+			           </tfoot>
+			       </table>
+					
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+@endif
+
+@if($game_history)
+
+<div class="body-content">
+	
+	<div class="row">
+
+		<div class="col-xl-12 col-sm-12 py-2">
+			<div class="card mb-4">
+				<div class="card-header">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<h6 class="fs-17 font-weight-600 mb-0">Game History</h6>
+						</div>
+						
+					</div>
+				</div>
+				<div class="card-body">
+					
+					 <table class="table display table-bordered table-striped table-hover basic">
+			                    <thead>
+			                      <tr>
+			                       <th>Sl</th>
+			                       <th>Time</th>
+			                       <th>Tray ID</th>
+			                       <th>Game Name</th>
+			                       <th>Pots</th>
+			                       <th>Amount</th>
+			                       <th>Status</th>
+			                       <th>Add Balance</th>
+			                   </tr>
+			               </thead>
+			                 <tbody>
+			                    @php
+			                    $i=0;
+			                    @endphp
+			                    @foreach($game_history as $game)
+			                   
+			                    <tr>
+			                      <td>{{ ++$i }}</td>
+			                      <td>{{$game->created_at}}  </td>
+			                      <td>{{$game->tray_id}}  </td>
+			                        @if($game->game_type=='firust')
+			                      <td>fruits  </td>
+			                      <td>@if($game->pot_no=='saven_win') <img src="{{asset('public/game/new/image')}}/lemon.png" style=" width: 48px; " alt="Saven Winner"> @elseif($game->pot_no=='watermelon')  <img  style=" width: 48px; "src="{{asset('public/game/new/image')}}/watermelon.png" alt="Saven Winner"> @else <img  style=" width: 48px; "src="{{asset('public/game/new/image')}}/apple.png" alt="Saven Winner"> @endif  </td>
+			                     @elseif($game->game_type=='Teen_patti')
+			                      <td>Teen Patti  </td>
+			                      <td>@if($game->pot_no=='saven_win') <img src="{{asset('public/game/teenpatti/')}}/image/ChairBlue.png" style=" width: 48px; " alt="Saven Winner"> @elseif($game->pot_no=='watermelon')  <img  style=" width: 48px; "src="{{asset('public/game/teenpatti/')}}/image/ChairGreen.png" alt="Saven Winner"> @else <img  style=" width: 48px; "src="{{asset('public/game/teenpatti/')}}/image/ChairRed.png" alt="Saven Winner"> @endif  </td>
+			                      @elseif($game->game_type=='greedy')
+			                      <td>Greedy  </td>
+			                      <td> @if($game->pot_no == "grapes")
+				                  <img src="{{asset('public/game/grady/')}}/image/grapes.jpeg" class="trendcoing" style=" width: 48px; ">;
+				               @elseif($game->pot_no == "banana")
+				                  <img src="{{asset('public/game/grady/')}}/image/banana.jpeg" class="trendcoing" style=" width: 48px; ">;
+				               @elseif($game->pot_no == "apple")
+				                  <img src="{{asset('public/game/grady/')}}/image/apple.jpeg" class="trendcoing" style=" width: 48px; ">;
+				               @elseif($game->pot_no == "lemon")
+				                  <img src="{{asset('public/game/grady/')}}/image/lemon.jpeg" class="trendcoing" style=" width: 48px; ">;
+				               @elseif($game->pot_no == "lion")
+				                  <img src="{{asset('public/game/grady/')}}/image/lion.jpeg" class="trendcoing" style=" width: 48px; ">;
+				               @elseif($game->pot_no == "cat")
+				                  <img src="{{asset('public/game/grady/')}}/image/cat.jpeg" class="trendcoing" style=" width: 48px; ">;
+				               @elseif($game->pot_no == "tiger")
+				                  <img src="{{asset('public/game/grady/')}}/image/tiger.jpeg" class="trendcoing" style=" width: 48px; ">;
+				               @elseif($game->pot_no == "horse")
+				                  <img src="{{asset('public/game/grady/')}}/image/horse.jpeg" class="trendcoing" style=" width: 48px; ">;
+				               @elseif($game->pot_no == "vegetable")
+				                  <img src="{{asset('public/game/grady/')}}/image/fruits.png" class="trendcoing" style=" width: 48px; ">;
+				               @elseif($game->pot_no == "animals")
+				                  <img src="{{asset('public/game/grady/')}}/image/dragons.png" class="trendcoing" style=" width: 48px; ">;
+				               @else
+				               @endif </td>
+			                      @else
+			                       <td>Five Star </td>
+			                      <td>@if($game->pot_no=='saven_win') <img src="{{asset('public/game/fivestar/image')}}/lemon.png" style=" width: 48px; " alt="Saven Winner"> @elseif($game->pot_no=='watermelon')  <img  style=" width: 48px; "src="{{asset('public/game/fivestar/image')}}/watermelon.png" alt="Saven Winner"> @else <img  style=" width: 48px; "src="{{asset('public/game/fivestar/image')}}/apple.png" alt="Saven Winner"> @endif  </td>
+			                    
+			                      @endif
+			                      <td>{{$game->amount}}  </td>
+			                      <td>@if($game->status==0) Hold @elseif($game->status==1) Win @else Loss @endif </td>
+			                      <td>{{$game->serve_balance}} </td>
+			                  </tr>
+			                  @endforeach
+			              </tbody>
+			              <tfoot>
+			                <tr>
+			                       <th>Sl</th>
+			                       <th>Tray ID</th>
+			                       <th>Game Name</th>
+			                       <th>Pots</th>
+			                       <th>Amount</th>
+			                       <th>Status</th>
+			               </tr>
+			           </tfoot>
+			       </table>
+					
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+@endif
+
+@if($type)
+
+<div class="body-content">
+	
+	<div class="row">
+
+		<div class="col-xl-12 col-sm-12 py-2">
+			<div class="card mb-4">
+				<div class="card-header">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<h6 class="fs-17 font-weight-600 mb-0">Day Time History</h6>
+						</div>
+						
+					</div>
+				</div>
+				<div class="card-body">
+					
+					 <table class="table display table-bordered table-striped table-hover basic">
+			                    <thead>
+			                      <tr>
+			                       <th>Sl</th>
+			                       <th>Channel Name</th>
+			                       <th>Time</th>
+			                       <th>Live Date</th>
+			                       <th>Type</th>
+			                   </tr>
+			               </thead>
+			                 <tbody>
+			                    @php
+			                    $i=0;
+			                    @endphp
+			                    @foreach($day_time_data as $day_time_h)
+			                   
+			                    <tr>
+			                      <td>{{ ++$i }}</td>
+			                      <td>{{$day_time_h->channelName}}  </td>
+			              
+			                      <td>{{$day_time_h->day_times}}  </td>
+			                      <td>{{$day_time_h->created_at}}  </td>
+			                      <td>@if($day_time_h->brd_type==2) Video @else Audio @endif  </td>
+			                  </tr>
+			                  @endforeach
+			              </tbody>
+			              <tfoot>
+			                <tr>
+			                 <th>Sl</th>
+			                       <th>Channel Name</th>
+			                       <th>Time</th>
+			                       <th>Live Date</th>
+			                       <th>Type</th>
+			               </tr>
+			           </tfoot>
+			       </table>
+					
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+@endif
+
+
+@if($type)
+
+<div class="body-content">
+	
+	<div class="row">
+
+		<div class="col-xl-12 col-sm-12 py-2">
+			<div class="card mb-4">
+				<div class="card-header">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<h6 class="fs-17 font-weight-600 mb-0">Day Time Last RoundHistory</h6>
+						</div>
+						
+					</div>
+				</div>
+				<div class="card-body">
+					
+					 <table class="table display table-bordered table-striped table-hover basic">
+			                    <thead>
+			                      <tr>
+			                       <th>Sl</th>
+			                       <th>Channel Name</th>
+			                       <th>Time</th>
+			                       <th>Live Date</th>
+			                       <th>Type</th>
+			                   </tr>
+			               </thead>
+			                 <tbody>
+			                    @php
+			                    $i=0;
+			                    @endphp
+			                    @foreach($dayTimeHistory as $dayTimeHistory)
+			                   
+			                    <tr>
+			                      <td>{{ ++$i }}</td>
+			                      <td>{{$dayTimeHistory->channelName}}  </td>
+			              
+			                      <td>{{$dayTimeHistory->day_times}}  </td>
+			                      <td>{{$dayTimeHistory->live_time}}  </td>
+			                      <td>@if($dayTimeHistory->brd_type==2) Video @else Audio @endif  </td>
+			                  </tr>
+			                  @endforeach
+			              </tbody>
+			              <tfoot>
+			                <tr>
+			                 <th>Sl</th>
+			                       <th>Channel Name</th>
+			                       <th>Time</th>
+			                       <th>Live Date</th>
+			                       <th>Type</th>
+			               </tr>
+			           </tfoot>
+			       </table>
+					
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+@endif
+@if($recharge_historys)
+
+<div class="body-content">
+	
+	<div class="row">
+
+		<div class="col-xl-12 col-sm-12 py-2">
+			<div class="card mb-4">
+				<div class="card-header">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<h6 class="fs-17 font-weight-600 mb-0">Recharge History</h6>
+						</div>
+						
+					</div>
+				</div>
+				<div class="card-body">
+					
+					<table class="table display table-bordered table-striped table-hover basic">
+			                    <thead>
+			                      <tr>
+			                       <th>Sl</th>
+			                       <th>Protal ID</th>
+			                       <th>TxID</th>
+			                       <th>Amount</th>
+			                       <th>Date</th>
+			                   </tr>
+			               </thead>
+			                 <tbody>
+			                    @php
+			                    $i=0;
+			                    $recharge_history_total=0;
+			                    @endphp
+			                    @foreach($recharge_historys as $recharge_history)
+			                    <tr>
+			                      <td>{{ ++$i }}</td>
+			                      <td>{{$recharge_history->portal_user_id}}  </td>
+			                      <td>{{$recharge_history->trxid}}  </td>
+			                      <td>{{$recharge_history->amount}}  </td>
+			                      <td>{{$recharge_history->created_at}}  </td>
+			                      
+			                  </tr>
+			                  @php
+			                  $recharge_history_total+=$recharge_history->amount;
+			                  @endphp
+			                  @endforeach
+			              </tbody>
+			              <tfoot>
+			                <tr>
+			                 <th>Sl</th>
+			                 <th>Reciver ID</th>
+			                 <th>Gift Name</th>
+			                 <th>{{$recharge_history_total}}</th>
+			                 <th>Time</th> 
+			               </tr>
+			           </tfoot>
+			       </table>
+					
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+@endif
+@if($sanding_historys)
+
+<div class="body-content">
+	
+	<div class="row">
+
+		<div class="col-xl-12 col-sm-12 py-2">
+			<div class="card mb-4">
+				<div class="card-header">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<h6 class="fs-17 font-weight-600 mb-0">Gift Sanding History</h6>
+						</div>
+						
+					</div>
+				</div>
+				<div class="card-body">
+					
+					<table class="table display table-bordered table-striped table-hover basic">
+			                    <thead>
+			                      <tr>
+			                       <th>Sl</th>
+			                       <th>Reciver ID</th>
+			                       <th>Gift Name</th>
+			                       <th>Gift Amount</th>
+			                       <th>Time</th>
+			                       <th>ReCall</th>
+			                   </tr>
+			               </thead>
+			                 <tbody>
+			                    @php
+			                    $i=0;
+			                    $sanding_history_total=0;
+			                    @endphp
+			                    @foreach($sanding_historys as $sanding_history)
+			                    <tr>
+			                      <td>{{ ++$i }}</td>
+			                      <td>{{$sanding_history->reciever_id}}  </td>
+			                      <td>{{$sanding_history->name}}  </td>
+			                      <td>{{$sanding_history->value}}  </td>
+			                      <td>{{$sanding_history->date}}  </td>
+			                      <td> @if(Auth::id()=='556014') <a href="{{URL::to('gift_recall',$sanding_history->id)}}" class="btn btn-sm btn-danger" ><span class="fa fa-times"></span> Recall </a> @endif </td>
+			                      
+			                  </tr>
+			                  @php
+			                  $sanding_history_total+=$sanding_history->value;
+			                  @endphp
+			                  @endforeach
+			              </tbody>
+			              <tfoot>
+			                <tr>
+			                 <th>Sl</th>
+			                 <th>Reciver ID</th>
+			                 <th>Gift Name</th>
+			                 <th>{{$sanding_history_total}}</th>
+			                 <th>Time</th> 
+			                 <th>ReCall</th> 
+			               </tr>
+			           </tfoot>
+			       </table>
+					
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+@endif
+@if($reciving_historys)
+
+<div class="body-content">
+	
+	<div class="row">
+
+		<div class="col-xl-12 col-sm-12 py-2">
+			<div class="card mb-4">
+				<div class="card-header">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<h6 class="fs-17 font-weight-600 mb-0">Gift Recived History</h6>
+						</div>
+						
+					</div>
+				</div>
+				<div class="card-body">
+					
+					 <table class="table display table-bordered table-striped table-hover basic">
+			                    <thead>
+			                      <tr>
+			                       <th>Sl</th>
+			                       <th>Reciver ID</th>
+			                       <th>Gift Name</th>
+			                       <th>Gift Amount</th>
+			                       <th>Time</th>
+			                       <th>ReCall</th>
+			                   </tr>
+			               </thead>
+			                 <tbody>
+			                    @php
+			                    $i=0;
+			                    $reciving_history_total=0;
+			                    @endphp
+			                    @foreach($reciving_historys as $reciving_history)
+			                    <tr>
+			                      <td>{{ ++$i }}</td>
+			                      <td>{{$reciving_history->sander_id}}  </td>
+			                      <td>{{$reciving_history->name}}  </td>
+			                      <td>{{$reciving_history->value}}  </td>
+			                      <td>{{$reciving_history->date}}  </td>
+			                     <td>    </td>
+			                      
+			                  </tr>
+			                   @php
+			                  $reciving_history_total+=$reciving_history->value;
+			                  @endphp
+			                  @endforeach
+			              </tbody>
+			              <tfoot>
+			                <tr>
+			                 <th>Sl</th>
+			                 <th>Reciver ID</th>
+			                 <th>Gift Name</th>
+			                 <th>{{$reciving_history_total}}</th>
+			                 <th>Time</th> 
+			                 <th>ReCall</th> 
+			               </tr>
+			           </tfoot>
+			       </table>
+					
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+@endif
+@endsection

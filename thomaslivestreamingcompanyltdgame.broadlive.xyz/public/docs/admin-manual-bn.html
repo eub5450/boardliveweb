@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Final Admin Manual - Bangla</title>
+    <style>
+        :root{
+            --bg:#07111f;
+            --bg2:#0d172a;
+            --panel:#101c31;
+            --panel2:#15233c;
+            --line:rgba(255,255,255,.10);
+            --text:#eef4ff;
+            --muted:#9cb0d6;
+            --accent:#ff9a62;
+            --accent2:#ffd76d;
+            --good:#57e0b6;
+            --warn:#ffd38a;
+            --bad:#ff8fa9;
+            --shadow:0 18px 50px rgba(0,0,0,.28);
+        }
+        *{box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{
+            margin:0;
+            font-family:Arial,Helvetica,sans-serif;
+            color:var(--text);
+            background:
+                radial-gradient(circle at top left,rgba(87,224,182,.12),transparent 28%),
+                radial-gradient(circle at top right,rgba(255,154,98,.13),transparent 24%),
+                linear-gradient(180deg,#050b15,#0a1324 48%,#07111f);
+        }
+        a{color:inherit}
+        code{
+            background:rgba(255,255,255,.06);
+            border:1px solid var(--line);
+            padding:.15rem .4rem;
+            border-radius:8px;
+            color:#ffe9b3;
+        }
+        .wrap{width:min(1220px,calc(100% - 24px));margin:0 auto;padding:22px 0 48px}
+        .hero{
+            padding:26px 18px 18px;
+            border:1px solid var(--line);
+            border-radius:24px;
+            background:linear-gradient(180deg,rgba(16,28,49,.98),rgba(10,18,33,.92));
+            box-shadow:var(--shadow);
+        }
+        .eyebrow{
+            display:inline-flex;align-items:center;gap:8px;
+            padding:8px 12px;border-radius:999px;
+            background:rgba(255,255,255,.06);border:1px solid var(--line);
+            font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#ffd9c6;
+        }
+        h1,h2,h3{margin:0;line-height:1.15}
+        h1{font-size:38px;margin-top:14px}
+        .sub{margin:12px 0 0;max-width:920px;color:var(--muted);line-height:1.7;font-size:15px}
+        .top-grid{
+            margin-top:18px;
+            display:grid;
+            grid-template-columns:repeat(3,minmax(0,1fr));
+            gap:12px;
+        }
+        .mini{
+            padding:14px 16px;border-radius:18px;
+            border:1px solid var(--line);
+            background:rgba(255,255,255,.04);
+        }
+        .mini b{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#c8d8ff}
+        .mini span{display:block;margin-top:8px;color:var(--muted);line-height:1.6;font-size:14px}
+        .grid{
+            display:grid;
+            grid-template-columns:1.2fr .8fr;
+            gap:16px;
+            margin-top:18px;
+        }
+        .panel{
+            border:1px solid var(--line);
+            border-radius:24px;
+            background:linear-gradient(180deg,rgba(16,28,49,.98),rgba(12,22,39,.94));
+            box-shadow:var(--shadow);
+            overflow:hidden;
+        }
+        .panel-h{
+            padding:18px 18px 14px;
+            border-bottom:1px solid var(--line);
+        }
+        .panel-h p{margin:8px 0 0;color:var(--muted);line-height:1.6}
+        .panel-b{padding:18px}
+        .toc{
+            display:grid;gap:10px;
+        }
+        .toc a{
+            display:flex;justify-content:space-between;gap:12px;align-items:center;
+            padding:14px 15px;border-radius:16px;text-decoration:none;
+            border:1px solid transparent;background:rgba(255,255,255,.04);
+        }
+        .toc a:hover{border-color:var(--line);background:rgba(255,255,255,.06)}
+        .toc small{color:var(--muted)}
+        .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+        .chip{
+            display:inline-flex;align-items:center;gap:8px;
+            padding:9px 11px;border-radius:999px;
+            background:rgba(255,255,255,.05);border:1px solid var(--line);
+            color:var(--text);font-size:12px;font-weight:700;
+        }
+        .chip.good{background:rgba(87,224,182,.10);border-color:rgba(87,224,182,.20)}
+        .chip.warn{background:rgba(255,211,138,.10);border-color:rgba(255,211,138,.20)}
+        .chip.bad{background:rgba(255,143,169,.10);border-color:rgba(255,143,169,.20)}
+        .section{margin-top:16px}
+        .card{
+            border:1px solid var(--line);
+            border-radius:22px;
+            background:linear-gradient(180deg,rgba(16,28,49,.96),rgba(10,18,33,.92));
+            box-shadow:var(--shadow);
+        }
+        .card .hd{
+            padding:18px;border-bottom:1px solid var(--line);
+            display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;
+        }
+        .card .hd p{margin:8px 0 0;color:var(--muted);line-height:1.65}
+        .card .bd{padding:18px}
+        .steps{display:grid;gap:10px}
+        .step{
+            display:grid;grid-template-columns:28px 1fr;gap:12px;
+            padding:14px 14px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)
+        }
+        .num{
+            display:grid;place-items:center;width:28px;height:28px;border-radius:10px;
+            background:rgba(255,154,98,.16);border:1px solid rgba(255,154,98,.24);color:#ffd9c6;font-weight:800
+        }
+        .step b{display:block}
+        .step span{display:block;margin-top:6px;color:var(--muted);line-height:1.6}
+        .sim{
+            display:grid;
+            grid-template-columns:1.1fr .9fr;
+            gap:14px;
+        }
+        .screen{
+            position:relative;
+            min-height:420px;
+            padding:16px;
+            border-radius:22px;
+            overflow:hidden;
+            border:1px solid rgba(255,255,255,.08);
+            background:
+                radial-gradient(circle at 20% 18%,rgba(255,154,98,.20),transparent 24%),
+                radial-gradient(circle at 80% 16%,rgba(87,224,182,.16),transparent 18%),
+                linear-gradient(180deg,#0a1326,#09101d 55%,#08101a);
+        }
+        .screen-top{
+            display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;
+            padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06)
+        }
+        .brand{
+            display:flex;align-items:center;gap:10px;font-weight:800
+        }
+        .brand .logo{
+            width:34px;height:34px;border-radius:12px;display:grid;place-items:center;
+            background:linear-gradient(135deg,var(--accent),var(--accent2));color:#2d1400
+        }
+        .statline{display:flex;gap:8px;flex-wrap:wrap}
+        .p{
+            padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-size:12px;color:#e8f1ff
+        }
+        .menu-grid{
+            margin-top:14px;
+            display:grid;
+            grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:10px;
+        }
+        .menu-item{
+            position:relative;
+            padding:14px;
+            min-height:96px;
+            border-radius:18px;
+            border:1px solid rgba(255,255,255,.08);
+            background:rgba(255,255,255,.05);
+            cursor:help;
+            transition:transform .18s ease,border-color .18s ease,background .18s ease;
+        }
+        .menu-item:hover{transform:translateY(-2px);border-color:rgba(255,215,109,.28);background:rgba(255,255,255,.07)}
+        .menu-item b{display:block;font-size:15px}
+        .menu-item span{display:block;margin-top:8px;color:var(--muted);font-size:13px;line-height:1.55}
+        .tip{
+            position:absolute;
+            left:14px;right:14px;bottom:12px;
+            padding:10px 11px;border-radius:14px;
+            background:rgba(5,10,19,.92);border:1px solid rgba(255,255,255,.10);
+            color:#eef4ff;font-size:12px;line-height:1.55;
+            opacity:0;transform:translateY(8px);pointer-events:none;transition:.18s ease;
+            box-shadow:0 16px 30px rgba(0,0,0,.30);
+        }
+        .menu-item:hover .tip,
+        .menu-item:focus-within .tip,
+        .menu-item.is-open .tip{opacity:1;transform:translateY(0)}
+        .menu-item .hot{
+            display:inline-flex;align-items:center;gap:6px;
+            padding:6px 9px;border-radius:999px;background:rgba(255,154,98,.12);border:1px solid rgba(255,154,98,.18);
+            color:#ffd9c6;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+        }
+        .tooltip-panel{
+            display:grid;gap:10px;
+        }
+        .callout{
+            padding:14px 15px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.04)
+        }
+        .callout b{display:block}
+        .callout p{margin:8px 0 0;color:var(--muted);line-height:1.65}
+        .list{
+            margin:0;padding-left:18px;color:var(--muted);line-height:1.8
+        }
+        .list li{margin:0 0 6px}
+        .table{
+            width:100%;border-collapse:collapse;overflow:hidden;border-radius:18px;border:1px solid var(--line);
+            background:rgba(255,255,255,.03)
+        }
+        .table th,.table td{
+            padding:12px 13px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;vertical-align:top
+        }
+        .table th{
+            background:rgba(255,255,255,.05);font-size:12px;letter-spacing:.10em;text-transform:uppercase;color:#c8d8ff
+        }
+        .table td{color:var(--muted);line-height:1.6}
+        .footer{
+            margin-top:18px;padding:16px 18px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.04)
+        }
+        .footer b{display:block}
+        .footer p{margin:8px 0 0;color:var(--muted);line-height:1.7}
+        .badge{
+            display:inline-flex;align-items:center;gap:8px;
+            padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+            font-size:12px;font-weight:700;color:#edf3ff
+        }
+        .badge.good{border-color:rgba(87,224,182,.20);background:rgba(87,224,182,.10)}
+        .badge.warn{border-color:rgba(255,211,138,.20);background:rgba(255,211,138,.10)}
+        .badge.bad{border-color:rgba(255,143,169,.20);background:rgba(255,143,169,.10)}
+        .kbd{
+            display:inline-flex;align-items:center;justify-content:center;
+            min-width:24px;height:24px;padding:0 8px;border-radius:8px;
+            border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;font-size:12px;font-weight:700
+        }
+        @media (max-width: 980px){
+            .grid,.sim,.top-grid{grid-template-columns:1fr}
+            h1{font-size:32px}
+            .menu-grid{grid-template-columns:1fr}
+        }
+        @media (max-width: 640px){
+            .wrap{width:min(100% - 16px,1220px);padding-top:12px}
+            .hero,.panel,.card{border-radius:18px}
+            h1{font-size:26px}
+            .sub{font-size:14px}
+            .screen{min-height:auto}
+            .menu-item{min-height:88px}
+            .table th,.table td{padding:10px}
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <section class="hero">
+            <span class="eyebrow">Game Final Admin Manual</span>
+            <h1>অ্যাডমিন প্যানেল ব্যবহার নির্দেশিকা</h1>
+            <p class="sub">
+                এই HTML ম্যানুয়ালটি অ্যাডমিন প্যানেল বুঝতে সহজ করার জন্য বানানো হয়েছে।
+                এখানে dashboard, security, games, rounds, bets, payouts, users এবং maintenance flow বাংলায় ব্যাখ্যা করা আছে।
+                নিচের panel simulator-এ hover বা tap করলে প্রতিটি অংশের কাজ tooltip হিসেবে দেখা যাবে।
+            </p>
+
+            <div class="top-grid">
+                <div class="mini">
+                    <b>Login Flow</b>
+                    <span>প্রথমে <code>/thomas-admin</code> এ email/password, তারপর security pass.</span>
+                </div>
+                <div class="mini">
+                    <b>Panel Purpose</b>
+                    <span>গেম control, round audit, bet check, payout review, user lock, maintenance control.</span>
+                </div>
+                <div class="mini">
+                    <b>Mobile Friendly</b>
+                    <span>ছোট স্ক্রিনেও panel cards, tables, filters, buttons readable রাখা হয়েছে।</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid">
+            <section class="panel">
+                <div class="panel-h">
+                    <h2>দ্রুত সূচি</h2>
+                    <p>যে অংশে যেতে চান, সেখানেই jump করুন।</p>
+                </div>
+                <div class="panel-b">
+                    <div class="toc">
+                        <a href="#login"><span>1. Login ও Security</span><small>প্রথম দুই ধাপ</small></a>
+                        <a href="#dashboard"><span>2. Dashboard</span><small>Game control page</small></a>
+                        <a href="#simulator"><span>3. Panel Simulator</span><small>Hover / Tap tips</small></a>
+                        <a href="#tables"><span>4. Tables Guide</span><small>Rounds, Bets, Payouts, Users</small></a>
+                        <a href="#tasks"><span>5. Common Tasks</span><small>Practical কাজ</small></a>
+                        <a href="#mobile"><span>6. Mobile ও Troubleshooting</span><small>Quick fixes</small></a>
+                    </div>
+                    <div class="chips">
+                        <span class="chip good">Maintenance</span>
+                        <span class="chip good">Lobby Control</span>
+                        <span class="chip good">Round Audit</span>
+                        <span class="chip warn">User Lock</span>
+                        <span class="chip bad">Sensitive Access</span>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="panel">
+                <div class="panel-h">
+                    <h2>এক নজরে</h2>
+                    <p>এই panel কী করে, খুব ছোট করে।</p>
+                </div>
+                <div class="panel-b">
+                    <table class="table" aria-label="Admin panel summary">
+                        <thead>
+                            <tr>
+                                <th>অংশ</th>
+                                <th>কাজ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Dashboard</td>
+                                <td>গেম on/off, maintenance, board payout, live setup.</td>
+                            </tr>
+                            <tr>
+                                <td>Rounds</td>
+                                <td>প্রতিটি round-এর status, winner, timing.</td>
+                            </tr>
+                            <tr>
+                                <td>Bets</td>
+                                <td>কে কত bet করেছে এবং কোন board এ করেছে।</td>
+                            </tr>
+                            <tr>
+                                <td>Payouts</td>
+                                <td>Settlement line-by-line দেখা।</td>
+                            </tr>
+                            <tr>
+                                <td>Users</td>
+                                <td>Wallet, lock, profile, active user review.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </aside>
+        </div>
+
+        <section class="section card" id="login">
+            <div class="hd">
+                <div>
+                    <h2>1) Login ও Security Pass</h2>
+                    <p>অ্যাডমিনে ঢোকার আগে দুই ধাপ থাকে। প্রথমে admin login, তারপর game security pass।</p>
+                </div>
+                <span class="badge warn">Two-step access</span>
+            </div>
+            <div class="bd">
+                <div class="steps">
+                    <div class="step">
+                        <div class="num">1</div>
+                        <div>
+                            <b>Email + Password</b>
+                            <span><code>/thomas-admin</code> এ গিয়ে admin email/password দিন। ভুল login হলে lock হতে পারে।</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="num">2</div>
+                        <div>
+                            <b>Security Pass</b>
+                            <span>Login এর পর security page এ pass বসিয়ে dashboard খুলতে হবে। এটা extra protection layer.</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="num">3</div>
+                        <div>
+                            <b>Admin Session</b>
+                            <span>একবার access পেলে games, rounds, bets, payouts, users সব দেখতে পারবেন।</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section card" id="dashboard">
+            <div class="hd">
+                <div>
+                    <h2>2) Dashboard কীভাবে কাজ করে</h2>
+                    <p>Dashboard হলো control room. এখান থেকে game status, maintenance, visible room, payout, এবং room-level settings নিয়ন্ত্রণ হয়।</p>
+                </div>
+                <span class="badge good">Main control room</span>
+            </div>
+            <div class="bd">
+                <div class="steps">
+                    <div class="step">
+                        <div class="num">A</div>
+                        <div>
+                            <b>Game On / Off / Maintenance</b>
+                            <span>একটি game live থাকবে, hide হবে, অথবা maintenance mode এ যাবে। Maintenance হলে developer ID whitelist কাজ করতে পারে।</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="num">B</div>
+                        <div>
+                            <b>Board Payout Control</b>
+                            <span>প্রতিটি board-এর payout multiplier edit করা যায়। সাধারণত active mode-এ careful change করতে হয়।</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="num">C</div>
+                        <div>
+                            <b>Lobby Visibility</b>
+                            <span>কোন game lobby-তে দেখাবে, কোনটা hidden থাকবে, সেটাও এখান থেকেই control হয়।</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section card" id="simulator">
+            <div class="hd">
+                <div>
+                    <h2>3) Panel Simulator</h2>
+                    <p>এখানে hover করলে tooltip দেখা যাবে। মোবাইলে tap করলে tip খুলে যাবে।</p>
+                </div>
+                <span class="badge good">Tooltip simulator</span>
+            </div>
+            <div class="bd">
+                <div class="sim">
+                    <div class="screen" id="screen">
+                        <div class="screen-top">
+                            <div class="brand"><span class="logo">GF</span> Game Final Admin</div>
+                            <div class="statline">
+                                <span class="p">Visible: 4</span>
+                                <span class="p">Locks: 1</span>
+                                <span class="p">Mode: Online</span>
+                            </div>
+                        </div>
+
+                        <div class="menu-grid">
+                            <div class="menu-item" tabindex="0" data-tip="Dashboard থেকে game status, maintenance, payout multiplier, lobby visibility control করা হয়।">
+                                <span class="hot">Main</span>
+                                <b>Dashboard</b>
+                                <span>সব game-এর live settings একসাথে</span>
+                                <div class="tip">এখানে room চালু/বন্ধ, maintenance mode, payout edit, and lobby state handle হয়।</div>
+                            </div>
+                            <div class="menu-item" tabindex="0" data-tip="Rounds tab এ প্রতিটি round-এর winner, time, decision mode, settlement status থাকে।">
+                                <span class="hot">Audit</span>
+                                <b>Rounds</b>
+                                <span>প্রতি round-এর history দেখা</span>
+                                <div class="tip">Round list এ গিয়ে কোন round settled, pending, won বা failed ছিল তা দেখা যায়।</div>
+                            </div>
+                            <div class="menu-item" tabindex="0" data-tip="Bets tab player bet rows দেখায়, যেমন user, amount, board, and settlement result.">
+                                <span class="hot">Audit</span>
+                                <b>Bets</b>
+                                <span>User bet details</span>
+                                <div class="tip">এখানে কে কত bet করেছে, কোন board এ করেছে এবং settlement কী হয়েছে দেখা যায়।</div>
+                            </div>
+                            <div class="menu-item" tabindex="0" data-tip="Payouts tab settlement items দেখায়। এখানে actual win, multiplier, and wallet effect থাকে।">
+                                <span class="hot">Finance</span>
+                                <b>Payouts</b>
+                                <span>Settlement line-by-line</span>
+                                <div class="tip">Settlement row দেখে payout ঠিক হয়েছে কিনা verify করা যায়।</div>
+                            </div>
+                            <div class="menu-item" tabindex="0" data-tip="Users tab এ wallet, lock, profile, and support actions থাকে।">
+                                <span class="hot">Support</span>
+                                <b>Users</b>
+                                <span>Wallet ও lock control</span>
+                                <div class="tip">Support বা security issue হলে user lock করা এবং wallet adjust করা যায়।</div>
+                            </div>
+                            <div class="menu-item" tabindex="0" data-tip="Security page admin access gate হিসেবে কাজ করে। ভুল pass দিলে settings page খুলবে না।">
+                                <span class="hot">Gate</span>
+                                <b>Security</b>
+                                <span>Extra protection layer</span>
+                                <div class="tip">Admin login এর পর আবার security pass চাওয়া হয়, যাতে শুধু অনুমোদিত লোক ঢুকতে পারে।</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tooltip-panel">
+                        <div class="callout">
+                            <b>কীভাবে ব্যবহার করবেন</b>
+                            <p>কোনো menu card-এ mouse নিয়ে যান, বা mobile-এ tap করুন। Tooltip আপনার কাজে কী করে তা ছোট করে দেখাবে।</p>
+                        </div>
+                        <div class="callout">
+                            <b>Legend</b>
+                            <p><span class="kbd">Main</span> = core control, <span class="kbd">Audit</span> = history review, <span class="kbd">Finance</span> = settlement/payout, <span class="kbd">Support</span> = user help.</p>
+                        </div>
+                        <div class="callout">
+                            <b>Quick Reminder</b>
+                            <p>যে game maintenance mode এ আছে, সেখানে payout বা board change করার আগে নিশ্চিত হয়ে নিন।</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section card" id="tables">
+            <div class="hd">
+                <div>
+                    <h2>4) Tables Guide</h2>
+                    <p>প্যানেলে যে টেবিলগুলো সবচেয়ে বেশি ব্যবহার করবেন, সেগুলোর মানে নিচে দেয়া হলো।</p>
+                </div>
+                <span class="badge">Tables</span>
+            </div>
+            <div class="bd">
+                <table class="table" aria-label="Table guide">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>এখানে কী দেখবেন</th>
+                            <th>ব্যবহারের উদ্দেশ্য</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Rounds</td>
+                            <td>Round no, winner board, decision mode, start/close time, status</td>
+                            <td>একটি round কিভাবে চলেছে তা audit করা</td>
+                        </tr>
+                        <tr>
+                            <td>Bets</td>
+                            <td>User, board, bet amount, potential win, actual win, status</td>
+                            <td>Betging pattern এবং settlement verify করা</td>
+                        </tr>
+                        <tr>
+                            <td>Payouts</td>
+                            <td>Settlement item, multiplier, result, wallet effect</td>
+                            <td>কোন bet এ কী payout গেছে তা যাচাই করা</td>
+                        </tr>
+                        <tr>
+                            <td>Users</td>
+                            <td>Balance, status, lock, profile, recent bets</td>
+                            <td>User support, wallet transfer, security lock</td>
+                        </tr>
+                        <tr>
+                            <td>Round Detail</td>
+                            <td>Board totals, users per board, win/loss/hole summary</td>
+                            <td>একটি round-এর ভেতরে deep audit</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section card" id="tasks">
+            <div class="hd">
+                <div>
+                    <h2>5) Common Tasks</h2>
+                    <p>অ্যাডমিনরা সাধারণত এই কাজগুলো করেন।</p>
+                </div>
+                <span class="badge good">Practical guide</span>
+            </div>
+            <div class="bd">
+                <div class="steps">
+                    <div class="step">
+                        <div class="num">1</div>
+                        <div>
+                            <b>গেম maintenance এ রাখা</b>
+                            <span>Dashboard এ game status maintenance করুন, তারপর প্রয়োজন হলে নির্দিষ্ট developer ID allow করুন।</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="num">2</div>
+                        <div>
+                            <b>ইন-অ্যাকটিভ user refresh</b>
+                            <span>Network off, phone sleep, বা lock হলে session refresh / re-sync দরকার হতে পারে। Backend flow থাকলে সেটাই active থাকে।</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="num">3</div>
+                        <div>
+                            <b>Wallet review</b>
+                            <span>Users page থেকে wallet transfer, lock, profile open করা যায়। সবসময় journal entry যাচাই করুন।</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="num">4</div>
+                        <div>
+                            <b>Round audit</b>
+                            <span>Rounds ট্যাবে গিয়ে winner, time, and decision mode দেখে settlement ঠিক কিনা মিলিয়ে নিন।</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section card" id="mobile">
+            <div class="hd">
+                <div>
+                    <h2>6) Mobile ও Troubleshooting</h2>
+                    <p>ছোট স্ক্রিনে কাজ করার সময় যেসব জিনিস খেয়াল করবেন।</p>
+                </div>
+                <span class="badge warn">Mobile safe</span>
+            </div>
+            <div class="bd">
+                <ul class="list">
+                    <li>Mobile-এ table long হলে horizontal scroll ব্যবহার করুন, fullscreen table দেখার চেষ্টা করবেন না।</li>
+                    <li>Density toggle থাকলে <span class="kbd">Compact</span> mode long rows পড়তে সাহায্য করে।</li>
+                    <li>Security pass ভুল দিলে login/session lock হতে পারে, তাই বারবার ভুল চেষ্টা না করাই ভালো।</li>
+                    <li>Maintenance mode এ শুধু অনুমোদিত developer ID-ই game play করতে পারবে।</li>
+                    <li>Round বা payout edit করার আগে relevant game live আছে কিনা যাচাই করুন।</li>
+                </ul>
+                <div class="footer">
+                    <b>শেষ কথা</b>
+                    <p>
+                        এই ম্যানুয়ালটা নতুন operator বা support team-এর জন্য বানানো।
+                        চাইলে আমরা পরে এর একটা আরও ছোট “one-page cheat sheet” version বানাতে পারি,
+                        যেটা mobile-এ দ্রুত পড়া যাবে।
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.querySelectorAll('.menu-item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                const open = item.classList.contains('is-open');
+                document.querySelectorAll('.menu-item.is-open').forEach(function (node) {
+                    node.classList.remove('is-open');
+                });
+                if (!open) {
+                    item.classList.add('is-open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

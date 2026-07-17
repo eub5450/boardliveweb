@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Access System - Thomas Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            margin: -40px -40px 40px -40px;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .language-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .lang-btn {
+            padding: 8px 15px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .lang-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        h3 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+        
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        table th {
+            background: #f4f4f4;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+        
+        table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .info {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header {
+                margin: -20px -20px 30px -20px;
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.5em;
+            }
+            
+            .language-switch {
+                position: static;
+                justify-content: center;
+                margin-top: 15px;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+            
+            table th, table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="language-switch">
+                <button class="lang-btn active" onclick="switchLanguage('en')">English</button>
+                <button class="lang-btn" onclick="switchLanguage('bn')">বাংলা</button>
+            </div>
+            <h1 id="title">App Access System</h1>
+            <p id="subtitle">Complete documentation for app-based game access</p>
+        </header>
+        
+        <a href="index.html" class="back-link">← Back to Documentation</a>
+        
+        <!-- English Content -->
+        <div id="en-content">
+            <h2>📱 App-Based Game Access System</h2>
+            
+            <p>This system provides <strong>secure URL-based access</strong> to games from mobile/desktop applications without requiring manual token issuance. It includes automatic package verification, password authentication, and backend session validation.</p>
+            
+            <h2>🔑 Key Features</h2>
+            <ul>
+                <li><strong>Automatic package verification</strong> for whitelisted apps</li>
+                <li><strong>Developer password authentication</strong> for non-whitelisted apps</li>
+                <li><strong>Custom authentication UI</strong> for app access</li>
+                <li><strong>Backend session validation</strong> with no public access</li>
+                <li><strong>Dart/Flutter app compatibility</strong></li>
+            </ul>
+            
+            <h2>⚙️ Configuration</h2>
+            
+            <h3>Step 1: Set Allowed App Packages</h3>
+            <p>Edit your <code>.env</code> file:</p>
+            <pre><code># Multiple packages separated by commas
+BD_GAME_FINAL_ALLOWED_APP_PACKAGES=com.jambo.app,com.example.games,com.mycompany.app
+BD_GAME_FINAL_DEVELOPER_PASSWORD=#jambo</code></pre>
+            
+            <h3>Step 2: App Package Format</h3>
+            <p>Package names should follow standard format:</p>
+            <pre><code>com.company.appname
+org.organization.game
+com.example.myapp</code></pre>
+            
+            <h2>🚀 Usage</h2>
+            
+            <h3>For Whitelisted Apps</h3>
+            
+            <h4>1. Generate Entry URL</h4>
+            <pre><code>https://fairylive.online/game/{gameCode}/app-access?app_package=com.jambo.app</code></pre>
+            
+            <h4>2. Send Request with Package Header (Dart/Flutter)</h4>
+            <pre><code>import 'package:http/http.dart' as http;
+
+final response = await http.get(
+  Uri.parse('https://fairylive.online/game/lucky88_master/app-access'),
+  headers: {
+    'X-App-Package': 'com.jambo.app',
+  },
+);</code></pre>
+            
+            <h4>3. Response Handling</h4>
+            <p><strong>Success (200):</strong> Session established, redirect to game</p>
+            <p><strong>Unauthorized (401):</strong> Package not whitelisted, show password form</p>
+            <p><strong>Not Found (404):</strong> Game code does not exist</p>
+            
+            <h3>For Non-Whitelisted Apps</h3>
+            
+            <h4>1. Visit Authentication Page</h4>
+            <pre><code>https://fairylive.online/game/lucky88_master/app-access</code></pre>
+            
+            <h4>2. Show Password Form</h4>
+            <p>If not whitelisted, users see a custom authentication UI prompting for the developer password.</p>
+            
+            <h4>3. Submit Credentials</h4>
+            <p>App sends password with the request:</p>
+            <pre><code>final response = await http.post(
+  Uri.parse('https://fairylive.online/game/lucky88_master/app-access'),
+  headers: {
+    'X-App-Package': 'com.unknown.app',
+    'X-Developer-Password': '#jambo',
+  },
+);</code></pre>
+            
+            <h2>📊 Request/Response Format</h2>
+            
+            <table>
+                <tr>
+                    <th>Header</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td><code>X-App-Package</code></td>
+                    <td>Yes</td>
+                    <td>App package name (e.g., com.jambo.app)</td>
+                </tr>
+                <tr>
+                    <td><code>X-Developer-Password</code></td>
+                    <td>If not whitelisted</td>
+                    <td>Developer password for non-whitelisted apps</td>
+                </tr>
+                <tr>
+                    <td><code>Accept</code></td>
+                    <td>No</td>
+                    <td>Set to "application/json" for JSON response</td>
+                </tr>
+            </table>
+            
+            <h2>🔐 Security Features</h2>
+            <ul>
+                <li><strong>Whitelist-based verification:</strong> Only approved apps get instant access</li>
+                <li><strong>Password protection:</strong> Unauthorized apps can still access if they know the password</li>
+                <li><strong>Session validation:</strong> Backend validates every session for additional security</li>
+                <li><strong>No public token exposure:</strong> Tokens are never shared in URLs or requests</li>
+                <li><strong>HTTPS required:</strong> All requests should use secure connections</li>
+            </ul>
+            
+            <h2>💻 API Endpoints</h2>
+            
+            <table>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><code>/game/{gameCode}/app-access</code></td>
+                    <td>GET/POST</td>
+                    <td>Main app access entry point</td>
+                </tr>
+                <tr>
+                    <td><code>/game/{gameCode}/start</code></td>
+                    <td>GET</td>
+                    <td>Start-to-play page after authentication</td>
+                </tr>
+                <tr>
+                    <td><code>/game/api/{gameCode}/status</code></td>
+                    <td>GET</td>
+                    <td>Get game status and current round</td>
+                </tr>
+            </table>
+            
+            <h2>🧪 Testing</h2>
+            
+            <h3>Test with cURL</h3>
+            <pre><code># Test whitelisted app
+curl -H "X-App-Package: com.jambo.app" \
+  https://fairylive.online/game/lucky88_master/app-access
+
+# Test non-whitelisted app
+curl -H "X-App-Package: com.unknown.app" \
+  -H "X-Developer-Password: #jambo" \
+  https://fairylive.online/game/lucky88_master/app-access</code></pre>
+            
+            <h3>Browser Testing</h3>
+            <p>Simply visit the app-access URL in your browser:</p>
+            <pre><code>https://fairylive.online/game/lucky88_master/app-access</code></pre>
+            
+            <div class="info">
+                <strong>💡 Note:</strong> Browser requests without the app package header will show the authentication UI for security purposes.
+            </div>
+        </div>
+        
+        <!-- Bengali Content -->
+        <div id="bn-content" class="hidden">
+            <h2>📱 অ্যাপ-ভিত্তিক গেম অ্যাক্সেস সিস্টেম</h2>
+            
+            <p>এই সিস্টেমটি মোবাইল/ডেস্কটপ অ্যাপ্লিকেশন থেকে গেমগুলিতে <strong>নিরাপদ URL-ভিত্তিক অ্যাক্সেস</strong> প্রদান করে ম্যানুয়াল টোকেন জারি করার প্রয়োজন ছাড়াই। এতে স্বয়ংক্রিয় প্যাকেজ যাচাইকরণ, পাসওয়ার্ড প্রমাণীকরণ এবং ব্যাকএন্ড সেশন যাচাইকরণ অন্তর্ভুক্ত রয়েছে।</p>
+            
+            <h2>🔑 মূল বৈশিষ্ট্য</h2>
+            <ul>
+                <li><strong>স্বয়ংক্রিয় প্যাকেজ যাচাইকরণ</strong> হোয়াইটলিস্টেড অ্যাপের জন্য</li>
+                <li><strong>ডেভেলপার পাসওয়ার্ড প্রমাণীকরণ</strong> অ-হোয়াইটলিস্টেড অ্যাপের জন্য</li>
+                <li><strong>কাস্টম প্রমাণীকরণ UI</strong> অ্যাপ অ্যাক্সেসের জন্য</li>
+                <li><strong>ব্যাকএন্ড সেশন যাচাইকরণ</strong> কোন পাবলিক অ্যাক্সেস ছাড়াই</li>
+                <li><strong>Dart/Flutter অ্যাপ সামঞ্জস্য</strong></li>
+            </ul>
+            
+            <h2>⚙️ কনফিগারেশন</h2>
+            
+            <h3>ধাপ ১: অনুমোদিত অ্যাপ প্যাকেজ সেট করুন</h3>
+            <p>আপনার <code>.env</code> ফাইল সম্পাদনা করুন:</p>
+            <pre><code># কমা দ্বারা পৃথক একাধিক প্যাকেজ
+BD_GAME_FINAL_ALLOWED_APP_PACKAGES=com.jambo.app,com.example.games,com.mycompany.app
+BD_GAME_FINAL_DEVELOPER_PASSWORD=#jambo</code></pre>
+            
+            <h3>ধাপ ২: অ্যাপ প্যাকেজ ফরম্যাট</h3>
+            <p>প্যাকেজ নাম স্ট্যান্ডার্ড ফরম্যাট অনুসরণ করা উচিত:</p>
+            <pre><code>com.company.appname
+org.organization.game
+com.example.myapp</code></pre>
+            
+            <h2>🚀 ব্যবহার</h2>
+            
+            <h3>হোয়াইটলিস্টেড অ্যাপের জন্য</h3>
+            
+            <h4>১. এন্ট্রি URL তৈরি করুন</h4>
+            <pre><code>https://fairylive.online/game/{gameCode}/app-access?app_package=com.jambo.app</code></pre>
+            
+            <h4>২. প্যাকেজ হেডার সহ অনুরোধ পাঠান (Dart/Flutter)</h4>
+            <pre><code>import 'package:http/http.dart' as http;
+
+final response = await http.get(
+  Uri.parse('https://fairylive.online/game/lucky88_master/app-access'),
+  headers: {
+    'X-App-Package': 'com.jambo.app',
+  },
+);</code></pre>
+            
+            <h4>৩. প্রতিক্রিয়া পরিচালনা</h4>
+            <p><strong>সাফল্য (200):</strong> সেশন প্রতিষ্ঠিত, গেমে পুনঃনির্দেশ করুন</p>
+            <p><strong>অননুমোদিত (401):</strong> প্যাকেজ হোয়াইটলিস্টেড নয়, পাসওয়ার্ড ফর্ম দেখান</p>
+            <p><strong>পাওয়া যায়নি (404):</strong> গেম কোড বিদ্যমান নেই</p>
+            
+            <h3>অ-হোয়াইটলিস্টেড অ্যাপের জন্য</h3>
+            
+            <h4>১. প্রমাণীকরণ পৃষ্ঠা পরিদর্শন করুন</h4>
+            <pre><code>https://fairylive.online/game/lucky88_master/app-access</code></pre>
+            
+            <h4>२. পাসওয়ার্ড ফর্ম দেখান</h4>
+            <p>যদি হোয়াইটলিস্টেড না হয়, ব্যবহারকারীরা ডেভেলপার পাসওয়ার্ড চাইছে এমন কাস্টম প্রমাণীকরণ UI দেখেন।</p>
+            
+            <h4>३. শংসাপত্র জমা দিন</h4>
+            <p>অ্যাপ অনুরোধের সাথে পাসওয়ার্ড পাঠায়:</p>
+            <pre><code>final response = await http.post(
+  Uri.parse('https://fairylive.online/game/lucky88_master/app-access'),
+  headers: {
+    'X-App-Package': 'com.unknown.app',
+    'X-Developer-Password': '#jambo',
+  },
+);</code></pre>
+            
+            <h2>📊 অনুরোধ/প্রতিক্রিয়া ফরম্যাট</h2>
+            
+            <table>
+                <tr>
+                    <th>হেডার</th>
+                    <th>প্রয়োজনীয়</th>
+                    <th>বর্ণনা</th>
+                </tr>
+                <tr>
+                    <td><code>X-App-Package</code></td>
+                    <td>হ্যাঁ</td>
+                    <td>অ্যাপ প্যাকেজ নাম (যেমন com.jambo.app)</td>
+                </tr>
+                <tr>
+                    <td><code>X-Developer-Password</code></td>
+                    <td>যদি হোয়াইটলিস্টেড না হয়</td>
+                    <td>অ-হোয়াইটলিস্টেড অ্যাপের জন্য ডেভেলপার পাসওয়ার্ড</td>
+                </tr>
+                <tr>
+                    <td><code>Accept</code></td>
+                    <td>না</td>
+                    <td>JSON প্রতিক্রিয়ার জন্য "application/json" এ সেট করুন</td>
+                </tr>
+            </table>
+            
+            <h2>🔐 নিরাপত্তা বৈশিষ্ট্য</h2>
+            <ul>
+                <li><strong>হোয়াইটলিস্ট-ভিত্তিক যাচাইকরণ:</strong> শুধুমাত্র অনুমোদিত অ্যাপ তাৎক্ষণিক অ্যাক্সেস পায়</li>
+                <li><strong>পাসওয়ার্ড সুরক্ষা:</strong> অননুমোদিত অ্যাপ পাসওয়ার্ড জানলেও অ্যাক্সেস করতে পারে</li>
+                <li><strong>সেশন যাচাইকরণ:</strong> ব্যাকএন্ড অতিরিক্ত নিরাপত্তার জন্য প্রতিটি সেশন যাচাই করে</li>
+                <li><strong>কোন পাবলিক টোকেন এক্সপোজার নেই:</strong> টোকেন কখনও URL বা অনুরোধে শেয়ার করা হয় না</li>
+                <li><strong>HTTPS প্রয়োজন:</strong> সমস্ত অনুরোধ নিরাপদ সংযোগ ব্যবহার করা উচিত</li>
+            </ul>
+            
+            <h2>💻 API এন্ডপয়েন্ট</h2>
+            
+            <table>
+                <tr>
+                    <th>এন্ডপয়েন্ট</th>
+                    <th>পদ্ধতি</th>
+                    <th>উদ্দেশ্য</th>
+                </tr>
+                <tr>
+                    <td><code>/game/{gameCode}/app-access</code></td>
+                    <td>GET/POST</td>
+                    <td>প্রধান অ্যাপ অ্যাক্সেস এন্ট্রি পয়েন্ট</td>
+                </tr>
+                <tr>
+                    <td><code>/game/{gameCode}/start</code></td>
+                    <td>GET</td>
+                    <td>প্রমাণীকরণের পরে শুরু-থেকে-খেলার পৃষ্ঠা</td>
+                </tr>
+                <tr>
+                    <td><code>/game/api/{gameCode}/status</code></td>
+                    <td>GET</td>
+                    <td>গেম স্ট্যাটাস এবং বর্তমান রাউন্ড পান</td>
+                </tr>
+            </table>
+            
+            <h2>🧪 পরীক্ষা</h2>
+            
+            <h3>cURL দিয়ে পরীক্ষা করুন</h3>
+            <pre><code># হোয়াইটলিস্টেড অ্যাপ পরীক্ষা করুন
+curl -H "X-App-Package: com.jambo.app" \
+  https://fairylive.online/game/lucky88_master/app-access
+
+# অ-হোয়াইটলিস্টেড অ্যাপ পরীক্ষা করুন
+curl -H "X-App-Package: com.unknown.app" \
+  -H "X-Developer-Password: #jambo" \
+  https://fairylive.online/game/lucky88_master/app-access</code></pre>
+            
+            <h3>ব্রাউজার পরীক্ষা</h3>
+            <p>সহজভাবে আপনার ব্রাউজারে app-access URL পরিদর্শন করুন:</p>
+            <pre><code>https://fairylive.online/game/lucky88_master/app-access</code></pre>
+            
+            <div class="info">
+                <strong>💡 নোট:</strong> অ্যাপ প্যাকেজ হেডার ছাড়া ব্রাউজার অনুরোধগুলি নিরাপত্তার কারণে প্রমাণীকরণ UI দেখাবে।
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function switchLanguage(lang) {
+            document.getElementById('en-content').classList.add('hidden');
+            document.getElementById('bn-content').classList.add('hidden');
+            document.getElementById(lang + '-content').classList.remove('hidden');
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            localStorage.setItem('appAccessLanguage', lang);
+        }
+        
+        // Restore language preference
+        const savedLang = localStorage.getItem('appAccessLanguage') || 'en';
+        if (savedLang === 'bn') {
+            switchLanguage('bn');
+            document.querySelectorAll('.lang-btn')[1].classList.add('active');
+        }
+    </script>
+</body>
+</html>

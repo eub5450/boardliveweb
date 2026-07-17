@@ -1,0 +1,104 @@
+@extends('backend.layouts.main')
+@section('title')
+User Email ID Change
+@endsection
+@section('content')
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+@if (Session::has('messege'))
+    <div class="alert alert-{{ Session::get('alert-type') == 'success' ? 'success' : (Session::get('alert-type') == 'info' ? 'info' : 'danger') }}">
+        {{ Session::get('messege') }}
+    </div>
+@endif
+
+<div class="body-content">
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <h4 class="text-center font-weight-bold font-italic mt-3">Email Against User ID</h4>
+                    <p class="text-center text-muted">
+                        Enter an existing Gmail/email and a free 5 digit user ID. The old user ID will be removed and this email will move to the new ID.
+                    </p>
+                </div>
+            </div>
+            <form action="{{ URL::to('admin-user-email-change_store') }}" method="post" class="form-inline">
+                @csrf
+
+                <div class="form-group col-md-6 mb-3">
+                    <label for="email" class="col-sm-4 col-form-label text-right">Existing Email *</label>
+                    <input type="email" name="email" class="form-control col-sm-8" placeholder="jahirvevo@gmail.com" value="{{ old('email') }}" id="email" required>
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label for="user_id" class="col-sm-4 col-form-label text-right">New Free ID *</label>
+                    <input type="number" name="user_id" class="form-control col-sm-8" placeholder="44444" value="{{ old('user_id') }}" id="user_id" min="1" max="99999" required>
+                </div>
+
+                <div class="form-group col-md-12 mb-3">
+                    <div class="alert alert-warning w-100">
+                        Save is blocked if the target ID already exists or if the target ID is 6 digits. Related user references are updated safely and users AUTO_INCREMENT is reset to the next serial after the highest ID.
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12 mb-3">
+                    <button type="submit" class="btn btn-success">Save Email ID Change</button>
+                </div>
+                <div class="form-group col-md-12 mb-1">
+                    <div class="text-muted w-100 text-center" style="font-size:10px;">Powerd by JAMBOai</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="body-content">
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <h4 class="text-center font-weight-bold font-italic mt-3">Change Email Only</h4>
+                    <p class="text-center text-muted">
+                        Enter an existing user ID and a new free email. This does not change the user ID.
+                    </p>
+                </div>
+            </div>
+            <form action="{{ URL::to('admin-user-email-change_store') }}" method="post" class="form-inline">
+                @csrf
+                <input type="hidden" name="change_mode" value="email_only">
+
+                <div class="form-group col-md-6 mb-3">
+                    <label for="email_only_user_id" class="col-sm-4 col-form-label text-right">User ID *</label>
+                    <input type="number" name="email_only_user_id" class="form-control col-sm-8" placeholder="14921" value="{{ old('email_only_user_id') }}" id="email_only_user_id" min="1" required>
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label for="new_email" class="col-sm-4 col-form-label text-right">New Free Email *</label>
+                    <input type="email" name="new_email" class="form-control col-sm-8" placeholder="newgmail@gmail.com" value="{{ old('new_email') }}" id="new_email" required>
+                </div>
+
+                <div class="form-group col-md-12 mb-3">
+                    <div class="alert alert-info w-100">
+                        Save is blocked if the new email is already used by another user. A backup row is created before changing the email.
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12 mb-3">
+                    <button type="submit" class="btn btn-primary">Save Email Only</button>
+                </div>
+                <div class="form-group col-md-12 mb-1">
+                    <div class="text-muted w-100 text-center" style="font-size:10px;">Powerd by JAMBOai</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection

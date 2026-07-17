@@ -1,0 +1,86 @@
+@extends('backend.layouts.main')
+
+
+@section('title')
+Protal Recall History
+@endsection
+@section('content')
+<!--Content Start-->
+<div class="body-content">
+    <div class="card mb-4">
+        <div class="card-body">
+<section class="forms">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="card">
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                          <h4> Protal Recall History</h4>
+                          <span class="badge badge-secondary">Read Only / recall_from_protal</span>
+                      </div>
+                      <div class="table-responsive">
+                  <table class="table display table-bordered table-striped table-hover basic">
+                <thead>
+                  <tr>
+                    <th>Sl</th>
+                    <th>Protal ID</th>
+                    <th>Protal Image</th>
+                    <th>Protal Name</th>
+                    <th>Source User</th>
+                    <th>Recall Amount</th>
+                    <th>TxID</th>
+                    <th>Date</th>
+                    <th>Create By</th>
+                    <th>Source Table</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @php
+                  $i=0;
+                  @endphp
+                  @foreach($data as $item)
+                @php
+                $created_by=App\Models\User::find($item->user_id);
+                $protal=App\Models\User::find($item->protal_id);
+                $source_user=App\Models\User::find($item->source_user_id);
+
+                @endphp
+                  <tr>
+                    <td>{{ ++$i }}</td>
+                    <td> @if($protal) {{$protal->id}} @else {{$item->protal_id}} @endif</td>
+                    <td> @if($protal)<img style="width: 73px;" src="{{URL::to($protal->profile)}}">@endif</td>
+                    <td> @if($protal){{$protal->name}} @endif </td>
+                    <td> @if($source_user) {{$source_user->id}} -- {{$source_user->name}} @else {{$item->source_user_id}} @endif </td>
+                    <td><span class="text-danger">{{$item->amount}}</span></td>
+                    <td>{{$item->trxid}}</td>
+                    <td>{{$item->date}}</td>
+                    <td>@if($created_by) {{$created_by->name}} @else {{$item->user_id}} @endif</td>
+                    <td>recall_from_protal</td>
+                  </tr>
+                  @endforeach
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Sl</th>
+                    <th>Protal ID</th>
+                    <th>Protal Image</th>
+                    <th>Protal Name</th>
+                    <th>Source User</th>
+                    <th>Recall Amount</th>
+                    <th>TxID</th>
+                    <th>Date</th>
+                    <th>Create By</th>
+                    <th>Source Table</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+</div>
+</div>
+</div>
+  @endsection

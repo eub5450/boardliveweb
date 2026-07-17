@@ -1,0 +1,122 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
+
+class AdminParmisiton extends Model
+{
+    protected $table = 'adminparmisiton';
+
+    protected $fillable = [
+        'user_id',
+        'permission_key',
+        'permission_label',
+        'permission_group',
+        'is_allowed',
+        'created_by',
+        'updated_by',
+    ];
+
+    public static function definitions(): array
+    {
+        return [
+            'sidebar_access' => ['group' => 'Sidebar', 'label' => 'Open Admin Sidebar / Panel'],
+            'sidebar_coin_balance' => ['group' => 'Sidebar', 'label' => 'Sidebar Coin Balance Badge'],
+            'sidebar_protal' => ['group' => 'Sidebar', 'label' => 'Protal Menu'],
+            'sidebar_user_balance' => ['group' => 'Sidebar', 'label' => 'User Balance Menu'],
+            'sidebar_coin_generate' => ['group' => 'Sidebar', 'label' => 'Coin Generate Menu'],
+            'sidebar_game_control' => ['group' => 'Sidebar', 'label' => 'Game Control Menu'],
+            'sidebar_setting_country' => ['group' => 'Sidebar', 'label' => 'Settings Country Menu'],
+            'sidebar_setting_gift_data' => ['group' => 'Sidebar', 'label' => 'Settings Gift Data Menu'],
+            'sidebar_setting_agora' => ['group' => 'Sidebar', 'label' => 'Settings Agora Menu'],
+            'sidebar_setting_email_change' => ['group' => 'Sidebar', 'label' => 'Settings Email Change Menu'],
+            'sidebar_setting_admin' => ['group' => 'Sidebar', 'label' => 'Settings Admin Menu'],
+            'sidebar_setting_audio_background' => ['group' => 'Sidebar', 'label' => 'Settings Audio Background Menu'],
+
+            'dashboard_access' => ['group' => 'Dashboard', 'label' => 'Open Dashboard'],
+            'dashboard_vip_offer' => ['group' => 'Dashboard', 'label' => 'VIP Offer Button'],
+            'dashboard_version_update' => ['group' => 'Dashboard', 'label' => 'Android Version Update Button'],
+            'dashboard_country_game_balance_cards' => ['group' => 'Dashboard', 'label' => 'Country Game Balance Cards'],
+            'dashboard_profit_loss' => ['group' => 'Dashboard', 'label' => 'Profit / Loss Card'],
+            'dashboard_total_serve_coin' => ['group' => 'Dashboard', 'label' => 'Total Serve Coin Card'],
+            'dashboard_coin_generate_game' => ['group' => 'Dashboard', 'label' => 'Coin Generate + Game Cards'],
+
+            'profile_balance' => ['group' => 'Profile', 'label' => 'Profile Balance'],
+            'profile_sensitive_info' => ['group' => 'Profile', 'label' => 'Profile Email / NID / Phone / VIP Info'],
+            'profile_other_ids' => ['group' => 'Profile', 'label' => 'Other IDs From Same IMEI'],
+            'profile_power_buttons' => ['group' => 'Profile', 'label' => 'Power Buttons'],
+            'profile_vip_frames_edit' => ['group' => 'Profile', 'label' => 'VIP / Entry / Special Frame / Profile Edit'],
+            'profile_password_daytime' => ['group' => 'Profile', 'label' => 'Change Password / Add Day Time'],
+
+            'setting_admin_manage' => ['group' => 'Admin Setting', 'label' => 'Manage Admin Permissions'],
+        ];
+    }
+
+    public static function groupedDefinitions(): array
+    {
+        $groups = [];
+        foreach (self::definitions() as $key => $definition) {
+            $groups[$definition['group']][$key] = $definition['label'];
+        }
+        return $groups;
+    }
+
+    public static function allowed($userId, string $permissionKey, bool $default = false): bool
+    {
+        if (!$userId) {
+            return false;
+        }
+
+        if (!Schema::hasTable('adminparmisiton')) {
+            return $default;
+        }
+
+        $cacheKey = 'adminparmisiton:'.(int) $userId.':'.$permissionKey;
+        return (bool) Cache::remember($cacheKey, 60, function () use ($userId, $permissionKey, $default) {
+            $row = self::where('user_id', (int) $userId)
+                ->where('permission_key', $permissionKey)
+                ->first();
+
+            return $row ? (bool) $row->is_allowed : $default;
+        });
+    }
+
+    public static function syncUserPermissions(int $userId, array $enabledKeys, ?int $actorId = null): void
+    {
+        $enabled = array_flip($enabledKeys);
+        foreach (self::definitions() as $key => $definition) {
+            self::updateOrCreate(
+                ['user_id' => $userId, 'permission_key' => $key],
+                [
+                    'permission_label' => $definition['label'],
+                    'permission_group' => $definition['group'],
+                    'is_allowed' => isset($enabled[$key]) ? 1 : 0,
+                    'updated_by' => $actorId,
+                    'created_by' => $actorId,
+                ]
+            );
+            Cache::forget('adminparmisiton:'.$userId.':'.$key);
+        }
+    }
+
+    public static function matrixForUsers($userIds): array
+    {
+        $ids = collect($userIds)->map(function ($id) {
+            return (int) $id;
+        })->filter()->unique()->values();
+
+        if ($ids->isEmpty() || !Schema::hasTable('adminparmisiton')) {
+            return [];
+        }
+
+        $matrix = [];
+        self::whereIn('user_id', $ids)->get()->each(function ($row) use (&$matrix) {
+            $matrix[(int) $row->user_id][$row->permission_key] = (int) $row->is_allowed === 1;
+        });
+
+        return $matrix;
+    }
+}

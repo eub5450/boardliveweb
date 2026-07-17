@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BD GameFinal cPanel Subdomain Deployment Guide</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#0b1020;color:#edf3ff;font-family:Inter,Arial,sans-serif;line-height:1.6}.wrap{max-width:980px;margin:0 auto;padding:32px 18px 60px}h1,h2,h3{line-height:1.2;color:#fff}h1{font-size:34px;margin:0 0 10px}h2{margin-top:34px;padding-top:18px;border-top:1px solid rgba(255,255,255,.14)}p,li{color:#cbd7ef}.card{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:18px;margin:16px 0;box-shadow:0 18px 40px rgba(0,0,0,.22)}code,kbd{background:#111a33;border:1px solid rgba(255,255,255,.12);padding:2px 6px;border-radius:6px;color:#ffe39a}pre{overflow:auto;background:#050812;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px;color:#dbe7ff}a{color:#8bd3ff}.ok{color:#9ff0bd}.warn{color:#ffd28b}.bad{color:#ff9ca8}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.pill{padding:10px 12px;border-radius:999px;background:rgba(139,211,255,.1);border:1px solid rgba(139,211,255,.18);color:#dff4ff}@media(max-width:640px){h1{font-size:27px}.wrap{padding:22px 12px 42px}.card{padding:14px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <h1>BD GameFinal cPanel Subdomain Deployment Guide</h1>
+  <p>This guide explains how to upload and run the Laravel game project on a cPanel subdomain such as <code>play.example.com</code>. It includes file placement, database import, environment settings, cron setup, and test steps.</p>
+
+  <div class="grid">
+    <div class="pill">Lobby: <code>/play_bd_game</code></div>
+    <div class="pill">Game entry: <code>/game/{gameCode}/e</code></div>
+    <div class="pill">App access: <code>/game/{gameCode}/app-access</code></div>
+    <div class="pill">API: <code>/game/api/{gameCode}/...</code></div>
+  </div>
+
+  <h2>1. What Is Inside The Zip</h2>
+  <div class="card">
+    <ul>
+      <li>Laravel 10 game runtime.</li>
+      <li>22 configured GameFinal games.</li>
+      <li>Premium mobile lobby with banner-only game cards.</li>
+      <li>Teen Patti, Lucky 7/77/88, and Fruit Slot UI assets.</li>
+      <li>App access flow for APK/webview clients.</li>
+      <li>Game-related SQL dump in the package database folder.</li>
+      <li>Production verifier command: <code>php artisan bdgamefinal:verify-production</code>.</li>
+    </ul>
+  </div>
+
+  <h2>2. Create The Subdomain</h2>
+  <div class="card">
+    <ol>
+      <li>Open cPanel.</li>
+      <li>Go to <b>Domains</b> or <b>Subdomains</b>.</li>
+      <li>Create a subdomain, for example <code>play.example.com</code>.</li>
+      <li>Set the document root to the Laravel public folder if cPanel allows it: <code>/home/USER/play/public</code>.</li>
+      <li>If cPanel forces a root like <code>/home/USER/public_html/play</code>, upload the project there and point requests to the included <code>public/index.php</code>.</li>
+    </ol>
+  </div>
+
+  <h2>3. Upload Files</h2>
+  <div class="card">
+    <ol>
+      <li>Upload the generated project zip to the subdomain folder.</li>
+      <li>Extract it.</li>
+      <li>Make sure these paths exist:
+        <ul>
+          <li><code>artisan</code></li>
+          <li><code>bootstrap/app.php</code></li>
+          <li><code>public/index.php</code></li>
+          <li><code>public/game_final_assets</code></li>
+          <li><code>storage</code></li>
+        </ul>
+      </li>
+      <li>Set folder permissions:
+        <ul>
+          <li><code>storage</code>: writable</li>
+          <li><code>bootstrap/cache</code>: writable</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <h2>4. Create Database And Import SQL</h2>
+  <div class="card">
+    <ol>
+      <li>In cPanel, open <b>MySQL Databases</b>.</li>
+      <li>Create a database, for example <code>cpuser_play</code>.</li>
+      <li>Create a database user and password.</li>
+      <li>Add the user to the database with all privileges.</li>
+      <li>Open <b>phpMyAdmin</b>, select the database, and import the SQL file from the zip.</li>
+    </ol>
+    <p>The package includes a game-related dump named like:</p>
+    <pre>database/game_final_cpanel.sql</pre>
+  </div>
+
+  <h2>5. Configure .env</h2>
+  <div class="card">
+    <p>Create or edit <code>.env</code> in the project root. Important values:</p>
+    <pre>APP_NAME="BD GameFinal"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://play.example.com
+
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=cpuser_play
+DB_USERNAME=cpuser_playuser
+DB_PASSWORD=YOUR_DB_PASSWORD
+
+CACHE_DRIVER=file
+SESSION_DRIVER=file
+QUEUE_CONNECTION=sync
+BROADCAST_DRIVER=log
+
+BD_GAME_FINAL_REALTIME_ENABLED=false
+BD_GAME_FINAL_DISPATCH_VIA_QUEUE=false
+BD_GAME_FINAL_CACHE_STORE=file
+BD_GAME_FINAL_POLL_FALLBACK_MS=1500
+BD_GAME_FINAL_ALLOWED_APP_PACKAGES=com.jambo.app,com.example.games
+BD_GAME_FINAL_DEVELOPER_PASSWORD=CHANGE_THIS_TO_A_STRONG_24_CHAR_SECRET</pre>
+    <p class="warn">Use a strong developer password in production. Do not keep a short test password.</p>
+  </div>
+
+  <h2>6. Run Laravel Commands</h2>
+  <div class="card">
+    <p>Use cPanel Terminal or SSH:</p>
+    <pre>cd /home/USER/play
+php artisan key:generate --force
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan bdgamefinal:verify-production</pre>
+    <p>If Composer dependencies are not included or need refresh:</p>
+    <pre>composer install --no-dev --optimize-autoloader</pre>
+  </div>
+
+  <h2>7. Round Loop / Cron Job</h2>
+  <div class="card">
+    <p>The games need the round loop to advance betting, stop-bet, result, payout, and next-round phases.</p>
+    <p>Preferred cron command every minute:</p>
+    <pre>* * * * * cd /home/USER/play && php artisan bdgamefinal:tick >> /dev/null 2>&1</pre>
+    <p>If your host supports a long-running process, you can use:</p>
+    <pre>php artisan bdgamefinal:watch --sleep=1</pre>
+    <p class="warn">Most shared cPanel hosts do not allow permanent long-running commands, so cron tick is safer.</p>
+  </div>
+
+  <h2>8. App / WebView Access</h2>
+  <div class="card">
+    <p>For app wrappers, open:</p>
+    <pre>https://play.example.com/game/teen_patti/app-access?app_package=com.jambo.app</pre>
+    <p>If package verification is allowed, the user is redirected into the game automatically. Otherwise, the password page appears.</p>
+    <p>Lobby URL:</p>
+    <pre>https://play.example.com/play_bd_game</pre>
+  </div>
+
+  <h2>9. Test Checklist</h2>
+  <div class="card">
+    <ul>
+      <li class="ok">Open <code>/play_bd_game</code> on mobile and desktop.</li>
+      <li class="ok">Tap each lobby banner and confirm it enters the correct game.</li>
+      <li class="ok">Confirm betting countdown appears only during betting.</li>
+      <li class="ok">Place a small bet and confirm balance updates.</li>
+      <li class="ok">Wait for stop-bet, reveal, winner popup, payout, and next round.</li>
+      <li class="ok">Run <code>php artisan bdgamefinal:verify-production</code>.</li>
+      <li class="ok">Check <code>storage/logs/laravel.log</code> for errors.</li>
+    </ul>
+  </div>
+
+  <h2>10. Common Problems</h2>
+  <div class="card">
+    <h3>401 Unauthorized</h3>
+    <p>Use the approved app-access or lobby-first flow with a valid user session.</p>
+    <h3>500 Server Error</h3>
+    <p>Check <code>storage/logs/laravel.log</code>. Common causes are missing database tables, wrong DB password, unwritable storage, or missing required user columns.</p>
+    <h3>Rounds Not Moving</h3>
+    <p>Add the cron job for <code>php artisan bdgamefinal:tick</code>.</p>
+    <h3>Images Missing</h3>
+    <p>Confirm <code>public/game_final_assets</code> uploaded fully and the subdomain document root points to <code>public</code>.</p>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<?php
+
+namespace App\Helpers;
+
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Gift;
+use App\Models\LiveCall;
+use App\Models\UserLive;
+use App\Models\Withdraw;
+use Illuminate\Support\Facades\DB;
+
+class AudioLiveStreamHelper
+{
+    /* ==========================================================
+     *  ACCESS TOKEN VALIDATION
+     * ========================================================== */
+    public static function validateAccessToken($token)
+    {
+        return $token === "0411f0028cfb768b3a3d96ac3aa37dw3e5";
+    }
+
+    /* ==========================================================
+     *  CACHE KEY HELPERS
+     * ========================================================== */
+    public static function getRoomCacheKey($channelName, $host_id)
+    {
+        return "audio_room_cache_{$channelName}_{$host_id}";
+    }
+
+    /* Clear room cache when ANY data changes */
+    public static function clearRoomCache($channelName, $host_id)
+    {
+        cache()->forget(self::getRoomCacheKey($channelName, $host_id));
+    }
+
+    /* ==========================================================
+     *  MAIN ROOM CACHED STATE
+     * ========================================================== */
+    public static function getRoomStateCached($channelName, $host_id)
+    {
+        $key = self::getRoomCacheKey($channelName, $host_id);
+
+
+        return cache()->rememberForever($key, function () use ($channelName, $host_id) {
+
+            $listData  = self::generateHostList($channelName, $host_id);
+            $balance   = self::calculateHostBalance($host_id);
+            $starData  = self::calculateStarLevel($host_id);
+
+            return [
+                "host_list"              => $listData["host_list"],
+                "co_host_list"           => $listData["co_host_list"],
+                "host_balance"           => $balance,
+                "star"                   => $starData["star"],
+                "star_complete_percent"  => $starData["star_complete_percent"],
+            ];
+        });
+    }
+
+    /* ==========================================================
+     *  HALF-MONTH DATE RANGE
+     * ========================================================== */
+    public static function getHalfMonthDateRange()
+    {
+        $date = Carbon::now(config('app.timezone', 'Europe/London'));
+
+
+        return [
+             $date->copy()->startOfMonth()->toDateString(),
+            $date->copy()->endOfMonth()->toDateString()
+        ];
+    }
+
+    /* ==========================================================
+     *  HOST BALANCE
+     * ========================================================== */
+    public static function calculateHostBalance($host_id)
+    {
+        $host = User::find($host_id);
+        if (!$host) return 0;
+
+        [$start_date, $end_date] = self::getHalfMonthDateRange();
+
+        $total_gift_coin = Gift::where('reciever_id', $host_id)
+            ->whereDate('date', '>=', $start_date)
+            ->whereDate('date', '<=', $end_date)
+            ->sum('value');
+
+        $total_withdraw = Withdraw::where('host_id', $host_id)
+            ->whereDate('date', '>=', $start_date)
+            ->whereDate('date', '<=', $end_date)
+            ->sum('total');
+
+        return ($host->previous_coin + $total_gift_coin) - $total_withdraw;
+    }
+
+    /* ==========================================================
+     *  STAR LEVEL
+     * ========================================================== */
+    public static function calculateStarLevel($host_id)
+    {
+        $today = Carbon::now(config('app.timezone', 'Europe/London'))->toDateString();
+        $today_gift = Gift::where('reciever_id', $host_id)
+            ->whereDate('date', $today)
+            ->sum('value');
+
+        $ranges = [
+            ['min' => 0,       'max' => 49999,    'star' => 1, 'next' => 50000],
+            ['min' => 50000,   'max' => 199999,   'star' => 2, 'next' => 200000],
+            ['min' => 200000,  'max' => 499999,   'star' => 3, 'next' => 500000],
+            ['min' => 500000,  'max' => 999999,   'star' => 4, 'next' => 1000000],
+            ['min' => 1000000, 'max' => 1999999,  'star' => 5, 'next' => 2000000],
+            ['min' => 2000000, 'max' => 19999999, 'star' => 5, 'next' => 20000000],
+        ];
+
+        foreach ($ranges as $r) {
+
+            if ($today_gift >= $r["min"] && $today_gift <= $r["max"]) {
+
+                $percent = intval(($today_gift / $r["next"]) * 100);
+
+                return [
+                    "star"                  => $r["star"],
+                    "star_complete_percent" => $percent,
+                    "today_gift"            => $today_gift,
+                ];
+            }
+        }
+
+        return [
+            "star"                  => 5,
+            "star_complete_percent" => 100,
+            "today_gift"            => $today_gift
+        ];
+    }
+
+    /* ==========================================================
+     *  HOST + COHOST LIST (Optimized)
+     * ========================================================== */
+    public static function generateHostList($channelName, $host_id)
+    {
+        $host = User::find($host_id);
+        if (!$host) {
+            return ["host_list" => [], "co_host_list" => []];
+        }
+
+        $live = UserLive::where("channelName", $channelName)
+            ->where("user_id", $host_id)
+            ->first();
+
+        $acceptCalls = LiveCall::where("channelName", $channelName)
+            ->where("host_id", $host_id)
+            ->where("status", "Accept")
+            ->get(["co_host_id", "set_no", "mute", "is_co_host_active"]);
+
+        $userIds = array_unique(
+            array_merge([$host_id], $acceptCalls->pluck("co_host_id")->toArray())
+        );
+
+        $users = User::whereIn("id", $userIds)->get()->keyBy("id");
+
+        $giftSums = Gift::where("channelName", $channelName)
+            ->whereIn("reciever_id", $userIds)
+            ->select("reciever_id", DB::raw("SUM(value) as total"))
+            ->groupBy("reciever_id")
+            ->pluck("total", "reciever_id");
+
+        $hostList = [];
+        $coHostList = [];
+
+        // HOST SEAT
+        $hostList[] = [
+            "channelName"    => $channelName,
+            "profile"        => $host->profile,
+            "is_vip"         => $host->is_vip,
+            "balance"        => $giftSums[$host_id] ?? 0,
+            "co_host_name"   => $host->name,
+            "set_no"         => "0",
+            "mute"           => $live ? strval($live->mute) : "0",
+            "frame"          => strval($host->frame),
+            "co_host_id"     => strval($host->id),
+            "co_host_status" => "accept",
+            "emoji"          => "0",
+        ];
+
+        foreach ($acceptCalls as $call) {
+
+            if (!isset($users[$call->co_host_id])) continue;
+
+            $u = $users[$call->co_host_id];
+
+            $row = [
+                "channelName"    => $channelName,
+                "profile"        => $u->profile,
+                "is_vip"         => $u->is_vip,
+                "balance"        => $giftSums[$call->co_host_id] ?? 0,
+                "co_host_name"   => $u->name,
+                "set_no"         => strval($call->set_no),
+                "mute"           => strval($call->mute),
+                "frame"          => strval($u->frame),
+                "co_host_id"     => strval($call->co_host_id),
+                "co_host_status" => strval($call->is_co_host_active),
+                "emoji"          => "0",
+            ];
+
+            $hostList[]   = $row;
+            $coHostList[] = $row;
+        }
+
+        return [
+            "host_list"    => $hostList,
+            "co_host_list" => $coHostList
+        ];
+    }
+
+    /* ==========================================================
+     *  FIREBASE PENDING CALL COUNT
+     * ========================================================== */
+    public static function updateCallRequestCount($channelName, $database)
+    {
+        $count = LiveCall::where("status", "pending")
+            ->where("channelName", $channelName)
+            ->count();
+
+        $database
+            ->getReference("call_request/{$channelName}")
+            ->set(["call_count" => strval($count)]);
+
+        return $count;
+    }
+
+    /* ==========================================================
+     *  SENDER LEVEL SYSTEM
+     * ========================================================== */
+    public static function calculateSenderLevel(User $user)
+    {
+        $total = $user->total_sent_gifts;
+
+        $levels = [
+            1 => 0,
+            2 => 10000,
+            3 => 50001,
+            4 => 100001,
+            5 => 150001,
+            6 => 200001,
+            7 => 400001,
+            8 => 600001,
+            9 => 800001,
+            10 => 1000001,
+            11 => 1200001,
+            12 => 2200001,
+            13 => 3200001,
+            14 => 4200001,
+            15 => 5200001,
+            16 => 6200001,
+            17 => 8200001,
+            18 => 10200001,
+            19 => 12200001,
+            20 => 14200001,
+            21 => 16200001,
+            22 => 19200001,
+            23 => 22200001,
+            24 => 25200001,
+            25 => 28200001,
+            26 => 31200001,
+            27 => 40000001,
+            28 => 50000001,
+            29 => 60000001,
+            30 => 70000001,
+            31 => 80000001,
+            32 => 100000001,
+            33 => 120000001,
+            34 => 140000001,
+            35 => 160000001,
+            36 => 180000001,
+            37 => 200000001,
+            38 => 220000001,
+            39 => 240000001,
+            40 => 260000001,
+            41 => 280000001,
+            42 => 330000001,
+            43 => 380000001,
+            44 => 430000001,
+            45 => 480000001,
+            46 => 530000001,
+            47 => 580000001,
+            48 => 630000001,
+            49 => 680000001,
+        ];
+
+        $level = 1;
+
+        foreach ($levels as $lvl => $required) {
+            if ($total >= $required) {
+                $level = $lvl;
+            } else {
+                break;
+            }
+        }
+
+        return $level;
+    }
+}

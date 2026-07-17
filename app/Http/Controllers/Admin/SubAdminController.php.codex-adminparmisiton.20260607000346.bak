@@ -1,0 +1,92 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\User;
+use Auth;
+use Illuminate\Support\Facades\Hash;
+
+class SubAdminController extends Controller
+{
+    public function Index(Request $request)
+    {
+        $this->authorizeOwner();
+
+        $query = trim((string) $request->get('q', ''));
+        $users = User::query()
+            ->whereIn('is_admin', [1, 2, 3])
+            ->when($query !== '', function ($builder) use ($query) {
+                $builder->where(function ($search) use ($query) {
+                    $search->where('id', $query)
+                        ->orWhere('email', 'like', '%'.$query.'%')
+                        ->orWhere('name', 'like', '%'.$query.'%');
+                });
+            })
+            ->orderBy('is_admin', 'desc')
+            ->orderBy('id', 'asc')
+            ->limit(200)
+            ->get();
+
+        $accessLevels = $this->accessLevels();
+
+        return view('backend.setting.subadmin', compact('users', 'accessLevels', 'query'));
+    }
+
+    public function Update(Request $request)
+    {
+        $this->authorizeOwner();
+
+        $request->validate([
+            'target_user' => 'required',
+            'is_admin' => 'required|integer|in:0,1,2,3',
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        $target = trim((string) $request->target_user);
+        $user = User::where('id', $target)->orWhere('email', $target)->first();
+
+        if (!$user) {
+            return Redirect()->back()->withInput()->with([
+                'messege' => 'User not found',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        if ((int) $user->id === (int) Auth::id() && (int) $request->is_admin === 0) {
+            return Redirect()->back()->withInput()->with([
+                'messege' => 'You cannot remove your own admin access',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        $user->is_admin = (int) $request->is_admin;
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+        $user->save();
+
+        return Redirect()->back()->with([
+            'messege' => 'Admin access updated successfully',
+            'alert-type' => 'success',
+        ]);
+    }
+
+    private function authorizeOwner(): void
+    {
+        if ((int) Auth::id() !== 11133) {
+            abort(403, 'Only owner admin can manage subadmin access.');
+        }
+    }
+
+    private function accessLevels(): array
+    {
+        return [
+            0 => 'Normal User',
+            1 => 'Main Admin Panel',
+            2 => 'Country Admin Panel',
+            3 => 'Sub Admin Panel',
+        ];
+    }
+}

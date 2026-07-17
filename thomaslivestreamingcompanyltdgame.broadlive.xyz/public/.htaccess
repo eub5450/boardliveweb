@@ -1,0 +1,50 @@
+DirectoryIndex index.php
+Options -Indexes
+ServerSignature Off
+
+<IfModule mod_authz_core.c>
+    <FilesMatch "(^\.|\.env|composer\.(json|lock)$|package(-lock)?\.json$|webpack\.mix\.js$|artisan$|README|CHANGELOG|LICENSE|\.md$|\.sql$|\.log$|\.bak$|\.old$|\.ini$|\.sh$|\.bat$|\.ps1$)">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+    <FilesMatch "(^\.|\.env|composer\.(json|lock)$|package(-lock)?\.json$|webpack\.mix\.js$|artisan$|README|CHANGELOG|LICENSE|\.md$|\.sql$|\.log$|\.bak$|\.old$|\.ini$|\.sh$|\.bat$|\.ps1$)">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Block sensitive files even if this directory is used as the document root.
+    RewriteRule (^|/)(\.env|\.env\..*|composer\.(json|lock)|package(-lock)?\.json|webpack\.mix\.js|artisan|phpunit\.xml|server\.php|.*\.(md|sql|log|bak|old|ini|sh|bat|ps1))$ - [F,L,NC]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Serve game assets with a fresh-first policy on deploy/runtime start.
+<IfModule mod_headers.c>
+    <FilesMatch "^game_final_assets/.+\.(css|js|png|jpg|jpeg|gif|webp|svg|woff2?|ttf|eot|otf)$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+</IfModule>

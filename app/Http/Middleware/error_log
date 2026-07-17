@@ -1,0 +1,4 @@
+[25-May-2026 22:31:55 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Auth\Middleware\Authenticate" not found in /home/broadlive/public_html/app/Http/Middleware/Authenticate.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/broadlive/public_html/app/Http/Middleware/Authenticate.php on line 7

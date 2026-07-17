@@ -1,0 +1,25 @@
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+
+# Added when this repo was set up as a git-tracked mirror of the live
+# production source (2026-07-17) - see D:\Work File\Project\Broadlive\Backend
+/storage
+/store
+/public/store
+/bootstrap/cache/*.php
+*firebase*adminsdk*.json
+*.tar.gz
+*service-account*.json
+*.pem
+*.key
+id_rsa*

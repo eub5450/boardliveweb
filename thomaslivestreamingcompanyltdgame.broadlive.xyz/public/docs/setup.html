@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Guide - Thomas Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            margin: -40px -40px 40px -40px;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .language-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .lang-btn {
+            padding: 8px 15px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .lang-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        h3 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+        
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #333;
+        }
+        
+        .note {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header {
+                margin: -20px -20px 30px -20px;
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.5em;
+            }
+            
+            .language-switch {
+                position: static;
+                justify-content: center;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="language-switch">
+                <button class="lang-btn active" onclick="switchLanguage('en')">English</button>
+                <button class="lang-btn" onclick="switchLanguage('bn')">বাংলা</button>
+            </div>
+            <h1 id="title">Setup Guide</h1>
+            <p id="subtitle">Complete installation and configuration instructions</p>
+        </header>
+        
+        <a href="index.html" class="back-link">← Back to Documentation</a>
+        
+        <!-- English Content -->
+        <div id="en-content">
+            <h2>🚀 Server Setup Instructions</h2>
+            
+            <h3>Requirements</h3>
+            <ul>
+                <li>PHP 8.1 or higher</li>
+                <li>MySQL or MariaDB</li>
+                <li>Composer</li>
+                <li>Web server (Apache/Nginx) with document root pointing to the Laravel app</li>
+            </ul>
+            
+            <h3>Step 1: Environment Setup</h3>
+            <ol>
+                <li>Copy <code>.env.example</code> to <code>.env</code></li>
+                <li>Edit <code>.env</code> with your settings:
+                    <pre><code>APP_NAME="Thomas Game"
+APP_URL=https://fairylive.online
+
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=play
+DB_USERNAME=root
+DB_PASSWORD=your_password
+
+APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxx</code></pre>
+                </li>
+            </ol>
+            
+            <h3>Step 2: Install Dependencies</h3>
+            <pre><code>composer install --no-dev --optimize-autoloader</code></pre>
+            
+            <h3>Step 3: Generate Application Key</h3>
+            <pre><code>php artisan key:generate</code></pre>
+            
+            <h3>Step 4: Database Setup</h3>
+            <p>Option A: Import from database dump</p>
+            <pre><code>mysql -u root -p play < database/dumps/thomas-game.sql</code></pre>
+            
+            <p>Option B: Run migrations</p>
+            <pre><code>php artisan migrate</code></pre>
+            
+            <h3>Step 5: Clear Cache</h3>
+            <pre><code>php artisan optimize:clear</code></pre>
+            
+            <h3>Step 6: Start Game Round Loop</h3>
+            <p>This process handles game rounds and settlements:</p>
+            <pre><code>php artisan bdgamefinal:watch --sleep=1</code></pre>
+            
+            <div class="note">
+                <strong>💡 Note:</strong> The <code>bdgamefinal:watch</code> command should run continuously. Use a process manager like Supervisor or PM2 to keep it running.
+            </div>
+            
+            <h3>Supervisor Configuration (Recommended)</h3>
+            <p>Create <code>/etc/supervisor/conf.d/thomas-game.conf</code>:</p>
+            <pre><code>[program:thomas-game-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /path/to/play/artisan bdgamefinal:watch --sleep=1
+autostart=true
+autorestart=true
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/path/to/play/storage/logs/worker.log</code></pre>
+            
+            <p>Then reload supervisor:</p>
+            <pre><code>sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start thomas-game-worker:*</code></pre>
+            
+            <h3>Web Server Configuration</h3>
+            <p><strong>Apache (.htaccess):</strong> Usually already configured</p>
+            
+            <p><strong>Nginx:</strong></p>
+            <pre><code>server {
+    listen 80;
+    server_name fairylive.online;
+    root /path/to/play/public;
+    
+    index index.php;
+    
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}</code></pre>
+            
+            <div class="warning">
+                <strong>⚠️ Important:</strong> Always use HTTPS in production. Install an SSL certificate using Let's Encrypt.
+            </div>
+            
+            <h3>Verification</h3>
+            <ol>
+                <li>Visit your game lobby: <code>https://yoursite.com/play_bd_game</code></li>
+                <li>Check logs: <code>storage/logs/laravel.log</code></li>
+                <li>Test API: <code>https://yoursite.com/game/api/lucky88_master/status</code></li>
+            </ol>
+        </div>
+        
+        <!-- Bengali Content -->
+        <div id="bn-content" class="hidden">
+            <h2>🚀 সার্ভার সেটআপ নির্দেশাবলী</h2>
+            
+            <h3>প্রয়োজনীয়তা</h3>
+            <ul>
+                <li>PHP 8.1 বা উচ্চতর</li>
+                <li>MySQL বা MariaDB</li>
+                <li>Composer</li>
+                <li>ওয়েব সার্ভার (Apache/Nginx) Laravel অ্যাপের সাথে সংযুক্ত</li>
+            </ul>
+            
+            <h3>ধাপ ১: পরিবেশ সেটআপ</h3>
+            <ol>
+                <li><code>.env.example</code> থেকে <code>.env</code> কে কপি করুন</li>
+                <li><code>.env</code> সম্পাদনা করুন আপনার সেটিংস দিয়ে:
+                    <pre><code>APP_NAME="Thomas Game"
+APP_URL=https://fairylive.online
+
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=play
+DB_USERNAME=root
+DB_PASSWORD=আপনার_পাসওয়ার্ড
+
+APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxx</code></pre>
+                </li>
+            </ol>
+            
+            <h3>ধাপ ২: নির্ভরতা ইনস্টল করুন</h3>
+            <pre><code>composer install --no-dev --optimize-autoloader</code></pre>
+            
+            <h3>ধাপ ৩: অ্যাপ্লিকেশন কী তৈরি করুন</h3>
+            <pre><code>php artisan key:generate</code></pre>
+            
+            <h3>ধাপ ৪: ডাটাবেস সেটআপ</h3>
+            <p>বিকল্প A: ডাটাবেস ডাম্প থেকে আমদানি করুন</p>
+            <pre><code>mysql -u root -p play < database/dumps/thomas-game.sql</code></pre>
+            
+            <p>বিকল্প B: মাইগ্রেশন চালান</p>
+            <pre><code>php artisan migrate</code></pre>
+            
+            <h3>ধাপ ৫: ক্যাশ সাফ করুন</h3>
+            <pre><code>php artisan optimize:clear</code></pre>
+            
+            <h3>ধাপ ৬: গেম রাউন্ড লুপ শুরু করুন</h3>
+            <p>এই প্রক্রিয়াটি গেম রাউন্ড এবং নিষ্পত্তি পরিচালনা করে:</p>
+            <pre><code>php artisan bdgamefinal:watch --sleep=1</code></pre>
+            
+            <div class="note">
+                <strong>💡 নোট:</strong> <code>bdgamefinal:watch</code> কমান্ডটি ক্রমাগত চলবে। এটি চালু রাখতে Supervisor বা PM2 ব্যবহার করুন।
+            </div>
+            
+            <h3>Supervisor কনফিগারেশন (সুপারিশকৃত)</h3>
+            <p><code>/etc/supervisor/conf.d/thomas-game.conf</code> তৈরি করুন:</p>
+            <pre><code>[program:thomas-game-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /পথ/থেকে/play/artisan bdgamefinal:watch --sleep=1
+autostart=true
+autorestart=true
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/পথ/থেকে/play/storage/logs/worker.log</code></pre>
+            
+            <p>তারপর supervisor পুনরায় লোড করুন:</p>
+            <pre><code>sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start thomas-game-worker:*</code></pre>
+            
+            <h3>ওয়েব সার্ভার কনফিগারেশন</h3>
+            <p><strong>Apache (.htaccess):</strong> সাধারণত ইতিমধ্যে কনফিগার করা থাকে</p>
+            
+            <p><strong>Nginx:</strong></p>
+            <pre><code>server {
+    listen 80;
+    server_name fairylive.online;
+    root /পথ/থেকে/play/public;
+    
+    index index.php;
+    
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}</code></pre>
+            
+            <div class="warning">
+                <strong>⚠️ গুরুত্বপূর্ণ:</strong> উৎপাদনে সর্বদা HTTPS ব্যবহার করুন। Let's Encrypt ব্যবহার করে SSL সার্টিফিকেট ইনস্টল করুন।
+            </div>
+            
+            <h3>যাচাইকরণ</h3>
+            <ol>
+                <li>আপনার গেম লবি পরিদর্শন করুন: <code>https://আপনারসাইট.com/play_bd_game</code></li>
+                <li>লগ পরীক্ষা করুন: <code>storage/logs/laravel.log</code></li>
+                <li>API পরীক্ষা করুন: <code>https://আপনারসাইট.com/game/api/lucky88_master/status</code></li>
+            </ol>
+        </div>
+    </div>
+    
+    <script>
+        function switchLanguage(lang) {
+            document.getElementById('en-content').classList.add('hidden');
+            document.getElementById('bn-content').classList.add('hidden');
+            document.getElementById(lang + '-content').classList.remove('hidden');
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            localStorage.setItem('setupLanguage', lang);
+        }
+        
+        // Restore language preference
+        const savedLang = localStorage.getItem('setupLanguage') || 'en';
+        if (savedLang === 'bn') {
+            switchLanguage('bn');
+            document.querySelectorAll('.lang-btn')[1].classList.add('active');
+        }
+    </script>
+</body>
+</html>

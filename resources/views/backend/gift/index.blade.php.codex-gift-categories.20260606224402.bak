@@ -1,0 +1,179 @@
+@extends('backend.layouts.main')
+@section('title')
+Create New Agency
+@endsection
+@section('content')
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
+<!--Content Start-->
+<div class="body-content">
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <h4 class="text-center font-weight-bold font-italic mt-3">New Gift</h4>
+                </div>
+            </div>
+            <form action="{{URL::to('admin-gift-data-store')}}" method="post" enctype="multipart/form-data" class="form-inline">
+                @csrf
+
+               
+            <div class="form-group col-md-6 mb-3">
+                <label for="name" class="col-sm-4 col-form-label text-right">Name *</label>
+                <input type="text"  name="name" class="form-control col-sm-8" placeholder="Enter Gift Name" value="" id="deposit" required>
+                <span class="text-danger"></span>
+            </div> 
+            <div class="form-group col-md-6 mb-3">
+                <label for="name" class="col-sm-4 col-form-label text-right">Amount *</label>
+                <input type="text"  name="value" class="form-control col-sm-8" placeholder="Enter Gift Value" value="" id="deposit" required>
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6 mb-3">
+                <label for="name" class="col-sm-4 col-form-label text-right">Image Name(.png) *</label>
+                <input type="text"  name="image_name" class="form-control col-sm-8" placeholder="Enter Gift image Name" value="" id="deposit" required>
+                <span class="text-danger"></span>
+            </div>
+            
+            <div class="form-group col-md-6 mb-3">
+                <label for="name" class="col-sm-4 col-form-label text-right"> Image * </label>
+                <input type="file"  name="image" class="form-control col-sm-8"  value="" id="deposit" required>
+                <span class="text-danger"></span>
+            </div>
+             <div class="form-group col-md-6 mb-3">
+                <label for="name" class="col-sm-4 col-form-label text-right">Svga Name(.svga) *</label>
+                <input type="text"  name="svga_name" class="form-control col-sm-8" placeholder="Enter Gift .Svga" value="" id="deposit" required>
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6 mb-3">
+                <label for="name" class="col-sm-4 col-form-label text-right"> SVGA * </label>
+                <input type="file"  name="svga" class="form-control col-sm-8"  value="" id="deposit" required>
+                <span class="text-danger"></span>
+            </div>
+ <div class="form-group col-md-6 mb-3">
+                    <label for="member" class="col-sm-4 col-form-label text-right">Category</label>
+                    <select name="category" class="form-control select_agency_id" required="" id="user_id">
+                      
+                       <option value="1">Popular</option>
+                       <option value="2">Luxury</option>
+                       <option value="3">Fastival</option>
+                       <option value="4">Entry</option>
+                       <option value="5">frame</option>
+                  
+                   </select>
+                   <span class="text-danger"></span>
+                </div>
+
+            <div class="form-group col-md-12 mb-3">
+                <button type="submit" class="btn btn-success">Active</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+<div class="body-content">
+  <div class="card mb-4">
+    <div class="card-body">
+      <section class="forms">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <h4> Gift List</h4>
+                </div>
+              <div class="table-responsive">
+                  <table class="table display table-bordered table-striped table-hover basic">
+                    <thead>
+                      <tr>
+                       <th>Sl</th>
+                       <th>ID</th>
+                       <th>Name</th>
+                       <th>Svga Name</th>
+                       <th>Image Name</th>
+                       <th>Image</th>
+                       <th>Value</th>
+                       <th>Type</th>
+                       <th>Action</th>
+                   </tr>
+               </thead>
+                 <tbody>
+                    @php
+                    $i=0;
+                    @endphp
+                    @foreach($gifts as $gift)
+                    <tr>
+                      <td>{{ ++$i }}</td>
+                      <td>{{$gift->id}}  </td>
+                       <td>{{$gift->name}}  </td>
+                       <td>{{$gift->svga_name}}  </td>
+                       <td>{{$gift->image_name}}  </td>
+                      <td> <img style="width: 73px;" src="{{URL::to($gift->image)}}"></td>
+                      <td>{{$gift->value}}  </td>                      
+                      <td>@if($gift->category==1) Propular @elseif($gift->category==2) Luxery @elseif($gift->category==3) Fastival @elseif($gift->category==4) Entry @else Frame @endif </td>    
+                      <td>
+                          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModals{{$gift->id}}">
+                              Edit
+                            </button>
+                          <a href="{{URL::to('gift_data_delete/'.$gift->id)}}" class="btn btn-sm btn-danger" ><span class="fa fa-cross"></span> Delete</a>
+                      </td>
+                      <div class="modal fade" id="exampleModals{{$gift->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Update Gift Data</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                          <form action="{{URL::to('update_gift_data',$gift->id)}}" enctype="multipart/form-data" method="post">
+                    	@csrf
+			          <div class="form-group">
+			            <label for="recipient-name" class="col-form-label">Price:</label>
+			            <input type="number" name="value" value="{{ $gift->value }}" class="form-control" id="recipient-name" required="">
+			          </div>
+			         
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			        <button type="submit" class="btn btn-primary">Save</button>
+			      </div>
+			      </form>
+                </div>
+              </div>
+            </div>
+                  </tr>
+                  @endforeach
+              </tbody>
+              <tfoot>
+                <tr>
+                   <th>Sl</th>
+                       <th>ID</th>
+                       <th>Name</th>
+                       <th>Image</th>
+                       <th>Value</th>
+                       <th>Type</th>
+                       <th>Action</th>
+               </tr>
+           </tfoot>
+       </table>
+   </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+ 
+@endsection

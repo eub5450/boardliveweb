@@ -1,0 +1,123 @@
+@extends('backend.layouts.main')
+
+@section('title')
+Protal List
+@endsection
+@section('content')
+<div class="body-content">
+  <div class="card mb-4">
+    <div class="card-body">
+      <section class="forms">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                  <h4>Protal List</h4>
+                  <a href="{{URL::to('recall-list')}}" class="btn btn-sm btn-info">Protal Recall History</a>
+                </div>
+                <div class="table-responsive">
+                  <table class="table display table-bordered table-striped table-hover basic">
+                    <thead>
+                      <tr>
+                       <th>Sl</th>
+                       <th>ID</th>
+                       <th>Profile</th>
+                       <th>Name</th>
+                       <th>Level</th>
+                       <th>Total Recived</th>
+                       <th>Total Sand</th>
+                       <th>Total Recall</th>
+                       <th>Balance</th>
+                       <th>Action</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                    @php $i=0; @endphp
+                    @foreach($users as $user)
+                    @php
+                    $total_recived=App\Models\PortalRecharge::where('user_id',$user->id)->where('status','Approved')->where('is_recall',0)->sum('amount');
+                    $total_sand=App\Models\PortalTransfer::where('portal_user_id',$user->id)->sum('amount');
+                    $total_recall=App\Models\PortalRecall::where('protal_id',$user->id)->sum('amount');
+                    $total_recall_abs=abs($total_recall);
+                    $ProtalToPTransfer=App\Models\ProtalToPTransfer::where('user_id',$user->id)->sum('amount');
+                    $ProtalToPTransferRecived=App\Models\ProtalToPTransfer::where('portal_user_id',$user->id)->sum('amount');
+                    $available_balance=($total_recived+$ProtalToPTransferRecived)-($total_sand+$total_recall_abs+$ProtalToPTransfer);
+                    @endphp
+                    <tr>
+                      <td>{{ ++$i }}</td>
+                      <td>{{$user->id}}</td>
+                      <td><img style="width:73px;" src="{{URL::to($user->profile)}}"></td>
+                      <td>{{$user->name}}</td>
+                      <td>{{$user->level}}</td>
+                      <td>{{$total_recived}}</td>
+                      <td>{{$total_sand}}</td>
+                      <td><span class="text-danger">{{$total_recall}}</span></td>
+                      <td>{{$available_balance}}</td>
+                      <td>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recallModal-{{$user->id}}">
+                          Recall
+                        </button>
+                      </td>
+                    </tr>
+                    <div class="modal fade" id="recallModal-{{$user->id}}" tabindex="-1" role="dialog" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <form action="{{URL::to('protal_recall')}}" method="post">
+                            @csrf
+                            <div class="modal-header">
+                              <h5 class="modal-title">{{$user->name}} Protal Recall</h5>
+                              <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="form-group">
+                                <label>Receiver Protal/User</label>
+                                <input type="text" value="{{$user->id}} -- {{$user->name}}" class="form-control" readonly>
+                                <input type="hidden" name="user_id" value="{{$user->id}}">
+                              </div>
+                              <div class="form-group">
+                                <label>Available Balance</label>
+                                <input type="number" value="{{$available_balance}}" class="form-control" readonly>
+                              </div>
+                              <div class="form-group">
+                                <label>Recall Amount *</label>
+                                <input type="number" name="amount" value="{{ max(0, $available_balance) }}" min="1" max="{{ max(1, $available_balance) }}" class="form-control" required>
+                                <small>System will save this as negative recall amount.</small>
+                              </div>
+                              <div style="font-size:10px;color:#777;margin-top:6px;">Powerd by JAMBOai</div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <button type="submit" class="btn btn-danger">Save Recall</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                    @endforeach
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                     <th>Sl</th>
+                     <th>ID</th>
+                     <th>Profile</th>
+                     <th>Name</th>
+                     <th>Level</th>
+                     <th>Total Recived</th>
+                     <th>Total Sand</th>
+                     <th>Total Recall</th>
+                     <th>Balance</th>
+                     <th>Action</th>
+                   </tr>
+                 </tfoot>
+               </table>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+   </section>
+ </div>
+</div>
+</div>
+@endsection

@@ -1,0 +1,77 @@
+@extends('backend.layouts.main')
+@section('title')
+User Swaif
+@endsection
+@section('content')
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+<div class="body-content">
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <h4 class="text-center font-weight-bold font-italic mt-3">ID Swap</h4>
+                </div>
+            </div>
+            <form action="{{URL::to('admin-user-email-change_store')}}" method="post" enctype="multipart/form-data" class="form-inline">
+                @csrf
+
+               
+            <div class="form-group col-md-6 mb-3">
+                <label for="user_id" class="col-sm-4 col-form-label text-right">Selected User ID *</label>
+                <input type="number"  name="user_id" class="form-control col-sm-8" placeholder="Selected User ID" value="" id="user_id" required>
+                <span class="text-danger"></span>
+            </div> 
+            <div class="form-group col-md-6 mb-3">
+                <label for="email" class="col-sm-4 col-form-label text-right">New Email *</label>
+                <input type="email"  name="email" class="form-control col-sm-8" placeholder="Enter New Email ID" value="" id="email" required>
+                <span class="text-danger"></span>
+            </div>
+           
+            <div class="form-group col-md-12 mb-3">
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+<!--<div class="body-content">-->
+<!--    <div class="card mb-4">-->
+<!--        <div class="card-body">-->
+<!--            <div class="form-group">-->
+<!--                <div class="col-sm-12">-->
+<!--                    <h4 class="text-center font-weight-bold font-italic mt-3">New ID Give</h4>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <form action="{{URL::to('admin-user-new-email-change_store')}}" method="post" enctype="multipart/form-data" class="form-inline">-->
+<!--                @csrf-->
+
+               
+<!--            <div class="form-group col-md-6 mb-3">-->
+<!--                <label for="user_id" class="col-sm-4 col-form-label text-right">Selected User ID *</label>-->
+<!--                <input type="number"  name="user_id" class="form-control col-sm-8" placeholder="Selected User ID" value="" id="user_id" required>-->
+<!--                <span class="text-danger"></span>-->
+<!--            </div> -->
+<!--            <div class="form-group col-md-6 mb-3">-->
+<!--                <label for="email" class="col-sm-4 col-form-label text-right">New Email *</label>-->
+<!--                <input type="email"  name="email" class="form-control col-sm-8" placeholder="Enter New Email ID" value="" id="email" required>-->
+<!--                <span class="text-danger"></span>-->
+<!--            </div>-->
+           
+<!--            <div class="form-group col-md-12 mb-3">-->
+<!--                <button type="submit" class="btn btn-success">Submit</button>-->
+<!--            </div>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
+<!--</div>-->
+
+ 
+@endsection

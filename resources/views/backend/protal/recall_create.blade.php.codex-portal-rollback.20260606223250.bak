@@ -1,0 +1,36 @@
+@extends('backend.layouts.main')
+@section('title')
+Protal Recall
+@endsection
+@section('content')
+@if ($errors->any())
+    <div class="alert alert-danger"><ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+@endif
+
+<div class="body-content">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="text-center font-weight-bold font-italic mt-3">Protal Recall</h4>
+            <form action="{{URL::to('protal_recall_submit')}}" method="post" class="form-inline">
+                @csrf
+                <div class="form-group col-md-6 mb-3">
+                    <label class="col-sm-4 col-form-label text-right">Receiver Protal/User</label>
+                    <select name="protal_id" class="form-control select_agency_id" required id="protal_id">
+                        @foreach($protals as $protal)
+                        <option value="{{$protal->id}}">{{$protal->id}} -- {{$protal->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-6 mb-3">
+                    <label class="col-sm-4 col-form-label text-right">Recall Amount</label>
+                    <input type="number" name="amount" class="form-control col-sm-8" placeholder="Enter positive amount; system saves negative" value="0" min="1" required>
+                </div>
+                <div class="form-group col-md-12 mb-3">
+                    <button type="submit" class="btn btn-danger">Submit Recall</button>
+                </div>
+                <div style="font-size:10px;color:#777;margin-top:6px;">Powerd by JAMBOai</div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection

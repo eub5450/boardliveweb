@@ -1,0 +1,683 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Agency;
+use App\Models\HostData;
+use App\Models\FuritsPotsBackup;
+use App\Models\DayTime;
+use App\Models\PortalRecharge;
+use App\Models\PortalTransfer;
+use App\Models\Game\Fivestar\FivestarPots;
+use App\Models\Battle\Fortune\FortunePots;
+use App\Models\Gift;
+use App\Models\PortalRecall;
+use App\Models\VipList;
+use App\Models\ProfilePending;
+use App\Models\BanDevice;
+use App\Models\Withdraw;
+use App\Models\WithdrawConvartAgency;
+use App\Models\Game\Grady\GradyPots;
+use App\Models\ProtalToPTransfer;
+use App\Models\Battle\TeenPattiPots;
+use App\Models\EntryFrame;
+use App\Models\MyBeg;
+use DB;
+use Carbon;
+use Auth;
+use Hash;
+use Illuminate\Support\Facades\Cache;
+
+class ProfileController extends Controller
+{
+    public function Index(Request $request)
+    {
+    	$id=$request->id;
+    	if ($id) {
+    		$user=User::find($id);
+    		if ($user) {
+
+		    	$data['user']=User::find($id);
+		        $data['agency']=Agency::where('user_id',$id)->first();
+		        $data['agency_info']=DB::table('host_data')->join('agencies','agencies.code','host_data.agency_code')->select('agencies.*')->where('host_data.user_id',$id)->first();
+		        $data['protal_recharge']=PortalRecharge::where('user_id',$id)->where('status','Approved')->sum('amount');
+		        $data['recall_protal_recharge']=PortalRecall::where('protal_id',$id)->sum('amount');
+		        $data['protal_transfer']=PortalTransfer::where('portal_user_id',$id)->sum('amount');
+		        $data['protal_recharge_details']=PortalRecharge::where('user_id',$id)->orderby('id','desc')->get();
+		        
+		        $data['protal_transfer_details']=PortalTransfer::where('portal_user_id',$id)->orderby('id','desc')->get();
+		        $data['recharge_historys']=PortalTransfer::where('user_id',$id)->orderby('id','desc')->get();
+		        $data['sanding_historys']=Gift::where('sander_id',$id)->orderby('id','desc')->get();
+		        $data['info']=DB::table('host_data')->where('user_id',$id)->first();
+		        $data['convart_history']=DB::table('withdraw_convart_agencies')->where('agency_id',$id)->get();
+		        $data['agency_commisiion']=DB::table('withdraw_convart_agencies')->where('agency_id',$id)->get();
+		        $data['reciving_historys']=Gift::where('reciever_id',$id)->orderby('id','desc')->get();
+		        $data['approved_balance']=Withdraw::where('agency_id',$id)->where('status',1)->sum('agency_profit');
+        		$data['agency_convart_balance']=WithdrawConvartAgency::where('agency_id',$id)->sum('amount');
+        		$data['protal_to_protal_transfer']=ProtalToPTransfer::where('user_id',$id)->get();
+        		$data['entry_frame_list']=EntryFrame::all();
+        		$data['my_begs']=MyBeg::where('user_id',$id)->get();
+        		$data['my_vips']=VipList::where('user_id',$id)->get();
+        		$data['protal_to_protal_transfer_recived']=ProtalToPTransfer::where('portal_user_id',$id)->get();
+        	        $start_date = date('Y-m') . '-01';
+                    $end_date = date('Y-m') . '-31';
+                    $data['check_host_balance'] = Withdraw::where('agency_id', $id)
+                                        ->whereDate('date', '>=', $start_date)
+                                        ->whereDate('date', '<=', $end_date)
+                                        ->distinct('host_id')
+                                        ->count('host_id');
+				$currentDate = Carbon\Carbon::now()->format('Y-m-d');
+               $twoDaysAgo = Carbon\Carbon::now()->subDays(2)->format('Y-m-d');
+                $firust_game=FortunePots::orderby('id','desc')->where('user_id',$id)->whereDate('created_at', '>=', $twoDaysAgo)
+                    ->whereDate('created_at', '<=', $currentDate) ->get();
+                $firust_game_backup=FuritsPotsBackup::orderby('id','desc')->where('user_id',$id)->limit(100)->get();
+                $five_game=FivestarPots::orderby('id','desc')->where('user_id',$id)->whereDate('created_at', '>=', $twoDaysAgo)
+                    ->whereDate('created_at', '<=', $currentDate) ->get();
+                $greedy_game=GradyPots::orderby('id','desc')->where('user_id',$id)->whereDate('created_at', '>=', $twoDaysAgo)
+                    ->whereDate('created_at', '<=', $currentDate) ->get();
+                    $teen_patti=TeenPattiPots::orderby('id','desc')->where('user_id',$id)->whereDate('created_at', '>=', $twoDaysAgo)
+                    ->whereDate('created_at', '<=', $currentDate) ->get();
+                    
+                $mergedArray = collect();
+
+                foreach ($firust_game as $game) {
+                    $game->game_type = 'firust';
+                    $mergedArray->push($game);
+                }
+                foreach ($firust_game_backup as $firust_game) {
+                    $firust_game->game_type = 'firust';
+                    $mergedArray->push($firust_game);
+                }
+                
+                foreach ($five_game as $game) {
+                    $game->game_type = 'five_game';
+                    $mergedArray->push($game);
+                } 
+                foreach ($greedy_game as $game) {
+                    $game->game_type = 'greedy';
+                    $mergedArray->push($game);
+                }
+                foreach ($teen_patti as $game) {
+                    $game->game_type = 'Teen_patti';
+                    $mergedArray->push($game);
+                }
+                
+                $data['game_history'] = $mergedArray->sortByDesc('created_at');
+
+               
+
+		        return view('backend.profile.index')->with($data);
+    		}else{
+    			 $notification=array(
+                'messege'=>'User Not Found!!',
+                'alert-type'=>'warning'
+            );
+            return Redirect()->back()->with($notification);
+    		}
+    	
+    	}else{
+    		 $notification=array(
+                'messege'=>'Please Enter ID Number',
+                'alert-type'=>'error'
+            );
+            return Redirect()->back()->with($notification);
+    	}
+        
+    }
+    public function BrdPowerOn($id)
+    {
+      $user=User::find($id);
+      $user->brd_off_power=1;
+      $user->save();
+       $notification=array(
+                'messege'=>'Brd Power On Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function PasswordChange($id){
+        $user=User::find($id);
+        $user->password=Hash::make(123456);
+        $user->save();
+        $notification=array(
+                'messege'=>'Password Changed',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function VipActived($id,$vip)
+    {
+       
+      $user=User::find($id);
+      $check_old_vip=VipList::where('user_id',$user->id)->where('vip_no',$vip)->first();
+      if(!$check_old_vip){
+          $data=new VipList;
+          $data->vip_no=$vip;
+          $data->user_id=$user->id;
+          $data->active_date=Carbon\Carbon::now();
+          $data->is_active=0;
+          $data->end_date=Carbon\Carbon::now()->addDays(15);
+          
+          if($vip==1){
+              $data->image='store/vip/1.png';
+          }elseif($vip==2){
+               $data->image='store/vip/2.png';
+          }elseif($vip==3){
+               $data->image='store/vip/3.png';
+          }elseif($vip==4){
+               $data->image='store/vip/4.png';
+          }elseif($vip==5){
+               $data->image='store/vip/5.png';
+          }elseif($vip==6){
+               $data->image='store/vip/6.png';
+          }elseif($vip==7){
+               $data->image='store/vip/7.png';
+          }
+          $data->save();
+           $notification=array(
+                'messege'=>'VIP Active Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+      }else{
+          $notification=array(
+                'messege'=>'This Vip Already Have In Store',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+      }
+    }
+     public function officalFrameAtive($id)
+    {
+      $user=User::find($id);
+      $user->is_admin_frame=0;
+      $user->is_reseller_frame=0;
+      $user->is_country_admin_frame=0;
+      $user->is_official_frame=1;
+      $user->frame='official.svga';
+      $user->save();
+       $notification=array(
+                'messege'=>'Official Frame Actived',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function AdminFrameAtive($id)
+    {
+      $user=User::find($id);
+     // return $user;
+      $user->is_admin_frame=1;
+      $user->is_official_frame=0;
+      $user->is_reseller_frame=0;
+      $user->is_country_admin_frame=0;
+      $user->frame='frame_10.svga';
+      $user->save();
+       $notification=array(
+                'messege'=>'BD Admin Frame Actived',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function CountryAdminFrameAtive($id)
+    {
+      $user=User::find($id);
+     // return $user;
+     $user->is_country_admin_frame=1;
+      $user->is_admin_frame=0;
+      $user->is_official_frame=0;
+      $user->is_reseller_frame=0;
+      $user->frame='frame_9.svga';
+      $user->save();
+       $notification=array(
+                'messege'=>'Country Admin Frame Actived',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function ResellerFrameAtive($id)
+    {
+      $user=User::find($id);
+      $user->is_admin_frame=0;
+      $user->is_official_frame=0;
+      $user->is_country_admin_frame=0;
+      $user->is_reseller_frame=1;
+      $user->frame='reseller.svga';
+      $user->save();
+       $notification=array(
+                'messege'=>'Reseller Frame Actived',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    
+    
+    public function EffectActive($user_id,$id){
+        $check_old_effect=MyBeg::where('user_id',$user_id)->where('store_id',$id)->first();
+        if(!$check_old_effect){
+            $check_effect=EntryFrame::find($id);
+            $data=new MyBeg;
+            $data->store_id=$id;
+            $data->user_id=$user_id;
+            $data->status=0;
+            $data->active_time=Carbon\Carbon::now();
+            $data->expaire_time=Carbon\Carbon::now()->addDays(15);
+            $data->name=$check_effect->name;
+            $data->image=$check_effect->image;
+            $data->effect=$check_effect->effect;
+            $data->type=$check_effect->type;
+            $data->save();
+            $notification=array(
+                'messege'=>'Effect Added Submited',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+            
+        }else{
+             $notification=array(
+                'messege'=>'Effect Already Have',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+        }
+    }
+    public function BrdPowerOff($id)
+    {
+      $user=User::find($id);
+      $user->brd_off_power=0;
+      $user->save();
+       $notification=array(
+                'messege'=>'Brd Power Off Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function sceenshortOn($id)
+    {
+      $user=User::find($id);
+      $user->sceen_short_power=1;
+      $user->save();
+       $notification=array(
+                'messege'=>'Sceen Short On Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    } 
+    public function sceenshortOff($id)
+    {
+      $user=User::find($id);
+      $user->sceen_short_power=0;
+      $user->save();
+       $notification=array(
+                'messege'=>'Sceen Short Off Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function OfficialIDOn($id)
+    {
+      $user=User::find($id);
+      $user->is_official_id=1;
+      $user->save();
+       $notification=array(
+                'messege'=>'Official ID Active  Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    } 
+    public function OfficialIDOff($id)
+    {
+      $user=User::find($id);
+      $user->is_official_id=0;
+      $user->save();
+       $notification=array(
+                'messege'=>'Official ID InActive Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    } 
+    public function KickPowerOn($id)
+    {
+      $user=User::find($id);
+      $user->kick_power=1;
+      $user->save();
+       $notification=array(
+                'messege'=>'Kick On Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    } 
+    public function KickPowerOff($id)
+    {
+      $user=User::find($id);
+      $user->kick_power=0;
+      $user->save();
+       $notification=array(
+                'messege'=>'Kick Off Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function CommentMuteOn($id)
+    {
+      $user=User::find($id);
+      $user->comment_mute_power=1;
+      $user->save();
+       $notification=array(
+                'messege'=>'Comment Mute On Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    } 
+    public function CommentMuteOff($id)
+    {
+      $user=User::find($id);
+      $user->comment_mute_power=0;
+      $user->save();
+       $notification=array(
+                'messege'=>'Comment Mute Off Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function invisibalOn($id)
+    {
+      $user=User::find($id);
+      $user->is_invisible=1;
+      $user->save();
+       $notification=array(
+                'messege'=>'Invisibal On Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    } public function invisibalOff($id)
+    {
+      $user=User::find($id);
+      $user->is_invisible=0;
+      $user->save();
+       $notification=array(
+                'messege'=>'Invisibal Off Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function User()
+    {
+        $users=User::where('balance','!=',0)->whereNotIn('id', [23825, 23826, 23827])->orderby('balance','desc')->get();
+        return view('backend.profile.user_balance_list',compact('users'));
+    }
+    public function Rank()
+    {
+        $now = Carbon\Carbon::now();
+    
+        $limit = (int) request()->get('limit', 300);
+        $limit = max(50, min($limit, 1000));
+    
+        $currentStart  = $now->copy()->startOfMonth()->startOfDay()->toDateTimeString();
+        $currentEnd    = $now->copy()->endOfMonth()->endOfDay()->toDateTimeString();
+    
+        $previousStart = $now->copy()->subMonth()->startOfMonth()->startOfDay()->toDateTimeString();
+        $previousEnd   = $now->copy()->subMonth()->endOfMonth()->endOfDay()->toDateTimeString();
+    
+        $cacheKey = 'admin_rank_v4_' . $now->format('Ym') . '_' . $limit;
+    
+        $data = Cache::remember($cacheKey, now()->addMinutes(3), function () use (
+            $currentStart,
+            $currentEnd,
+            $previousStart,
+            $previousEnd,
+            $limit
+        ) {
+            return [
+                'totalSands' => $this->rankByUser('sander_id', $currentStart, $currentEnd, $limit),
+                'totalReciveds' => $this->rankByUser('reciever_id', $currentStart, $currentEnd, $limit),
+                'totalfamillyReciveds' => $this->rankByFamily($currentStart, $currentEnd, $limit),
+    
+                'previous_totalSands' => $this->rankByUser('sander_id', $previousStart, $previousEnd, $limit),
+                'previous_totalReciveds' => $this->rankByUser('reciever_id', $previousStart, $previousEnd, $limit),
+                'previous_totalfamillyReciveds' => $this->rankByFamily($previousStart, $previousEnd, $limit),
+            ];
+        });
+    
+        return view('backend.profile.rankingList')->with($data);
+    }
+    
+    private function rankByUser($column, $startDate, $endDate, $limit = 5000)
+    {
+        $giftTable = (new Gift)->getTable();
+    
+        return Gift::query()
+            ->join('users', $giftTable . '.' . $column, '=', 'users.id')
+            ->whereBetween($giftTable . '.date', [$startDate, $endDate])
+            ->groupBy($giftTable . '.' . $column, 'users.id', 'users.name', 'users.profile')
+            ->selectRaw(
+                $giftTable . '.' . $column . ', 
+                SUM(' . $giftTable . '.value) as total_sand, 
+                users.name, 
+                users.id, 
+                users.profile'
+            )
+            ->orderByDesc('total_sand')
+            ->limit($limit)
+            ->get();
+    }
+    
+    private function rankByFamily($startDate, $endDate, $limit = 500)
+    {
+        $giftTable = (new Gift)->getTable();
+        $hostDataTable = (new HostData)->getTable();
+    
+        return Gift::query()
+            ->leftJoin($hostDataTable, $giftTable . '.reciever_id', '=', $hostDataTable . '.user_id')
+            ->join('agencies', function ($join) use ($giftTable, $hostDataTable) {
+                $join->on(
+                    'agencies.code',
+                    '=',
+                    DB::raw('COALESCE(' . $hostDataTable . '.agency_code, ' . $giftTable . '.agency_code)')
+                );
+            })
+            ->whereBetween($giftTable . '.date', [$startDate, $endDate])
+            ->groupBy('agencies.code', 'agencies.name', 'agencies.logo')
+            ->selectRaw(
+                'SUM(' . $giftTable . '.value) as total_sand, 
+                agencies.code, 
+                agencies.name, 
+                agencies.logo'
+            )
+            ->orderByDesc('total_sand')
+            ->limit($limit)
+            ->get();
+    }
+    public function Update(Request $request,$id)
+    {
+      if($request->hasFile('profile')){
+                $image = $request->file('profile');
+                $image_name = uniqid().'.'.strtolower($image->getClientOriginalExtension());
+                $image_path = 'store/agency/';
+                $image_url = $image_path.$image_name;
+                $image->move($image_path, $image_name);
+            }else{
+                $image_url = $request->old_profile;
+            }
+            $user=User::find($id);
+            $user->name=$request->name;
+            if($request->teg){
+            $user->host_badge=$request->teg;
+            }else{
+              $user->host_badge=0;  
+            }
+            if($request->top_value){
+            $user->top_value=$request->top_value;
+            }
+            $user->profile=$image_url;
+            $user->save();
+            $notification=array(
+                'messege'=>'Profile Update Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+    }
+    public function ChangeHostingType($id)
+    {
+        $data=HostData::find($id);
+        if($data){
+            if($data->hosting_type==2){
+                $data->hosting_type=1;
+            }else{
+                $data->hosting_type=2;
+            }
+            $data->save();
+             $notification=array(
+                'messege'=>'Hosting Type Change Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+        }else{
+             $notification=array(
+                'messege'=>'Something Wrong Data not Found!!!!',
+                'alert-type'=>'error'
+            );
+            return Redirect()->back()->with($notification);
+        }
+    }
+     public function DeviceBan($id)
+    {
+        $data=User::find($id);
+        if($data){
+            $ban_device=new BanDevice;
+            $ban_device->device_id=$data->device_id;
+            $ban_device->save();
+             $notification=array(
+                'messege'=>'Device Banned Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+        }else{
+             $notification=array(
+                'messege'=>'Something Wrong Data not Found!!!!',
+                'alert-type'=>'error'
+            );
+            return Redirect()->back()->with($notification);
+        }
+    }
+    public function Pending()
+    {
+      $data=ProfilePending::all();
+      return view('backend.profile.pending',compact('data'));
+    }
+    public function ApprovedImage($id)
+    {
+      $data=ProfilePending::find($id);
+      if($data){
+        $user=User::find($data->user_id);
+        if($data->image){
+        $user->profile=$data->image;
+        }
+        if($data->name){
+        $user->name=$data->name;
+        }
+        $user->save();
+        $data->delete();
+        $notification=array(
+                'messege'=>'Image Approved Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+      }else{
+         $notification=array(
+                'messege'=>'Something Wrong Data not Found!!!!',
+                'alert-type'=>'error'
+            );
+            return Redirect()->back()->with($notification);
+      }
+
+    } 
+    public function RejectImage($id)
+    {
+      $data=ProfilePending::find($id);
+      if($data){
+        $data->delete();
+        $notification=array(
+                'messege'=>'Image Reject Successfully',
+                'alert-type'=>'success'
+            );
+            return Redirect()->back()->with($notification);
+      }else{
+         $notification=array(
+                'messege'=>'Something Wrong Data not Found!!!!',
+                'alert-type'=>'error'
+            );
+            return Redirect()->back()->with($notification);
+      }
+
+    }
+      public function ChangePass(Request $request)
+    {
+        $data=User::find(Auth::id());
+        $data->password=Hash::make($request->password);
+        $data->save();
+        $notification=array(
+            'messege'=>'Password change successfull!',
+           'alert-type'=>'success'
+       );
+        return redirect()->back()->with($notification);
+    }
+     public function TopPosition($id)
+    {
+        $data=User::find($id);
+        if($data->prosss_top==1){
+          $data->prosss_top=0; 
+          $data->top_value=0; 
+        }else{
+         $data->prosss_top=1;
+         $data->top_value=1500000;
+        }
+        
+       
+        $data->save();
+        $notification=array(
+            'messege'=>'Top Position Changed!',
+           'alert-type'=>'success'
+       );
+        return redirect()->back()->with($notification);
+    }
+    public function ProtalActive($id)
+    {
+        $data=User::find($id);
+        $data->is_coin_protal_active=1;
+        $data->save();
+        $notification=array(
+            'messege'=>'Protal Active Successfully',
+           'alert-type'=>'success'
+       );
+        return redirect()->back()->with($notification);
+    }public function ProtalReject($id)
+    {
+        $data=User::find($id);
+        $data->is_coin_protal_active=0;
+        $data->save();
+        $notification=array(
+            'messege'=>'Protal Active Successfully',
+           'alert-type'=>'success'
+       );
+        return redirect()->back()->with($notification);
+    }
+    
+    public function AddDayTime(Request $request,$id)
+    {
+        $data=new DayTime;
+        $data->user_id=$id;
+        $data->channelName=$request->_token;
+        $data->live_time=$request->date;
+        $data->day_times=$request->time;
+        $data->brd_type=$request->brd_type;
+        $data->save();
+        $notification=array(
+            'messege'=>'Day Added  Successfully',
+           'alert-type'=>'success'
+       );
+        return redirect()->back()->with($notification);
+    }
+}

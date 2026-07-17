@@ -1,0 +1,74 @@
+@extends('backend.layouts.main')
+
+@section('title')
+Protal Recall History
+@endsection
+@section('content')
+<div class="body-content">
+    <div class="card mb-4">
+        <div class="card-body">
+            <section class="forms">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header d-flex align-items-center justify-content-between">
+                                    <h4>Protal Recall History</h4>
+                                    <span class="badge badge-secondary">Read Only</span>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table display table-bordered table-striped table-hover basic">
+                                        <thead>
+                                            <tr>
+                                                <th>Sl</th>
+                                                <th>Receiver ID</th>
+                                                <th>Image</th>
+                                                <th>Name</th>
+                                                <th>Recall Amount</th>
+                                                <th>TxID</th>
+                                                <th>Date</th>
+                                                <th>Create By</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php $i=0; @endphp
+                                            @foreach($data as $item)
+                                            @php
+                                            $recharge_by=App\Models\User::find($item->recharge_by);
+                                            $user=App\Models\User::find($item->user_id);
+                                            @endphp
+                                            <tr>
+                                                <td>{{ ++$i }}</td>
+                                                <td>@if($user) {{$user->id}} @endif</td>
+                                                <td>@if($user)<img style="width:73px;" src="{{URL::to($user->profile)}}">@endif</td>
+                                                <td>@if($user){{$user->name}}@endif</td>
+                                                <td><span class="text-danger">{{$item->amount}}</span></td>
+                                                <td>{{$item->trxid}}</td>
+                                                <td>{{$item->date}}</td>
+                                                <td>@if($recharge_by) {{$recharge_by->name}} @endif</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Sl</th>
+                                                <th>Receiver ID</th>
+                                                <th>Image</th>
+                                                <th>Name</th>
+                                                <th>Recall Amount</th>
+                                                <th>TxID</th>
+                                                <th>Date</th>
+                                                <th>Create By</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+@endsection

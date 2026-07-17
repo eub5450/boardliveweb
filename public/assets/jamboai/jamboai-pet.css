@@ -1,0 +1,23 @@
+.jamboai-pet-root{position:fixed;right:22px;bottom:22px;z-index:2147482000;font-family:Inter,Segoe UI,Arial,sans-serif;color:#eaf8ff}
+.jamboai-pet-root *{box-sizing:border-box}
+.jamboai-pet{width:86px;height:86px;border:0;border-radius:0;background:transparent;box-shadow:none;display:grid;place-items:center;cursor:grab;position:relative}
+.jamboai-pet:after{content:"pet";position:absolute;right:-5px;top:-4px;min-width:24px;height:24px;padding:0 6px;border-radius:999px;border:1px solid rgba(125,249,255,.58);background:rgba(4,17,34,.92);color:#7df9ff;font-size:9px;line-height:22px;text-align:center;text-transform:uppercase;box-shadow:0 0 18px rgba(32,247,255,.42)}
+.jamboai-pet:active{cursor:grabbing}
+.jamboai-pet img{width:82px;height:82px;display:block;pointer-events:none;filter:drop-shadow(0 0 12px rgba(32,247,255,.7))}
+.jamboai-pet-root[data-mood=working] .jamboai-pet{animation:jamboai-work 1.05s infinite ease-in-out}.jamboai-pet-root[data-mood=working] .jamboai-pet:after{content:"work"}
+.jamboai-pet-root[data-mood=reply] .jamboai-pet:after{content:"reply"}.jamboai-pet-root[data-mood=done] .jamboai-pet:after{content:"done"}.jamboai-pet-root[data-mood=new] .jamboai-pet:after{content:"new"}
+.jamboai-tooltip{position:absolute;right:0;bottom:96px;min-width:280px;max-width:min(390px,calc(100vw - 44px));padding:14px 16px;border:1px solid rgba(32,247,255,.5);border-radius:18px;background:linear-gradient(135deg,rgba(4,17,34,.97),rgba(21,21,56,.94)),url("/assets/jamboai/jamboai-pet-tooltip.png") center/cover no-repeat;box-shadow:0 18px 50px rgba(0,0,0,.38),0 0 28px rgba(32,247,255,.16);font-size:13px;line-height:1.45}
+.jamboai-tooltip.is-quiet{display:none}
+.jamboai-tooltip:after{content:"";position:absolute;right:28px;bottom:-9px;border-width:9px 8px 0;border-style:solid;border-color:rgba(32,247,255,.46) transparent transparent}
+.jamboai-actions{position:absolute;right:0;bottom:-36px;display:flex;gap:8px}
+.jamboai-mini{border:1px solid rgba(125,249,255,.35);border-radius:999px;background:rgba(4,17,34,.82);color:#eaf8ff;font-size:11px;font-weight:800;padding:7px 10px;cursor:pointer}
+.jamboai-panel{position:fixed;right:22px;bottom:122px;width:min(430px,calc(100vw - 32px));max-height:min(680px,calc(100vh - 150px));overflow:auto;border:1px solid rgba(32,247,255,.42);border-radius:22px;background:linear-gradient(135deg,rgba(3,12,28,.96),rgba(12,17,48,.95));box-shadow:0 24px 80px rgba(0,0,0,.5);padding:16px;color:#edfaff}
+.jamboai-panel h3{margin:0 0 8px;font-size:16px;color:#7df9ff;letter-spacing:.04em}.jamboai-panel h4{margin:14px 0 8px;font-size:13px;color:#dffaff;text-transform:uppercase;letter-spacing:.08em}
+.jamboai-close{float:right;border:0;background:transparent;color:#edfaff;font-size:20px;cursor:pointer}
+.jamboai-textarea{width:100%;min-height:104px;resize:vertical;border:1px solid rgba(125,249,255,.28);border-radius:14px;background:rgba(0,0,0,.28);color:#fff;padding:12px;font:inherit;outline:none}
+.jamboai-btn{border:1px solid rgba(32,247,255,.5);border-radius:14px;background:linear-gradient(135deg,rgba(32,247,255,.2),rgba(124,60,255,.28));color:#fff;font-weight:850;padding:10px 13px;cursor:pointer}
+.jamboai-quick{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.jamboai-chip{border:1px solid rgba(125,249,255,.26);border-radius:999px;background:rgba(32,247,255,.08);color:#dffaff;font-size:11px;font-weight:800;padding:7px 9px;cursor:pointer}
+.jamboai-row{border:1px solid rgba(125,249,255,.18);border-radius:14px;background:rgba(255,255,255,.04);padding:10px;margin-top:9px}
+.jamboai-row b{color:#7df9ff}.jamboai-row small{display:block;color:#a9c7d8;margin-top:4px}.jamboai-reply{border-left:3px solid #7df9ff;padding-left:8px;color:#eaf8ff!important}.jamboai-muted{color:#a9c7d8;font-size:12px}.jamboai-error{color:#ff8ca3;font-size:12px;margin-top:8px}
+@media(max-width:640px){.jamboai-pet-root{right:12px;bottom:14px}.jamboai-panel{right:12px;bottom:112px}.jamboai-tooltip{min-width:230px}}
+@keyframes jamboai-work{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(2deg)}}

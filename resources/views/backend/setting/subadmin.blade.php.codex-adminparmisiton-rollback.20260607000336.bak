@@ -1,0 +1,130 @@
+@extends('backend.layouts.main')
+
+@section('title')
+Admin Setting
+@endsection
+@section('content')
+<style>
+.permission-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; }
+.permission-box { border:1px solid #d7e2ef; border-radius:8px; padding:10px; background:#fbfdff; }
+.permission-box h5 { margin:0 0 8px; font-size:14px; color:#1f2d3d; font-weight:700; }
+.permission-item { display:block; font-size:12px; color:#243447; margin-bottom:5px; line-height:1.3; }
+.permission-item input { margin-right:6px; }
+.admin-permission-actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+</style>
+<div class="body-content">
+  <div class="card mb-4">
+    <div class="card-body">
+      <section class="forms">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card mb-3">
+                <div class="card-header"><h4>Admin Setting</h4></div>
+                <div class="card-body">
+                  <p class="text-muted mb-2">Create or update admin access and page/card/sidebar permissions from <code>adminparmisiton</code>.</p>
+                  <form action="{{URL::to('setting/admin')}}" method="get" class="form-inline mb-3">
+                    <input type="text" name="q" value="{{$query}}" class="form-control mr-2" placeholder="Search id, name, email">
+                    <button type="submit" class="btn btn-info">Search</button>
+                  </form>
+
+                  <form action="{{URL::to('setting/admin-update')}}" method="post">
+                    @csrf
+                    <div class="admin-permission-actions mb-3">
+                      <input type="text" name="target_user" class="form-control" placeholder="User ID or email" required>
+                      <select name="is_admin" class="form-control" required>
+                        @foreach($accessLevels as $value => $label)
+                          <option value="{{$value}}">{{$value}} - {{$label}}</option>
+                        @endforeach
+                      </select>
+                      <input type="password" name="password" class="form-control" placeholder="New password optional">
+                      <button type="submit" class="btn btn-primary">Save New / Update</button>
+                    </div>
+                    <div class="permission-grid">
+                      @foreach($permissionGroups as $group => $permissions)
+                        <div class="permission-box">
+                          <h5>{{$group}}</h5>
+                          @foreach($permissions as $key => $label)
+                            <label class="permission-item">
+                              <input type="checkbox" name="permissions[]" value="{{$key}}">
+                              {{$label}}
+                            </label>
+                          @endforeach
+                        </div>
+                      @endforeach
+                    </div>
+                  </form>
+                  <div style="font-size:10px;text-align:center;color:#999;padding-top:12px;">Powerd by JAMBOai</div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header"><h4>Admin / Country Admin / Subadmin Users</h4></div>
+                <div class="table-responsive">
+                  <table class="table display table-bordered table-striped table-hover basic">
+                    <thead>
+                      <tr>
+                        <th style="min-width:70px;">ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Access</th>
+                        <th style="min-width:720px;">Edit Permission</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach($users as $user)
+                      @php $currentPermissions = $userPermissions[$user->id] ?? []; @endphp
+                      <tr>
+                        <td>{{$user->id}}</td>
+                        <td>{{$user->name}}</td>
+                        <td>{{$user->email}}</td>
+                        <td>{{$user->is_admin}} - {{ $accessLevels[(int)$user->is_admin] ?? 'Unknown' }}</td>
+                        <td>
+                          <form action="{{URL::to('setting/admin-update')}}" method="post">
+                            @csrf
+                            <input type="hidden" name="target_user" value="{{$user->id}}">
+                            <div class="admin-permission-actions mb-2">
+                              <select name="is_admin" class="form-control" required>
+                                @foreach($accessLevels as $value => $label)
+                                  <option value="{{$value}}" @if((int)$user->is_admin === (int)$value) selected @endif>{{$value}} - {{$label}}</option>
+                                @endforeach
+                              </select>
+                              <input type="password" name="password" class="form-control" placeholder="New password optional">
+                              <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                            </div>
+                            <div class="permission-grid">
+                              @foreach($permissionGroups as $group => $permissions)
+                                <div class="permission-box">
+                                  <h5>{{$group}}</h5>
+                                  @foreach($permissions as $key => $label)
+                                    <label class="permission-item">
+                                      <input type="checkbox" name="permissions[]" value="{{$key}}" @if(!empty($currentPermissions[$key])) checked @endif>
+                                      {{$label}}
+                                    </label>
+                                  @endforeach
+                                </div>
+                              @endforeach
+                            </div>
+                          </form>
+                          @if((int)$user->id !== (int)Auth::id())
+                          <form action="{{URL::to('setting/admin-delete')}}" method="post" onsubmit="return confirm('Remove admin permission for {{$user->id}}?')" style="margin-top:8px;">
+                            @csrf
+                            <input type="hidden" name="target_user" value="{{$user->id}}">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete Admin Permission</button>
+                          </form>
+                          @endif
+                        </td>
+                      </tr>
+                      @endforeach
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+@endsection

@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        foreach (glob(app_path('Http/Controllers/Api/V3/*Controller.php')) ?: [] as $controllerPath) {
+            $controllerName = pathinfo($controllerPath, PATHINFO_FILENAME);
+            $target = "App\\Http\\Controllers\\Api\\V3\\{$controllerName}";
+            foreach ([
+                "App\\Http\\Controllers\\Api\\{$controllerName}",
+                "App\\Http\\Controllers\\Api\\V2\\{$controllerName}",
+            ] as $alias) {
+                if (!class_exists($alias) && class_exists($target)) {
+                    class_alias($target, $alias);
+                }
+            }
+        }
+    }
+
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        //
+    }
+}

@@ -1,0 +1,140 @@
+<?php
+
+namespace App\Http\Controllers\Api\V3;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Gift;
+use App\Models\GiftFile;
+use DB;
+use Carbon\Carbon;
+use App\Models\Withdraw;
+
+use Illuminate\Support\Facades\Cache;
+class GiftController extends Controller
+{
+   public function HostBalanceChack(Request $request)
+    {
+        $response = [];
+    
+        if ($request->access_token !== "0411f0028cfb768b3a3d96ac3aa37dw3e5") {
+            return response()->json([
+                ["message" => "Unauthorized", "code" => "401"]
+            ], 401);
+        }
+    
+        $host_id = $request->host_id;
+    
+        // ------------------------------
+        // DATE RANGE (FIRST vs SECOND HALF)
+        // ------------------------------
+        $date = Carbon::now();
+        // if ($date->day <= 15) {
+        //     $start_date = $date->format('Y-m-01');
+        //     $end_date   = $date->format('Y-m-15');
+        // } else {
+        //     $start_date = $date->format('Y-m-16');
+        //     $end_date   = $date->format('Y-m-t');
+        // }
+    $start_date = $date->format('Y-m-01');
+    $end_date   = $date->format('Y-m-t');
+        // ------------------------------
+        // BASE QUERY (Used for both today & monthly)
+        // ------------------------------
+        $base = DB::table('gifts')
+            ->join('users', 'users.id', '=', 'gifts.sander_id')
+            ->where('gifts.reciever_id', $host_id);
+    
+        // ------------------------------
+        // TODAY DATA (top 3 + rest)
+        // ------------------------------
+        $todayQuery = (clone $base)
+            ->whereDate('gifts.date', Carbon::today())
+            ->select(
+                'users.profile',
+                'users.name',
+                'users.id',
+                'users.level',
+                DB::raw('SUM(gifts.value) as total_value')
+            )
+            ->groupBy('users.profile','users.name','users.id','users.level')
+            ->orderByDesc('total_value');
+    
+        $top_today_data = (clone $todayQuery)->limit(3)->get();
+        $today_data = (clone $todayQuery)->skip(3)->take(100)->get();
+    
+        $today_total = (clone $base)
+            ->whereDate('gifts.date', Carbon::today())
+            ->sum('gifts.value');
+    
+        // ------------------------------
+        // MONTH RANGE DATA (top 3 + rest)
+        // ------------------------------
+        $monthlyQuery = (clone $base)
+            ->whereBetween('gifts.date', [$start_date, $end_date])
+            ->select(
+                'users.profile',
+                'users.name',
+                'users.id',
+                'users.level',
+                DB::raw('SUM(gifts.value) as total_value')
+            )
+            ->groupBy('users.profile','users.name','users.id','users.level')
+            ->orderByDesc('total_value');
+    
+        $top_total_data = (clone $monthlyQuery)->limit(3)->get();
+        $total_data = (clone $monthlyQuery)->skip(3)->take(100)->get();
+    
+        // Total monthly gift coins
+        $total_gift_coin = (clone $base)
+            ->whereBetween('gifts.date', [$start_date, $end_date])
+            ->sum('gifts.value');
+    
+        // Total withdrawn
+        $total_withdraw = Withdraw::where('host_id', $host_id)
+            ->whereBetween('date', [$start_date, $end_date])
+            ->sum('total');
+    
+        $total_data_sum = $total_gift_coin - $total_withdraw;
+    
+        return response()->json([
+            [
+                'message'          => 'Gift List Showing',
+                'today_data'       => $today_data,
+                'today_total_sum'      => (int) $today_total,
+                'total_data'       => $total_data,
+                'total_data_sum'   => $total_data_sum,
+                'top_three_total_data'   => $top_total_data,
+                'top_three_today_data'   => $top_today_data,
+                'code'             => '200'
+            ]
+        ], JSON_UNESCAPED_UNICODE);
+    }
+
+     public function GiftData(Request $request)
+    {
+        // Static token (use env for better security)
+        if ($request->access_token !== "0411f0028cfb768b3a3d96ac3aa37dw3e5") {
+            return response()->json([
+                'message' => 'Unauthorized',
+                'code'    => 401
+            ], 401, [], JSON_UNESCAPED_UNICODE);
+        }
+    
+        // ⚡ 100x faster with caching + combined query
+        $gifts = Cache::remember('gift_data', 120, function () {
+            return GiftFile::orderBy('amount', 'asc')->get()->groupBy('category');
+        });
+    
+        return response()->json([
+            'message'   => 'Gift List Showing',
+            'populars'  => $gifts[1] ?? [],
+            'luxury'    => $gifts[2] ?? [],
+            'regular'     => $gifts[1] ?? [],
+            'event'     => $gifts[1] ?? [],
+            'soundless'     => $gifts[1] ?? [],
+            'code'      => 200
+        ], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+}

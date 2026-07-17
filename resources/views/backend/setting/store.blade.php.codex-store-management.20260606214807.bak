@@ -1,0 +1,116 @@
+@extends('backend.layouts.main')
+@section('title')
+Create New Agency
+@endsection
+@section('content')
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
+<div class="body-content">
+  <div class="card mb-4">
+    <div class="card-body">
+      <section class="forms">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <h4> Effect  List</h4>
+                </div>
+              <div class="table-responsive">
+                  <table class="table display table-bordered table-striped table-hover basic">
+                    <thead>
+                      <tr>
+                       <th>Sl</th>
+                       <th>Name</th>
+                       <th>Price</th>
+                       <th>Time</th>
+                       <th>Type</th>
+                       <th>Image</th>
+                       <th>Actions</th>
+                   </tr>
+               </thead>
+                 <tbody>
+                    @php
+                    $i=0;
+                    @endphp
+                    @foreach($data as $row)
+                    <tr>
+                      <td>{{ ++$i }}</td>
+                      <td>{{$row->name}}  </td>
+                      <td>{{$row->price}}  </td>
+                      <td>{{$row->time}}  </td>
+                      <td>@if($row->type==1) Entry Effect @else Frame @endif </td>
+                      <td> <img style="width: 73px;" src="{{URL::to($row->image)}}"></td>
+                      <td> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal-{{$row->id}}">
+                          Edit
+                        </button></td>
+                  </tr>
+                  <!-- Modal -->
+                      <div class="modal fade" id="exampleModal-{{$row->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">{{$row->name}} Edit</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                               <form action="{{URL::to('effect_update',$row->id)}}" method="post">
+                                   @csrf
+                                <div class="form-group">
+                                  <label for="recipient-name" class="col-form-label">Name:</label>
+                                  <input type="text" name="name" value="{{$row->name}}" class="form-control" id="recipient-name">
+                                </div> 
+                                <div class="form-group">
+                                  <label for="recipient-name" class="col-form-label">Time:</label>
+                                  <input type="number" name="time" value="{{$row->time}}" class="form-control" id="recipient-name">
+                                </div>
+                                <div class="form-group">
+                                  <label for="recipient-name" class="col-form-label">Amount:</label>
+                                  <input type="number" name="amount" value="{{$row->price}}" class="form-control" id="recipient-name">
+                                </div>
+                              
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <button type="submit" class="btn btn-primary">Save changes</button>
+                            </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                  @endforeach
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Sl</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Time</th>
+                  <th>Type</th>
+                  <th>Image</th>
+                  <th>Actions</th>
+               </tr>
+           </tfoot>
+       </table>
+   </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+ 
+@endsection
