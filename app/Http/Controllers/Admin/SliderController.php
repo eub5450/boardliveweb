@@ -44,7 +44,6 @@ class SliderController extends Controller
         $slider->image=$imagePath.$imageName;
         $slider->save();
         Cache::forget('v4:broadlive:slider_list_v1');
-        try { Redis::del('broadlive:slider'); } catch (\Throwable $e) {}
 
         $notification=array(
             'messege'=>'Slider Update Successfully!',
@@ -59,7 +58,6 @@ class SliderController extends Controller
              $slider->delete();
          }
          Cache::forget('v4:broadlive:slider_list_v1');
-         try { Redis::del('broadlive:slider'); } catch (\Throwable $e) {}
          $notification=array(
                 'messege'=>'Slider Removed Successfully!',
                 'alert-type'=>'success'
