@@ -57,6 +57,7 @@
     ['key'=>'sidebar_setting_email_change','url'=>'admin-user-emailchange','label'=>'User Email Change'],
     ['key'=>'sidebar_setting_admin','url'=>'setting/system-setting','label'=>'System Settings'],
     ['key'=>'sidebar_setting_admin','url'=>'setting/admin','label'=>'Admin Users'],
+    ['key'=>'sidebar_setting_admin','url'=>'setting/vip-setup','label'=>'VIP Setup'],
     ['key'=>'sidebar_setting_audio_background','url'=>'admin-audio-brd-background','label'=>'Audio Room Backgrounds'],
     ['key'=>'sidebar_setting_store','url'=>'admin-store','label'=>'Store Management'],
   ];

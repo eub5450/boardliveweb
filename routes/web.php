@@ -171,6 +171,8 @@ Route::post('setting/admin-update','SubAdminController@Update');
 Route::post('setting/system-setting-update','ProtalController@PortalSettingUpdate');
 Route::post('setting/country-admin-store','SubAdminController@StoreCountryAdmin');
 Route::post('setting/admin-delete','SubAdminController@Delete');
+Route::get('setting/vip-setup','VipSetupController@Index');
+Route::post('setting/vip-setup-update','VipSetupController@Update')->name('admin.vip_setup.update');
 Route::post('admin-user-email-change_store','UserController@UserEmailChangeStore');
 Route::get('chat_data','DashbordController@chat')->name('chat.data');
 Route::get('version_update','DashbordController@Version');
