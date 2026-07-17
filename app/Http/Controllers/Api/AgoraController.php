@@ -124,4 +124,49 @@ class AgoraController extends Controller
         //     // return response()->json(['message'=>"User Not Found"],404);
         //     }
     }
+
+    /**
+     * Broadlive-owned Agora RTC token endpoint, replacing the previous external
+     * dependency on rtctoken.bdlive.cloud/api/startStream. Response shape matches
+     * NewTokenModel in the Flutter client: {token, room, identity}.
+     *
+     * Accepts JSON body (GET or POST): {room_name, identity, app_id, app_certificate}.
+     */
+    public function startStream(Request $request)
+    {
+        $roomName = trim((string) $request->input('room_name'));
+        $identity = trim((string) $request->input('identity'));
+        $appId = trim((string) $request->input('app_id'));
+        $appCertificate = trim((string) $request->input('app_certificate'));
+
+        if ($roomName === '' || $identity === '' || $appId === '' || $appCertificate === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Missing token configuration',
+                'code' => 422,
+            ], 422);
+        }
+
+        $token = AgoraController::GetToken($identity, $appId, $appCertificate, $roomName);
+
+        // GetToken returns a JSON-encoded error array when the caller is banned
+        // or when the SDK throws. Surface that as a 403 instead of leaking the
+        // placeholder into the token field.
+        if (is_string($token) && strlen($token) > 0 && $token[0] === '[') {
+            $decoded = json_decode($token, true);
+            if (is_array($decoded) && isset($decoded[0]['code']) && (string) $decoded[0]['code'] !== '200') {
+                return response()->json([
+                    'success' => false,
+                    'message' => $decoded[0]['message'] ?? 'Token generation failed',
+                    'code' => (int) $decoded[0]['code'],
+                ], 403);
+            }
+        }
+
+        return response()->json([
+            'token' => (string) $token,
+            'room' => $roomName,
+            'identity' => (string) $identity,
+        ]);
+    }
 }

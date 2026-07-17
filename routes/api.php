@@ -347,6 +347,7 @@ Route::get('change_password','AuthController@ChangePassword');
 //Product
 Route::get('rank','RankingController@RankList')->middleware('broadlive.redis_first:ranking,30,120');
 Route::get('generate_live_token','AgoraController@generateToken');
+Route::match(['get','post'],'play_generate_live_token','AgoraController@generateToken');Route::match(['get','post'],'startStream','AgoraController@startStream');
 Route::get('comment_skip_word_list','CommentSkipController@WordList');
 
 Route::get('user_live_store','UserLiveController@Store');
