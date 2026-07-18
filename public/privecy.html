@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Privacy Policy — Broadlive</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --ink: #0f1421;
+    --ink-soft: #4b5563;
+    --card: #f6f5fa;
+    --border: #edecf3;
+    --brand: #7c3aed;
+    --brand-2: #ec4899;
+    --link: #2563eb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0b0d14; --ink:#f4f5f7; --ink-soft:#c4c7d0; --card:#151824; --border:#232739; --link:#8ab4ff; }
+  }
+  html, body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"; line-height:1.55; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 24px 20px 64px; }
+  header { margin-bottom: 20px; }
+  .brand-pill { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:linear-gradient(135deg, var(--brand), var(--brand-2)); color:#fff; font-weight:600; font-size:12px; letter-spacing:.3px; }
+  h1 { font-size: 26px; margin: 14px 0 6px; }
+  .meta { color: var(--ink-soft); font-size: 13px; }
+  h2 { font-size: 18px; margin: 24px 0 8px; }
+  h3 { font-size: 15px; margin: 16px 0 6px; color: var(--ink); }
+  p, li { font-size: 14.5px; color: var(--ink); }
+  ul { padding-left: 20px; }
+  .card { background: var(--card); border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin: 12px 0; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { background: var(--card); padding: 2px 6px; border-radius: 6px; font-size: 12.5px; }
+  footer { margin-top: 32px; font-size: 12px; color: var(--ink-soft); border-top:1px solid var(--border); padding-top: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 8px 0 4px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--card); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="brand-pill">BROADLIVE</span>
+    <h1>Privacy Policy</h1>
+    <div class="meta">Effective 18 July 2026 &middot; App package <code>com.broad.thomas</code></div>
+  </header>
+
+  <div class="card">
+    <p><strong>Broadlive</strong> is a live-streaming social app where you can host or join <strong>audio rooms</strong>, <strong>video rooms</strong>, and <strong>multi-guest rooms</strong>; send <strong>comments, stickers and gifts</strong>; watch and post <strong>Moments</strong> short videos; check <strong>rankings, levels and VIP</strong>; and top up a <strong>wallet</strong> to redeem items in the <strong>store</strong>. This policy explains what data we collect to run those features, who we share it with, and the controls you have.</p>
+  </div>
+
+  <h2>1. Who we are</h2>
+  <p>The Broadlive app and website (<a href="https://broadlive.xyz">broadlive.xyz</a>) are operated by the Broadlive team ("we", "us"). For any privacy question, contact <a href="mailto:support@broadlive.xyz">support@broadlive.xyz</a>.</p>
+
+  <h2>2. Information we collect</h2>
+
+  <h3>Account &amp; profile</h3>
+  <ul>
+    <li>Email address, phone number, or Google account identifier — depending on which sign-in method you choose.</li>
+    <li>Display name, avatar photo, gender, birthday, country and short bio if you fill them in on your profile.</li>
+    <li>Password (stored only as a salted hash — never in plain text).</li>
+  </ul>
+
+  <h3>Live-room content</h3>
+  <ul>
+    <li><strong>Audio &amp; video streams</strong> while a room is live — routed through Agora RTC for real-time delivery. Streams are not recorded to our servers by default.</li>
+    <li><strong>Chat comments</strong> and system events (join / leave, gifts, seat changes) — stored so late-joiners can see recent context and so we can enforce the community rules.</li>
+    <li><strong>Moments</strong> videos you upload — stored on our CDN so other users can play them.</li>
+  </ul>
+
+  <h3>Wallet &amp; store</h3>
+  <ul>
+    <li>Coin / diamond top-ups, gift sends, agency transfers, VIP purchases and Store redemptions.</li>
+    <li>Payment provider order IDs — actual card / bank credentials are never seen by Broadlive; they stay with the payment gateway.</li>
+  </ul>
+
+  <h3>Device &amp; usage</h3>
+  <ul>
+    <li>Device model, OS version, app version, Android advertising ID, Firebase installation ID, coarse region derived from IP.</li>
+    <li>Crash reports and non-fatal error traces (Firebase Crashlytics) — used to find and fix bugs.</li>
+    <li>Feature usage counters (which rooms you visit, how long you stay) — used to power ranking, level, and "For You" ordering.</li>
+  </ul>
+
+  <h3>Permissions we may ask for</h3>
+  <table>
+    <tr><th>Permission</th><th>Why</th></tr>
+    <tr><td>Microphone</td><td>Speak in an audio / multi room, or record a Moment.</td></tr>
+    <tr><td>Camera</td><td>Broadcast video, join as a video cohost, or record a Moment.</td></tr>
+    <tr><td>Photos / Media</td><td>Pick an avatar or upload a Moment.</td></tr>
+    <tr><td>Notifications</td><td>Tell you about follows, gifts, room invites, and important account events.</td></tr>
+    <tr><td>Contacts (optional)</td><td>Only if you tap "Find friends" — we never upload contacts silently.</td></tr>
+  </table>
+  <p>Each permission can be revoked any time in your device settings; the affected feature will simply be disabled.</p>
+
+  <h2>3. How we use your data</h2>
+  <ul>
+    <li>To run the app: sign-in, room joining, comment delivery, gifts, wallet, ranking, level, VIP, Moments feed.</li>
+    <li>To keep the platform safe: detect ban evasion, mute rule-breakers, remove sexual / abusive content.</li>
+    <li>To improve the app: aggregate analytics, crash fixes, A/B experiments — never tied to your identity beyond your user ID.</li>
+    <li>To send you legitimate notifications about your account, gifts, rewards, or content moderation actions.</li>
+  </ul>
+  <p>We do <strong>not</strong> sell personal data. We do not run ad networks or third-party targeted advertising inside the app.</p>
+
+  <h2>4. Who we share with</h2>
+  <table>
+    <tr><th>Partner</th><th>Purpose</th></tr>
+    <tr><td>Agora.io</td><td>Real-time audio &amp; video transport for rooms.</td></tr>
+    <tr><td>Firebase (Google)</td><td>Sign-in, push notifications, crash reporting, install analytics.</td></tr>
+    <tr><td>Google Sign-In</td><td>Optional login method — we receive only the fields you approve on the Google consent screen.</td></tr>
+    <tr><td>Pusher</td><td>Realtime channel events (join, mute, seat change, comment fan-out).</td></tr>
+    <tr><td>Payment gateway</td><td>Processing your top-up. We store only the order ID and status.</td></tr>
+    <tr><td>CDN provider</td><td>Serving avatars, gift SVGA, Moments video and other public media.</td></tr>
+  </table>
+  <p>We share the minimum needed for each partner to do its job, under contract and only for the purposes above.</p>
+
+  <h2>5. How long we keep it</h2>
+  <ul>
+    <li>Account data: kept while your account is active. After account deletion, we purge personal fields within 30 days; we retain the anonymous user-ID stub only where required for wallet ledger integrity.</li>
+    <li>Chat comments &amp; system events: rolling window; oldest entries expire from the room cache automatically.</li>
+    <li>Moments: kept until you delete them, your account is deleted, or the item is removed for a rule violation.</li>
+    <li>Wallet ledger: kept for at least 5 years for financial-record and anti-fraud obligations.</li>
+    <li>Crash and analytics logs: up to 90 days.</li>
+  </ul>
+
+  <h2>6. Your rights &amp; controls</h2>
+  <ul>
+    <li><strong>See &amp; edit</strong> your profile from the Profile screen inside the app.</li>
+    <li><strong>Invisible mode</strong> hides your presence in room and follower lists — Settings &rarr; Privacy toggle.</li>
+    <li><strong>Block list</strong> — blocked users cannot see your profile, follow you, or send you messages.</li>
+    <li><strong>Delete your account</strong> — Settings &rarr; Delete Account, or email <a href="mailto:support@broadlive.xyz">support@broadlive.xyz</a> from the address on file. We confirm deletion within 30 days.</li>
+    <li><strong>Data export</strong> — email us and we will provide a copy of your profile, gift and wallet history within 30 days.</li>
+  </ul>
+
+  <h2>7. Children</h2>
+  <p>Broadlive is <strong>not</strong> intended for children under 18. If we learn that a user is under 18 we suspend the account, remove their content, and refund any pending wallet balance. If you believe a minor is using the app, contact <a href="mailto:support@broadlive.xyz">support@broadlive.xyz</a> and we will act within 48 hours.</p>
+
+  <h2>8. Community safety</h2>
+  <p>Sexual, harassing, hateful and violent content is banned. Our moderators can mute, kick, or ban users; repeat offenders lose their wallet balance. Screen-recording of live rooms is blocked at the OS level (FLAG_SECURE) to protect hosts from non-consensual capture.</p>
+
+  <h2>9. Security</h2>
+  <p>Traffic is encrypted with HTTPS / TLS 1.2+. Passwords are stored only as bcrypt hashes. Access to production databases is restricted to named team members with 2FA. Payment card data never enters our systems.</p>
+
+  <h2>10. International transfers</h2>
+  <p>Broadlive servers are hosted in Singapore and the United States. If you use the app outside those regions your data will be transferred there, protected by the same technical and organisational measures described above.</p>
+
+  <h2>11. Changes</h2>
+  <p>We will notify users of material changes to this policy through an in-app banner and by updating the "Effective" date at the top. Continued use of the app after a change means you accept the updated policy.</p>
+
+  <h2>12. Contact</h2>
+  <p>Privacy questions or requests: <a href="mailto:support@broadlive.xyz">support@broadlive.xyz</a>.<br>
+  Postal: Broadlive Team, c/o Thomas Live Kit, Dhaka, Bangladesh.</p>
+
+  <footer>
+    &copy; 2026 Broadlive. All rights reserved. &middot; App version 1.5.3 &middot; <a href="https://broadlive.xyz">broadlive.xyz</a>
+  </footer>
+</div>
+</body>
+</html>
