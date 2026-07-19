@@ -8,6 +8,7 @@ use Willywes\AgoraSDK\RtcTokenBuilder;
 use App\Models\User;
 use App\Models\Setting;
 use App\Models\BanDevice;
+use Firebase\JWT\JWT;
 class AgoraController extends Controller
 {
    
@@ -132,35 +133,51 @@ class AgoraController extends Controller
      *
      * Accepts JSON body (GET or POST): {room_name, identity, app_id, app_certificate}.
      */
-    public function startStream(Request $request)
+        public function startStream(Request $request)
     {
         $roomName = trim((string) $request->input('room_name'));
         $identity = trim((string) $request->input('identity'));
-        $appId = trim((string) $request->input('app_id'));
-        $appCertificate = trim((string) $request->input('app_certificate'));
 
-        if ($roomName === '' || $identity === '' || $appId === '' || $appCertificate === '') {
+        if ($roomName === '' || $identity === '') {
             return response()->json([
                 'success' => false,
-                'message' => 'Missing token configuration',
+                'message' => 'Missing room_name or identity',
                 'code' => 422,
             ], 422);
         }
 
-        $token = AgoraController::GetToken($identity, $appId, $appCertificate, $roomName);
+        // LiveKit server credentials (lk-blr-main-01 :7880, fronted at rtc.bplive.online).
+        // Also readable from env for rotation.
+        $apiKey = env('LIVEKIT_API_KEY', 'APILKVYBW3pKZi6');
+        $apiSecret = env('LIVEKIT_API_SECRET', 'IBWImTWTMHxnXXh242vFc93DWymnAScnl9nMNoFfhHO');
 
-        // GetToken returns a JSON-encoded error array when the caller is banned
-        // or when the SDK throws. Surface that as a 403 instead of leaking the
-        // placeholder into the token field.
-        if (is_string($token) && strlen($token) > 0 && $token[0] === '[') {
-            $decoded = json_decode($token, true);
-            if (is_array($decoded) && isset($decoded[0]['code']) && (string) $decoded[0]['code'] !== '200') {
-                return response()->json([
-                    'success' => false,
-                    'message' => $decoded[0]['message'] ?? 'Token generation failed',
-                    'code' => (int) $decoded[0]['code'],
-                ], 403);
-            }
+        $now = time();
+        $ttl = 6 * 3600; // 6 hours — matches earlier Agora TTL
+
+        $payload = [
+            'iss' => $apiKey,
+            'sub' => (string) $identity,
+            'iat' => $now,
+            'nbf' => $now,
+            'exp' => $now + $ttl,
+            'name' => (string) $identity,
+            'video' => [
+                'room' => $roomName,
+                'roomJoin' => true,
+                'canPublish' => true,
+                'canSubscribe' => true,
+                'canPublishData' => true,
+            ],
+        ];
+
+        try {
+            $token = JWT::encode($payload, $apiSecret, 'HS256');
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token generation failed: ' . $e->getMessage(),
+                'code' => 500,
+            ], 500);
         }
 
         return response()->json([
