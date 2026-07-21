@@ -31,4 +31,27 @@ class RankingController extends Controller
         array_push($response, array('message'=>'Unauthorized','code'=>'401'));
         return json_encode($response, JSON_UNESCAPED_UNICODE);
     }
+
+    /**
+     * Authenticated caller's own rank/total — real DB numbers, never seeded.
+     */
+    public function MyRank(Request $request, RankingService $service)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(
+                ['message' => 'Unauthorized', 'code' => '401'],
+                401,
+                [],
+                JSON_UNESCAPED_UNICODE
+            );
+        }
+
+        return response()->json(
+            $service->myRankPayload((int) $user->id),
+            200,
+            [],
+            JSON_UNESCAPED_UNICODE
+        );
+    }
 }

@@ -114,6 +114,11 @@ class V4CacheService
         return Cache::remember('v4:ranking:top_list', self::RANKING_TTL, $resolver);
     }
 
+    public static function myRank(int $userId, callable $resolver)
+    {
+        return Cache::remember('v4:ranking:my_rank:' . $userId, self::RANKING_TTL, $resolver);
+    }
+
     public static function boardUserData($type, $channelName, $userId, $hostId, callable $resolver)
     {
         $key = self::roomKey(

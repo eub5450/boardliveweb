@@ -496,6 +496,7 @@ Route::get('v4/change_password','AuthController@ChangePassword');
 //Product
 Route::get('v4/rank','RankingController@RankList');
 Route::get('v4/top_list','RankingController@TopList');
+Route::get('v4/my_rank','RankingController@MyRank');
 Route::get('v4/generate_live_token','AgoraController@generateToken');
 Route::get('v4/comment_skip_word_list','CommentSkipController@WordList');
 
