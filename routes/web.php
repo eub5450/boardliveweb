@@ -157,6 +157,7 @@ Route::get('admin-audio-brd-background','GiftFileController@AudioBrdBackgroundIn
 
 
 Route::get('dashboard','DashbordController@index')->name('admin.dashboard');
+Route::post('toggle-maintenance-mode','DashbordController@ToggleMaintenanceMode')->name('admin.maintenance.toggle');
 Route::post('game-pro-balance-update','DashbordController@GameProBalanceUpdate')->name('game-pro-balance.update');
 Route::get('comment_data','DashbordController@CommentUpdate')->name('comment.data');
 Route::get('id_device_banned/{id}/{host}', 'DashbordController@EmargencyIDBanned');

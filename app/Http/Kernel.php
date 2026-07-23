@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use App\Http\Middleware\AuthorMiddleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\SubAdminMiddleware;
+use App\Http\Middleware\CheckAppMaintenanceMode;
 class Kernel extends HttpKernel
 {
     /**
@@ -46,6 +47,7 @@ class Kernel extends HttpKernel
             'throttle:api',
             //'throttle:200000000,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            CheckAppMaintenanceMode::class,
         ],
     ];
 

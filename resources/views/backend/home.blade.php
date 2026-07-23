@@ -128,6 +128,11 @@
             color: white;
         }
 
+        .action-btn-danger {
+            background: linear-gradient(135deg, var(--danger), #b91c1c);
+            color: white;
+        }
+
         .action-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
@@ -1339,7 +1344,9 @@
                 <h2 class="dashboard-title">Operations Dashboard</h2>
                 <p class="dashboard-subtitle">Live balances, game controls, comments, and chat</p>
             </div>
-            <div class="dashboard-status">Live</div>
+            <div class="dashboard-status" @if($setting->maintenance_mode ?? false) style="background:#dc2626;" @endif>
+                {{ ($setting->maintenance_mode ?? false) ? 'Maintenance' : 'Live' }}
+            </div>
         </div>
 
         <!-- Action Bar -->
@@ -1371,6 +1378,24 @@
                     </span>
                 @endif
                
+            @endif
+
+            @if(auth()->id() == 11133)
+                <form action="{{ route('admin.maintenance.toggle') }}" method="POST" style="display:inline;"
+                      onsubmit="return confirm('{{ $setting->maintenance_mode ?? false ? 'Turn maintenance mode OFF? The app and admin logins will work normally again.' : 'Turn maintenance mode ON? This blocks EVERY app route immediately and blocks every other admin from logging in.' }}');">
+                    @csrf
+                    @if($setting->maintenance_mode ?? false)
+                        <button type="submit" class="action-btn action-btn-danger">
+                            <i class="typcn typcn-warning"></i>
+                            <span>Maintenance Mode: ON - Click to Restore</span>
+                        </button>
+                    @else
+                        <button type="submit" class="action-btn action-btn-warning">
+                            <i class="typcn typcn-power-outline"></i>
+                            <span>Enable Maintenance Mode</span>
+                        </button>
+                    @endif
+                </form>
             @endif
         </div>
 

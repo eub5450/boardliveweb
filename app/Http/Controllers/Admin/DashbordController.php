@@ -26,6 +26,8 @@ use Kreait\Firebase\Contract\Database;
 use App\Models\BanDevice;
 use App\Models\AdminParmisiton;
 use Auth;
+use Log;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
@@ -74,6 +76,51 @@ class DashbordController extends Controller
        $data['approved_balance']=Withdraw::where('status',1)->sum('agency_profit');
         		$data['agency_convart_balance']=WithdrawConvartAgency::sum('amount');
     	return view('backend.home')->with($data);
+    }
+
+    /**
+     * Global kill-switch for the whole app. Restricted to this one admin id
+     * (same super-admin bypass id used elsewhere in this codebase, e.g.
+     * JamboAiTaskController::ALLOWED_ADMIN_ID) - nobody else can flip it, and
+     * the button that calls this route is itself hidden from every other
+     * admin in the dashboard view.
+     *
+     * When ON: every Flutter app API request is blocked with a 503
+     * (CheckAppMaintenanceMode middleware, registered globally on the 'api'
+     * middleware group) and admin-panel login is blocked for everyone except
+     * this same admin id (LoginController::login).
+     */
+    public function ToggleMaintenanceMode(Request $request)
+    {
+        if ((int) Auth::id() !== 11133) {
+            abort(403);
+        }
+
+        $setting = Setting::find(1);
+        if (!$setting) {
+            return redirect()->route('admin.dashboard')->with('error', 'Settings row not found.');
+        }
+
+        $newState = !$setting->maintenance_mode;
+        $setting->maintenance_mode = $newState;
+        $setting->maintenance_mode_by = Auth::id();
+        $setting->maintenance_mode_at = now();
+        $setting->save();
+
+        Cache::forget('app_maintenance_mode');
+
+        Log::warning('Global app maintenance mode toggled', [
+            'admin_id' => Auth::id(),
+            'new_state' => $newState ? 'ON' : 'OFF',
+            'ip' => $request->ip(),
+        ]);
+
+        return redirect()->route('admin.dashboard')->with(
+            'success',
+            $newState
+                ? 'Maintenance mode ENABLED - all app routes are blocked and only this admin can log in.'
+                : 'Maintenance mode DISABLED - app routes and admin login are back to normal.'
+        );
     }
 
   public function GameProBalanceUpdate(Request $request)
